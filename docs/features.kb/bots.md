@@ -16,8 +16,18 @@ AI opponents for practice and testing.
 
 ## AI Levels
 
-Start simple (legal random play + basic heuristics), improve over time.
-Opt-in only - players choose to include bots.
+Start simple, improve over time. Opt-in only.
+
+### a001 Bot (Minimal)
+
+Basic heuristics for playtesting:
+- Follow suit if able (required by rules)
+- Avoid leading QoS early
+- Dump high hearts when can't follow
+- Pass high spades (Q, K, A) and high hearts
+- If shooting moon looks possible, commit to it
+
+Not smart, but exercises all game paths.
 
 ## Architecture
 
