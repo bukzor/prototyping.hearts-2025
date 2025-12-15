@@ -31,6 +31,5 @@ node_modules/
 # Rust
 target/
 
-# Locks managed by package managers
+# uv lock file (regenerated from pyproject.toml)
 uv.lock
-pnpm-lock.yaml
