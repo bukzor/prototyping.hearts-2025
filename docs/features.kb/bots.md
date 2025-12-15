@@ -21,6 +21,7 @@ Start simple, improve over time. Opt-in only.
 ### a000 Bot (Minimal)
 
 Basic heuristics for playtesting:
+
 - Follow suit if able (required by rules)
 - Avoid leading QoS early
 - Dump high hearts when can't follow

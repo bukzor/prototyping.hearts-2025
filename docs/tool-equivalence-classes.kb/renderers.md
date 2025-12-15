@@ -2,11 +2,11 @@
 
 Client-side UI and graphics.
 
-| | POC | Production |
-|-|-----|------------|
-| UI framework | Preact | Preact or Dioxus (TBD) |
-| Scene graph | (not needed yet) | Babylon.js or Bevy (TBD) |
-| Graphics API | Canvas/WebGL | WebGPU or wgpu (TBD) |
+|              | POC              | Production               |
+| ------------ | ---------------- | ------------------------ |
+| UI framework | Preact           | Preact or Dioxus (TBD)   |
+| Scene graph  | (not needed yet) | Babylon.js or Bevy (TBD) |
+| Graphics API | Canvas/WebGL     | WebGPU or wgpu (TBD)     |
 
 ## Notes
 
@@ -27,11 +27,11 @@ Client-side UI and graphics.
 
 If a Rust client becomes necessary:
 
-| TypeScript | Rust |
-|------------|------|
+| TypeScript   | Rust   |
+| ------------ | ------ |
 | Preact/React | Dioxus |
-| Babylon.js | Bevy |
-| Canvas/WebGL | wgpu |
+| Babylon.js   | Bevy   |
+| Canvas/WebGL | wgpu   |
 
 ## Prior Exploration
 

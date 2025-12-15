@@ -15,6 +15,7 @@ Use Python for the proof-of-concept phase, then reimplement in Rust for producti
 - Production: Rust backend + wasm+wgpu client
 
 Maintain strong analogies between Python and Rust implementations:
+
 - uv monorepo structure mirrors cargo workspace
 - Separate packages mirror eventual crates (engine, bot, server, client)
 - Property-based tests (hypothesis) map to proptest
@@ -22,11 +23,13 @@ Maintain strong analogies between Python and Rust implementations:
 ## Consequences
 
 **Accepted trade-offs:**
+
 - Will rewrite code (but architecture carries over)
 - Python patterns may not map 1:1 to Rust
 - Need to maintain tool-equivalence-classes.kb/ to track mappings
 
 **Benefits:**
+
 - Faster iteration in familiar language
 - Architecture validated before Rust learning curve
 - Can show working prototype sooner

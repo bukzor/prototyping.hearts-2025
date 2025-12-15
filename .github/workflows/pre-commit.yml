@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  NODE_ENV: test
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: uv sync
+        run: uv sync
+
+      - name: pytest
+        run: uv run pytest
+
+  pre-commit:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: pnpm install
+        run: pnpm install
+
+      - name: uv sync
+        run: uv sync
+
+      - name: "pre-commit: find fixes"
+        uses: pre-commit/action@v3.0.1
+        id: pre-commit-fixes
+        continue-on-error: true
+
+      - name: "pre-commit: check stability"
+        id: pre-commit-check
+        if: steps.pre-commit-fixes.outcome == 'failure'
+        uses: pre-commit/action@v3.0.1
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        if: steps.pre-commit-check.outcome == 'success'
+        with:
+          commit_message: "formatting, from `pre-commit run --all-files`"

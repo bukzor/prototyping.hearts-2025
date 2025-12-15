@@ -19,12 +19,14 @@ Web UI for browser-based play.
 ## Scope
 
 **In:**
+
 - FastAPI server
 - Preact + TypeScript + Vite renderer
 - Localhost only, single browser
 - Pass-the-controller multiplayer
 
 **Out:**
+
 - Networking (multiple clients)
 - Authentication
 - Persistent state

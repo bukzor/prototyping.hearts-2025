@@ -24,3 +24,12 @@ Thumbs.db
 dist/
 build/
 *.egg-info/
+
+# Node
+node_modules/
+
+# Rust
+target/
+
+# uv lock file (regenerated from pyproject.toml)
+uv.lock

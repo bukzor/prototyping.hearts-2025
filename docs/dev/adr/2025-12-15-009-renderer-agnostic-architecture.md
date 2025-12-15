@@ -3,6 +3,7 @@
 ## Context
 
 Multiple renderer targets exist:
+
 - POC: React/Canvas or Babylon.js (TypeScript)
 - Testing: CLI, curses
 - Production: Possibly keep TS, possibly Bevy/wgpu (Rust)
@@ -21,15 +22,18 @@ Renderer ──► PlayerAction ──► Engine
 ```
 
 **GameState contract (engine → renderer):**
+
 - Pure data, no behavior
 - Includes derived state (validActions, playableCards)
 - Renderer never computes game logic
 
 **PlayerAction contract (renderer → engine):**
+
 - Intents, not mutations
 - Engine validates and applies
 
 **What this enables:**
+
 ```
 engine/     ← Python → Rust (transfers)
 server/     ← Python → Rust (transfers)
@@ -60,11 +64,11 @@ If CLI works, any renderer works.
 
 ## Analogies (if Rust client needed)
 
-| TypeScript | Rust (speculative) |
-|------------|-------------------|
-| React | Dioxus |
-| Babylon.js | Bevy |
-| Canvas/WebGL | wgpu |
-| Scene graph | Entity hierarchy |
+| TypeScript   | Rust (speculative) |
+| ------------ | ------------------ |
+| React        | Dioxus             |
+| Babylon.js   | Bevy               |
+| Canvas/WebGL | wgpu               |
+| Scene graph  | Entity hierarchy   |
 
 Note: TypeScript renderer may persist into production. These analogies are for reference if a Rust client becomes necessary.

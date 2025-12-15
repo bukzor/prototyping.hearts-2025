@@ -24,6 +24,7 @@ Zero-pad to 3 digits. Slug is kebab-case.
 ## Frontmatter
 
 Optional. When used:
+
 ```yaml
 status: planned|active|complete
 ```

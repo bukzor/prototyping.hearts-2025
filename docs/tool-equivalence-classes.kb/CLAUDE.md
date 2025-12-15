@@ -19,6 +19,7 @@ Each file is one equivalence class — tools that do the same job.
 ## Format
 
 Each file covers one **capability**. Structure:
+
 - What this capability is
 - Tools per ecosystem (table)
 - Key differences to watch for

@@ -2,11 +2,11 @@
 
 Dependency resolution, building, running.
 
-| | POC | Production |
-|-|-----|------------|
-| Tool | uv | cargo |
-| Manifest | pyproject.toml | Cargo.toml |
-| Workspaces | uv workspace | cargo workspace |
+|            | POC            | Production      |
+| ---------- | -------------- | --------------- |
+| Tool       | uv             | cargo           |
+| Manifest   | pyproject.toml | Cargo.toml      |
+| Workspaces | uv workspace   | cargo workspace |
 
 ## Notes
 

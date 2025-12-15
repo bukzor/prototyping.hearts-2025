@@ -17,7 +17,8 @@ Features to build for Hearts Online. Each file describes one feature.
 ## Frontmatter
 
 Optional. When used:
+
 ```yaml
 priority: high|medium|low
-milestone: aNNN-slug  # Target milestone
+milestone: aNNN-slug # Target milestone
 ```

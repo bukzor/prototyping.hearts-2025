@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+members = [
+    # TODO: uncomment as crates are created
+    # "packages/engine",
+    # "packages/bot",
+    # "packages/renderer_cli",
+]
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/bukzor/prototyping.hearts-2025"
+
+[workspace.dependencies]
+anyhow = "1"
+
+[workspace.lints.clippy]
+pedantic = "warn"
+nursery = "warn"

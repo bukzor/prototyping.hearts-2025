@@ -2,12 +2,12 @@
 
 Workspace and module organization.
 
-| Concept | POC | Production |
-|---------|-----|------------|
-| Library unit | Python package | Rust crate |
-| Workspace | uv workspace | cargo workspace |
-| Entry point | `__init__.py` | `lib.rs` |
-| Submodule | module | module |
+| Concept      | POC            | Production      |
+| ------------ | -------------- | --------------- |
+| Library unit | Python package | Rust crate      |
+| Workspace    | uv workspace   | cargo workspace |
+| Entry point  | `__init__.py`  | `lib.rs`        |
+| Submodule    | module         | module          |
 
 ## Planned Packages/Crates
 
@@ -34,6 +34,7 @@ hearts/
 ```
 
 Root `pyproject.toml`:
+
 ```toml
 [project]
 name = "hearts"
@@ -44,6 +45,7 @@ members = ["packages/*"]
 ```
 
 Package `pyproject.toml` (e.g., engine):
+
 ```toml
 [project]
 name = "hearts-engine"

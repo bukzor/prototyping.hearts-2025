@@ -1,0 +1,13 @@
+[project]
+name = "hearts-bot"
+version = "0.0.0"
+description = "Hearts AI player"
+requires-python = ">=3.13"
+dependencies = ["hearts-engine"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hearts_bot"]
