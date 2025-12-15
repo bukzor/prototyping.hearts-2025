@@ -1,9 +1,11 @@
-# Web Frameworks
+# Web Framework
 
-| Python | Rust |
-|--------|------|
-| FastAPI | axum |
-| uvicorn | tokio (runtime) |
+HTTP server, routing, WebSocket support.
+
+| | POC | Production |
+|-|-----|------------|
+| Framework | FastAPI | axum |
+| Runtime | uvicorn | tokio |
 
 ## Notes
 

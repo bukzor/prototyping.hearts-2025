@@ -1,19 +1,22 @@
 # Project Structure
 
-| Python | Rust |
-|--------|------|
-| package | crate |
-| uv workspace | cargo workspace |
-| `__init__.py` | `lib.rs` |
-| module | module |
+Workspace and module organization.
 
-## Notes
+| Concept | POC | Production |
+|---------|-----|------------|
+| Library unit | Python package | Rust crate |
+| Workspace | uv workspace | cargo workspace |
+| Entry point | `__init__.py` | `lib.rs` |
+| Submodule | module | module |
 
-- Python packages map to Rust crates
-- Workspace structure should mirror between implementations
-- Planned packages/crates: engine, bot, server, client
+## Planned Packages/Crates
 
-## uv Workspace Setup (POC)
+- engine — game rules and state
+- bot — AI players
+- server — FastAPI/axum backend
+- renderer — TypeScript (may stay TS in production)
+
+## POC Workspace Layout
 
 ```
 hearts/

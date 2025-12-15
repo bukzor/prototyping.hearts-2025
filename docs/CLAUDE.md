@@ -11,7 +11,7 @@ Knowledge base for an online multiplayer Hearts game targeting competitive playe
 ## Structure
 
 - `rules.kb/` - Hearts game rules, standard and optional variants
-- `rust-python-analogues.kb/` - Mappings between Python POC and eventual Rust implementation
+- `tool-equivalence-classes.kb/` - Tools that serve the same purpose across ecosystems
 - `features.kb/` - Features to build (matchmaking, leaderboards, chat, etc.)
 - `milestones.kb/` - Development milestones with alpha/beta/stable prefixes
 - `dev/adr/` - Architecture Decision Records (date-based, per llm-collab)

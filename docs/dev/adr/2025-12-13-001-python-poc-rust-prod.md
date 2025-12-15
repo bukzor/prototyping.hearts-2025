@@ -24,7 +24,7 @@ Maintain strong analogies between Python and Rust implementations:
 **Accepted trade-offs:**
 - Will rewrite code (but architecture carries over)
 - Python patterns may not map 1:1 to Rust
-- Need to maintain rust-python-analogues.kb/ to track mappings
+- Need to maintain tool-equivalence-classes.kb/ to track mappings
 
 **Benefits:**
 - Faster iteration in familiar language

@@ -15,11 +15,13 @@ First playable version. Validates core game loop.
 ## Scope
 
 **In:**
-- Python implementation (FastAPI + htmx)
+- Python backend (FastAPI)
+- TypeScript renderer (Vite)
 - Localhost only, single browser
 - Pass-the-controller multiplayer (4 players, 1 screen)
 - Core rules only (no JD variant)
 - Basic bot for playtesting (simple heuristics, opt-in)
+- CLI renderer for testing
 
 **Out:**
 - Networking
@@ -33,8 +35,9 @@ First playable version. Validates core game loop.
 
 - Python 3.x with uv
 - FastAPI for backend
-- htmx for frontend
+- TypeScript + Vite for renderer
 - Monorepo structure mimicking eventual Rust crates
+- Renderer-agnostic: GameState/PlayerAction interface (see ADR-009)
 
 ## Success Criteria
 

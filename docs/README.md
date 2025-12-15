@@ -1,5 +1,5 @@
 ---
-last-updated: 2025-12-13
+last-updated: 2025-12-15
 ---
 
 # Hearts Online
@@ -20,9 +20,10 @@ Target: competitive players. Philosophy: "fry or be fried" - no dumbing down.
 
 ## Technical Approach
 
-1. **POC Phase**: Python (FastAPI + htmx), localhost, rapid iteration
-2. **Production**: Rust backend + wasm+wgpu client
-3. **Architecture**: Monorepo with separate packages (engine, bot, server, client)
+1. **POC Phase**: Python backend (FastAPI) + TypeScript renderer, localhost, rapid iteration
+2. **Production**: Rust backend + TypeScript/WebGPU or Bevy/wgpu client
+3. **Architecture**: Monorepo with separate packages (engine, bot, server, renderer)
+4. **Key abstraction**: Renderer-agnostic GameState/PlayerAction interface (see `dev/gamestate-interface.md`)
 
 ## Key Constraints
 
