@@ -6,6 +6,10 @@ status: active
 
 First playable version. Validates core game loop.
 
+## Progress
+
+See [.claude/todo.d/](../../.claude/todo.d/) for current work.
+
 ## Goals
 
 - Play a complete game of Hearts that feels right
