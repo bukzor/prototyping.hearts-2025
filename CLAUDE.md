@@ -12,7 +12,7 @@ Multiplayer Hearts card game for competitive players.
 
 - `docs/` - Project knowledge base (start here)
 - `docs/README.md` - Vision and overview
-- `docs/milestones.kb/a001-local-prototype.md` - Current milestone
+- `docs/milestones.kb/a000-local-prototype.md` - Current milestone
 - `docs/dev/adr/` - Architecture decisions
 
 ## Current State
@@ -27,14 +27,14 @@ POC phase. Building Python prototype to validate game mechanics before Rust rewr
 
 **Strategic context:** This is one of several POC prototypes to "see what sticks." Common thread: web interface repackaged for mobile/desktop with micropayments.
 
-**Urgency:** a001 target is ~5 days to first playable version.
+**Urgency:** a000 target is ~5 days to first playable version.
 
 ## Tech Stack (POC)
 
 - Python + uv workspace
-- FastAPI + htmx
+- FastAPI + Preact/TypeScript renderer
 - Packages: engine, bot, server (mirrors eventual Rust crates)
 
 ## What to Build Next
 
-See `docs/milestones.kb/a001-local-prototype.md` for scope. Key deliverable: 4-player pass-the-controller Hearts game in single browser.
+See `docs/milestones.kb/a000-local-prototype.md` for scope. Key deliverable: 4-player pass-the-controller Hearts game in single browser.

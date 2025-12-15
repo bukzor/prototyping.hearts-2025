@@ -18,7 +18,7 @@ AI opponents for practice and testing.
 
 Start simple, improve over time. Opt-in only.
 
-### a001 Bot (Minimal)
+### a000 Bot (Minimal)
 
 Basic heuristics for playtesting:
 - Follow suit if able (required by rules)

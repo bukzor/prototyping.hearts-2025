@@ -109,3 +109,44 @@ Your hand: 2♣ 5♦ 8♦ Q♦ 3♥ 7♥ J♥ 2♠ 5♠ 9♠ K♠
 Valid: play 2♣
 > 
 ```
+
+## Renderer Conventions (Preact)
+
+Keep components as pure functions of (props) → JSX. This enables:
+- Easy testing (render with mock state)
+- Future portability (Preact → React is trivial)
+- Clear data flow (state down, actions up)
+
+```tsx
+// Good: pure function of props
+function Hand({ cards, onPlay }: { cards: Card[], onPlay: (c: Card) => void }) {
+  return (
+    <div class="hand">
+      {cards.map(card => (
+        <Card card={card} onClick={() => onPlay(card)} />
+      ))}
+    </div>
+  );
+}
+
+// State lives at top level, passed down
+function Game({ state, dispatch }: { state: GameState, dispatch: (a: PlayerAction) => void }) {
+  return (
+    <div class="game">
+      <Scores scores={state.scores} />
+      <Trick trick={state.trick} />
+      <Hand 
+        cards={state.hands[state.currentPlayer]} 
+        onPlay={card => dispatch({ type: 'play_card', card })} 
+      />
+    </div>
+  );
+}
+```
+
+**Rules:**
+1. Components are pure functions of props
+2. No `getElementById` or direct DOM queries
+3. State in one place, passed down via props
+4. Actions bubble up via callbacks
+5. CSS classes for styling (stylesheet ports unchanged)

@@ -26,4 +26,4 @@ Local multiplayer in a single browser for early playtesting.
 
 ## Target Milestone
 
-a001-local-prototype (POC only)
+a000-local-prototype (POC only)
