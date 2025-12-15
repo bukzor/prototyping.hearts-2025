@@ -7,6 +7,7 @@ Requirements gathering and documentation structure for Hearts Online.
 ## What Happened
 
 Extended discussion to clarify:
+
 - Product vision (competitive Hearts, "fry or be fried")
 - Target platforms (web, Android, iOS, Steam)
 - Rules (standard + JD variant, shooter's choice for moon)
@@ -14,6 +15,7 @@ Extended discussion to clarify:
 - Architecture (monorepo, separate packages)
 
 Created full KB structure:
+
 - 8 rules in `rules.kb/`
 - 6 features in `features.kb/`
 - 3 milestones in `milestones.kb/`
@@ -23,6 +25,7 @@ Created full KB structure:
 ## Decisions Made
 
 See `dev/adr/2025-12-13-*.md` for formal records. Key ones:
+
 - Python for POC, Rust for production
 - FastAPI + htmx (no SPA complexity)
 - No bots in ranked play (competitive integrity)
@@ -39,6 +42,7 @@ See `dev/adr/2025-12-13-*.md` for formal records. Key ones:
 5. Pass-the-controller UI: single browser, 4 players take turns
 
 **Pass-the-controller mechanics:**
+
 - One browser window shows current player's hand
 - Other players look away or use honor system
 - "End turn" button hides hand, prompts next player

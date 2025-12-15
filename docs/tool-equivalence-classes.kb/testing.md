@@ -2,10 +2,10 @@
 
 Test runners and property-based testing.
 
-| | POC | Production |
-|-|-----|------------|
-| Test runner | pytest | cargo test |
-| Property testing | hypothesis | proptest |
+|                  | POC        | Production |
+| ---------------- | ---------- | ---------- |
+| Test runner      | pytest     | cargo test |
+| Property testing | hypothesis | proptest   |
 
 ## Notes
 

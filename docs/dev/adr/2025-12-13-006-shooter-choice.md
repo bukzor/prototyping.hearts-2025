@@ -3,6 +3,7 @@
 ## Context
 
 Different Hearts variants handle shooting the moon differently:
+
 - Shooter gets -26
 - Everyone else gets +26
 - Shooter chooses

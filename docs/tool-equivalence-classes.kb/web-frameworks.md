@@ -2,10 +2,10 @@
 
 HTTP server, routing, WebSocket support.
 
-| | POC | Production |
-|-|-----|------------|
-| Framework | FastAPI | axum |
-| Runtime | uvicorn | tokio |
+|           | POC     | Production |
+| --------- | ------- | ---------- |
+| Framework | FastAPI | axum       |
+| Runtime   | uvicorn | tokio      |
 
 ## Notes
 

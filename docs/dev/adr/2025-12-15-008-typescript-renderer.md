@@ -6,7 +6,7 @@ ADR-002 chose htmx for fast iteration. After discussion, realized:
 
 1. Production client is wasm+wgpu, not server-rendered HTML
 2. htmx patterns don't transfer to wgpu mental model
-3. TypeScript renderer could be a *keeper*, not throwaway
+3. TypeScript renderer could be a _keeper_, not throwaway
 4. Renderer-agnostic architecture enables multiple frontends (web, CLI, curses)
 
 ## Decision
@@ -14,11 +14,13 @@ ADR-002 chose htmx for fast iteration. After discussion, realized:
 Replace htmx with TypeScript renderer. Keep FastAPI backend.
 
 **POC stack:**
+
 - Python engine/server/bot (unchanged)
 - TypeScript renderer (Vite build)
 - JSON over HTTP/WebSocket for state sync
 
 **Key insight:** If renderer consumes `GameState` and emits `PlayerAction`, the renderer is swappable. Same interface supports:
+
 - React (POC) — rich widget ecosystem
 - Babylon.js (future option if we need WebGPU)
 - CLI/curses (testing)

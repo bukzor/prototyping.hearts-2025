@@ -24,3 +24,13 @@ Thumbs.db
 dist/
 build/
 *.egg-info/
+
+# Node
+node_modules/
+
+# Rust
+target/
+
+# Locks managed by package managers
+uv.lock
+pnpm-lock.yaml

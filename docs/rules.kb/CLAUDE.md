@@ -17,8 +17,9 @@ Hearts game rules. Each file describes one rule or rule variant.
 ## Frontmatter
 
 Optional. When used:
+
 ```yaml
-optional: true|false  # Is this rule a variant/house rule?
+optional: true|false # Is this rule a variant/house rule?
 ```
 
 ## Reference

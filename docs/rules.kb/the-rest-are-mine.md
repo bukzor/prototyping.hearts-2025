@@ -17,6 +17,7 @@ Shortens games without affecting outcomes. Experienced players find playing out 
 ## UX Challenges
 
 Needs careful design:
+
 - Must not affect ranked play integrity (no information leak)
 - Must not confuse players about what happened
 - Needs clear confirmation from all players (or auto-detect?)

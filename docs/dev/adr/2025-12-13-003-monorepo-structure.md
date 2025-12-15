@@ -7,6 +7,7 @@ Need a project structure that scales and mirrors eventual Rust implementation.
 ## Decision
 
 uv workspace monorepo with separate Python packages:
+
 - `engine` - pure game logic, no I/O
 - `bot` - AI opponents
 - `server` - web server, networking

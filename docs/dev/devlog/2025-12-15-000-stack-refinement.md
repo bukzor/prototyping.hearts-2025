@@ -9,16 +9,19 @@ Finalizing v0 tech stack with emphasis on what transfers to production and what 
 Revisited ADR-002 (FastAPI + htmx) decision. Key realization: htmx patterns don't transfer to wgpu mental model, and the production client is "thin wrapper loading shaders" — renderer choice matters more than initially thought.
 
 Discussion explored:
+
 - htmx vs React vs Babylon.js vs vanilla TS
 - wgpu scene graph options (Bevy, Vello, Dioxus)
 - Remembered prior discussions: Dioxus (React-like in Rust), Babylon.js (WebGPU-first scene graph), Bevy (wgpu glue)
 
 Landed on: **TypeScript renderer is a keeper**, not throwaway. The real architecture is:
+
 - `GameState → pixels` contract enables renderer swapping
 - Same interface supports CLI, Preact, Babylon, or future Bevy
 - Engine/server abstractions transfer; renderer is swappable
 
 Further refinement:
+
 - For a000, pure Python is simpler — no need for two languages yet
 - Web renderer (Preact + Vite) deferred to a010
 - Preact chosen over React: same API, 3kb, better TS types, `class` not `className`
