@@ -5,6 +5,7 @@
 
 # Python
 __pycache__/
+.coverage
 .hypothesis/
 *.py[cod]
 *$py.class

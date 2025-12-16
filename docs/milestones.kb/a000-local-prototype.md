@@ -51,7 +51,7 @@ See [.claude/todo.d/](../../.claude/todo.d/) for current work.
 packages/
 ├── engine/           ← game rules, state
 ├── bot/              ← AI player
-├── renderer-cli/     ← Python CLI, a000 primary
+├── renderer_cli/     ← Python CLI, a000 primary
 ```
 
 Server and web renderer (Preact/TS) deferred to a010.

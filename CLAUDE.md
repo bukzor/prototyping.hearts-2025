@@ -34,13 +34,13 @@ micropayments.
 
 **Urgency:** a000 target is ~5 days to first playable version.
 
-## Tech Stack (POC)
+## Tech Stack (a000)
 
 - Python + uv workspace
-- FastAPI + Preact/TypeScript renderer
-- Packages: engine, bot, server (mirrors eventual Rust crates)
+- Python CLI renderer (no web UI until a010)
+- Packages: engine, bot, renderer_cli (mirrors eventual Rust crates)
 
 ## What to Build Next
 
 See `docs/milestones.kb/a000-local-prototype.md` for scope. Key deliverable:
-4-player pass-the-controller Hearts game in single browser.
+4-player pass-the-controller Hearts game in single terminal.
