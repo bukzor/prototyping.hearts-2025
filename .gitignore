@@ -5,6 +5,7 @@
 
 # Python
 __pycache__/
+.hypothesis/
 *.py[cod]
 *$py.class
 .venv/
@@ -33,3 +34,6 @@ target/
 
 # uv lock file (regenerated from pyproject.toml)
 uv.lock
+
+# dirty hacks
+trash/

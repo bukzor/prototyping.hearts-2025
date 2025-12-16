@@ -4,13 +4,15 @@ Session implementing the a000 scaffold plan.
 
 ## What Happened
 
-Implemented project infrastructure per the scaffold plan in a000-local-prototype.md:
+Implemented project infrastructure per the scaffold plan in
+a000-local-prototype.md:
 
 - Created uv workspace with 3 packages (engine, bot, renderer_cli)
 - Set up pre-commit hooks: prettier, pyupgrade, isort, black, pyright
 - Added CI workflow with test and pre-commit jobs
 - Added Cargo.toml placeholder for future Rust migration
-- Used src layout (`packages/engine/src/hearts_engine/`) to mirror Rust crate structure
+- Used src layout (`packages/engine/src/hearts_engine/`) to mirror Rust crate
+  structure
 
 ## Deviations from Plan
 

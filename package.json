@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Multiplayer Hearts card game",
   "private": true,
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

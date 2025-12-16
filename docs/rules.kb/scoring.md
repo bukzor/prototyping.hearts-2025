@@ -1,7 +1,6 @@
 # Scoring
 
-Each heart captured: +1 point
-Queen of Spades captured: +13 points
+Each heart captured: +1 point Queen of Spades captured: +13 points
 
 Points are bad. Low score wins.
 

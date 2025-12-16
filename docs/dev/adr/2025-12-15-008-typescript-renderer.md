@@ -19,7 +19,8 @@ Replace htmx with TypeScript renderer. Keep FastAPI backend.
 - TypeScript renderer (Vite build)
 - JSON over HTTP/WebSocket for state sync
 
-**Key insight:** If renderer consumes `GameState` and emits `PlayerAction`, the renderer is swappable. Same interface supports:
+**Key insight:** If renderer consumes `GameState` and emits `PlayerAction`, the
+renderer is swappable. Same interface supports:
 
 - React (POC) — rich widget ecosystem
 - Babylon.js (future option if we need WebGPU)
@@ -28,7 +29,8 @@ Replace htmx with TypeScript renderer. Keep FastAPI backend.
 
 ## Rationale
 
-- TypeScript renderer likely survives into production (Rust server + TS client is proven pattern)
+- TypeScript renderer likely survives into production (Rust server + TS client
+  is proven pattern)
 - Babylon.js ↔ Bevy is a meaningful analogy (scene graph + WebGPU/wgpu)
 - Dioxus (Rust) ↔ React (TS) is a meaningful analogy (component model)
 - Building transferable skills, not throwaway code
@@ -42,4 +44,7 @@ Replace htmx with TypeScript renderer. Keep FastAPI backend.
 
 ## Addendum: Prior Exploration
 
-There was an idea of using Godot as scene editor / retained scene graph with Bevy as the wgpu runtime glue. This remains a possible future direction for a Rust client, but TypeScript renderer may persist well into production — Rust server + TS client is a proven pattern.
+There was an idea of using Godot as scene editor / retained scene graph with
+Bevy as the wgpu runtime glue. This remains a possible future direction for a
+Rust client, but TypeScript renderer may persist well into production — Rust
+server + TS client is a proven pattern.

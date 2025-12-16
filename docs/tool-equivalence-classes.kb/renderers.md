@@ -10,8 +10,10 @@ Client-side UI and graphics.
 
 ## Notes
 
-- TypeScript renderer may persist into production (Rust server + TS client is proven)
-- Preact chosen for POC: React API in 3kb, excellent TypeScript support, same patterns
+- TypeScript renderer may persist into production (Rust server + TS client is
+  proven)
+- Preact chosen for POC: React API in 3kb, excellent TypeScript support, same
+  patterns
 - Babylon.js is an option if we need WebGPU scene graph in TS
 - Dioxus is React-like in Rust; Bevy provides scene graph + wgpu
 
@@ -35,4 +37,5 @@ If a Rust client becomes necessary:
 
 ## Prior Exploration
 
-There was discussion of using Godot as scene editor with Bevy as wgpu runtime glue. This remains a possible future direction but is not committed.
+There was discussion of using Godot as scene editor with Bevy as wgpu runtime
+glue. This remains a possible future direction but is not committed.

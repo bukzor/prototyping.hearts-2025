@@ -8,11 +8,14 @@ End the round early when outcome is obvious to all players.
 
 ## Concept
 
-When a player holds all remaining high cards in a suit (or otherwise cannot lose any remaining tricks), they may claim "the rest are mine" to skip playing out the hand.
+When a player holds all remaining high cards in a suit (or otherwise cannot lose
+any remaining tricks), they may claim "the rest are mine" to skip playing out
+the hand.
 
 ## Why
 
-Shortens games without affecting outcomes. Experienced players find playing out obvious endgames tedious.
+Shortens games without affecting outcomes. Experienced players find playing out
+obvious endgames tedious.
 
 ## UX Challenges
 

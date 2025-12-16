@@ -4,12 +4,14 @@ last-updated: 2025-12-15
 
 # Hearts Online
 
-The "best" Hearts game for competitive players who want a community and serious play.
+The "best" Hearts game for competitive players who want a community and serious
+play.
 
 ## Vision
 
-Enable lovers of Hearts to have a dedicated community and high-quality game experience.
-Target: competitive players. Philosophy: "fry or be fried" - no dumbing down.
+Enable lovers of Hearts to have a dedicated community and high-quality game
+experience. Target: competitive players. Philosophy: "fry or be fried" - no
+dumbing down.
 
 ## Platforms
 
@@ -20,16 +22,20 @@ Target: competitive players. Philosophy: "fry or be fried" - no dumbing down.
 
 ## Technical Approach
 
-1. **POC Phase**: Python backend (FastAPI) + TypeScript renderer, localhost, rapid iteration
+1. **POC Phase**: Python backend (FastAPI) + TypeScript renderer, localhost,
+   rapid iteration
 2. **Production**: Rust backend + TypeScript/WebGPU or Bevy/wgpu client
-3. **Architecture**: Monorepo with separate packages (engine, bot, server, renderer)
-4. **Key abstraction**: Renderer-agnostic GameState/PlayerAction interface (see `dev/gamestate-interface.md`)
+3. **Architecture**: Monorepo with separate packages (engine, bot, server,
+   renderer)
+4. **Key abstraction**: Renderer-agnostic GameState/PlayerAction interface (see
+   `dev/gamestate-interface.md`)
 
 ## Key Constraints
 
 - Bots never affect ranked play (forfeit on disconnect, no seat-filling)
 - Synchronous play only (no async/correspondence)
-- Monetization doors kept open (free/ads/premium/cosmetics) but not implemented initially
+- Monetization doors kept open (free/ads/premium/cosmetics) but not implemented
+  initially
 
 ## Status
 

@@ -2,14 +2,16 @@
 
 ## Context
 
-Building a cross-platform multiplayer Hearts game. Need to validate game mechanics
-and architecture quickly before committing to production implementation.
+Building a cross-platform multiplayer Hearts game. Need to validate game
+mechanics and architecture quickly before committing to production
+implementation.
 
 Developer is expert in Python, novice in Rust.
 
 ## Decision
 
-Use Python for the proof-of-concept phase, then reimplement in Rust for production.
+Use Python for the proof-of-concept phase, then reimplement in Rust for
+production.
 
 - POC: Python with FastAPI + htmx
 - Production: Rust backend + wasm+wgpu client

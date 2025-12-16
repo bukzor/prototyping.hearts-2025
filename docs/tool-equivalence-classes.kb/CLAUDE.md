@@ -6,7 +6,8 @@ Each file is one equivalence class — tools that do the same job.
 
 ## What Belongs Here
 
-- Tool/framework groupings by purpose (package management, testing, rendering, etc.)
+- Tool/framework groupings by purpose (package management, testing, rendering,
+  etc.)
 - Ecosystem coverage: Python, Rust, TypeScript, others as needed
 - Key differences between equivalent tools
 

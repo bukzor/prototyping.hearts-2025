@@ -2,13 +2,13 @@
 
 # a000 Scaffold Review
 
-**Priority:** High
-**Complexity:** Low
-**Context:** [a000-local-prototype](../../docs/milestones.kb/a000-local-prototype.md)
+**Priority:** High **Complexity:** Low **Context:**
+[a000-local-prototype](../../docs/milestones.kb/a000-local-prototype.md)
 
 ## Problem Statement
 
-Scaffold complete, needs user review before proceeding with engine implementation.
+Scaffold complete, needs user review before proceeding with engine
+implementation.
 
 ## Current Situation
 
@@ -33,6 +33,16 @@ PR #1 merged. Infrastructure in place:
 - Any adjustments to tool configuration?
 - Ready to proceed with engine implementation?
 
+## Pending Fixes
+
+- [x] Pin pnpm version properly - local (volta) vs CI mismatch causes lockfile
+      churn
+  - Added `"packageManager": "pnpm@9.15.9"` to package.json (corepack)
+  - CI uses pnpm/action-setup@v4 which reads from packageManager field
+  - Synced with template.python-project (added .editorconfig, .prettierrc.json5,
+    etc.)
+  - .envrc now adds bin/ to PATH (matching template)
+
 ## Success Criteria
 
 - [ ] User confirms scaffold is acceptable
@@ -40,4 +50,5 @@ PR #1 merged. Infrastructure in place:
 
 ## Notes
 
-Devlog: [2025-12-15-001-scaffold-complete](../../docs/dev/devlog/2025-12-15-001-scaffold-complete.md)
+Devlog:
+[2025-12-15-001-scaffold-complete](../../docs/dev/devlog/2025-12-15-001-scaffold-complete.md)

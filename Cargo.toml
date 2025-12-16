@@ -1,10 +1,10 @@
 [workspace]
 resolver = "2"
 members = [
-    # TODO: uncomment as crates are created
-    # "packages/engine",
-    # "packages/bot",
-    # "packages/renderer_cli",
+  # TODO: uncomment as crates are created
+  # "packages/engine",
+  # "packages/bot",
+  # "packages/renderer_cli",
 ]
 
 [workspace.package]

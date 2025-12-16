@@ -7,7 +7,7 @@ repos:
       # Prettier - configured in .editorconfig, .prettierrc.json5
       - id: prettier
         name: prettier
-        entry: bin/pnpm-run prettier --write --ignore-unknown
+        entry: pnpm-run prettier --write --ignore-unknown
         language: system
         types: [text]
 
@@ -36,7 +36,7 @@ repos:
       # 4. Type check (runs after formatting for cleaner output)
       - id: pyright
         name: pyright
-        entry: bin/pnpm-run pyright
+        entry: pnpm-run pyright
         language: system
         types: [python]
         pass_filenames: false # For performance with large codebases

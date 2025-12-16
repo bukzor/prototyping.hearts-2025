@@ -2,7 +2,8 @@
 
 ## Context
 
-Multiplayer card games are vulnerable to cheating if clients have access to hidden information (other players' hands).
+Multiplayer card games are vulnerable to cheating if clients have access to
+hidden information (other players' hands).
 
 ## Decision
 

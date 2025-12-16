@@ -11,4 +11,5 @@ Passing direction rotates each hand:
 
 Then repeats.
 
-All players pass simultaneously. No one sees received cards until all passes complete.
+All players pass simultaneously. No one sees received cards until all passes
+complete.

@@ -13,7 +13,12 @@ dev-test = ["pytest", "pytest-cov", "covdefaults"]
 dev-lint = ["pre-commit", "black", "isort", "pyupgrade"]
 
 [dependency-groups]
-dev = ["hearts-devenv[dev]", "hearts-engine", "hearts-bot", "hearts-renderer-cli"]
+dev = [
+  "hearts-devenv[dev]",
+  "hearts-engine",
+  "hearts-bot",
+  "hearts-renderer-cli",
+]
 
 [tool.uv.sources]
 hearts-devenv = { workspace = true }
@@ -46,11 +51,7 @@ minversion = "6.0"
 xfail_strict = true
 addopts = "-vvvvv --durations=10 --doctest-modules --last-failed --strict-markers"
 testpaths = ["packages"]
-norecursedirs = [
-  "**/.*",
-  "**/__pycache__",
-  "**/node_modules",
-]
+norecursedirs = ["**/.*", "**/__pycache__", "**/node_modules"]
 python_files = ["*.py"]
 log_cli_level = "0"
 
@@ -65,11 +66,15 @@ skip_covered = false
 [tool.pyright]
 pythonVersion = "3.14"
 include = ["packages"]
-exclude = [
-  "**/.*",
-  "**/__pycache__",
-  "**/node_modules",
-]
+exclude = ["**/.*", "**/__pycache__", "**/node_modules"]
 venvPath = "."
 venv = ".venv"
 typeCheckingMode = "strict"
+analyzeUnannotatedFunctions = true
+reportIncompatibleMethodOverride = "error"
+enableTypeIgnoreComments = true
+reportPrivateUsage = "warning"
+reportConstantRedefinition = "error"
+reportIncompatibleVariableOverride = "error"
+reportMissingImports = "error"
+reportMissingTypeStubs = false

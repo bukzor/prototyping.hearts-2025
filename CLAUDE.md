@@ -17,15 +17,20 @@ Multiplayer Hearts card game for competitive players.
 
 ## Current State
 
-POC phase. Building Python prototype to validate game mechanics before Rust rewrite.
+POC phase. Building Python prototype to validate game mechanics before Rust
+rewrite.
 
 ## Key Context
 
-**Product positioning:** "Mental exercise" for serious players. "Fry or be fried" - no hand-holding.
+**Product positioning:** "Mental exercise" for serious players. "Fry or be
+fried" - no hand-holding.
 
-**Expert user:** The developer's partner is a Hearts enthusiast who will validate gameplay feel and drive UI decisions during testing.
+**Expert user:** The developer's partner is a Hearts enthusiast who will
+validate gameplay feel and drive UI decisions during testing.
 
-**Strategic context:** This is one of several POC prototypes to "see what sticks." Common thread: web interface repackaged for mobile/desktop with micropayments.
+**Strategic context:** This is one of several POC prototypes to "see what
+sticks." Common thread: web interface repackaged for mobile/desktop with
+micropayments.
 
 **Urgency:** a000 target is ~5 days to first playable version.
 
@@ -37,4 +42,5 @@ POC phase. Building Python prototype to validate game mechanics before Rust rewr
 
 ## What to Build Next
 
-See `docs/milestones.kb/a000-local-prototype.md` for scope. Key deliverable: 4-player pass-the-controller Hearts game in single browser.
+See `docs/milestones.kb/a000-local-prototype.md` for scope. Key deliverable:
+4-player pass-the-controller Hearts game in single browser.

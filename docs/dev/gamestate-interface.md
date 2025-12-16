@@ -91,7 +91,8 @@ interface ActionResult {
 
 ### What's in GameState
 
-- **All derived state**: `validActions`, `heartsBroken` — renderer never computes
+- **All derived state**: `validActions`, `heartsBroken` — renderer never
+  computes
 - **Full hands**: For pass-the-controller mode, all hands visible
 - **Round and cumulative scores**: Both needed for display
 

@@ -12,7 +12,8 @@ Need architecture that survives renderer revolutions.
 
 ## Decision
 
-Strict separation: engine owns game logic, renderer owns pixels. Interface is data.
+Strict separation: engine owns game logic, renderer owns pixels. Interface is
+data.
 
 ```
 Engine ──► GameState ──► Renderer (black box)
@@ -71,4 +72,5 @@ If CLI works, any renderer works.
 | Canvas/WebGL | wgpu               |
 | Scene graph  | Entity hierarchy   |
 
-Note: TypeScript renderer may persist into production. These analogies are for reference if a Rust client becomes necessary.
+Note: TypeScript renderer may persist into production. These analogies are for
+reference if a Rust client becomes necessary.

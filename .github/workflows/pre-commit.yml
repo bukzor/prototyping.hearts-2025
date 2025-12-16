@@ -7,6 +7,7 @@ on:
 
 env:
   NODE_ENV: test
+  REPO: ${{ github.workspace }}
 
 jobs:
   test:
@@ -41,16 +42,19 @@ jobs:
         uses: astral-sh/setup-uv@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "pnpm"
 
+      - name: Add bin to PATH
+        run: echo "$REPO/bin" >> $GITHUB_PATH
+
       - name: pnpm install
-        run: pnpm install
+        run: |
+          pnpm --version
+          pnpm install
 
       - name: uv sync
         run: uv sync

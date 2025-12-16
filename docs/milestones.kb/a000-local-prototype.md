@@ -22,9 +22,11 @@ See [.claude/todo.d/](../../.claude/todo.d/) for current work.
 
 - Pure Python (no server, engine via import)
 - Python CLI renderer
-- [Pass-the-controller](../features.kb/pass-the-controller.md) multiplayer (4 players, 1 terminal)
+- [Pass-the-controller](../features.kb/pass-the-controller.md) multiplayer (4
+  players, 1 terminal)
 - [Core rules](../rules.kb/) only (no JD variant)
-- Basic [bot](../features.kb/bots.md) for playtesting (simple heuristics, opt-in)
+- Basic [bot](../features.kb/bots.md) for playtesting (simple heuristics,
+  opt-in)
 
 **Out:**
 
@@ -40,7 +42,8 @@ See [.claude/todo.d/](../../.claude/todo.d/) for current work.
 - Python 3.x with uv
 - Python CLI renderer (no web UI in a000)
 - Monorepo structure mimicking eventual Rust crates
-- Renderer-agnostic: [GameState/PlayerAction interface](../dev/gamestate-interface.md)
+- Renderer-agnostic:
+  [GameState/PlayerAction interface](../dev/gamestate-interface.md)
 
 ## Package Structure
 
@@ -59,9 +62,12 @@ Complete a 4-player game to 100 points with no rule violations.
 
 ## Getting Started
 
-1. Set up uv workspace (see [project-structure](../tool-equivalence-classes.kb/project-structure.md))
-2. Implement `engine/` — cards, hands, tricks, [rules](../rules.kb/), [scoring](../rules.kb/scoring.md)
-3. Implement `renderer-cli/` — display [GameState](../dev/gamestate-interface.md), accept input
+1. Set up uv workspace (see
+   [project-structure](../tool-equivalence-classes.kb/project-structure.md))
+2. Implement `engine/` — cards, hands, tricks, [rules](../rules.kb/),
+   [scoring](../rules.kb/scoring.md)
+3. Implement `renderer-cli/` — display
+   [GameState](../dev/gamestate-interface.md), accept input
 4. Implement `bot/` — [a000 heuristics](../features.kb/bots.md)
 5. Wire together and play test
 
@@ -104,7 +110,8 @@ packages/renderer_cli/hearts_renderer_cli/__init__.py
 | `bin/pnpm-run`                     | `template.python-project/bin/pnpm-run`                        |
 | `packages/*/pyproject.toml`        | `devinfra-flakiness/lib/flaky_test_automation/pyproject.toml` |
 
-Reference paths: `~/repo/github.com/bukzor/work-stuff/repo/getsentry/` and `~/repo/github.com/bukzor/template.python-project/`
+Reference paths: `~/repo/github.com/bukzor/work-stuff/repo/getsentry/` and
+`~/repo/github.com/bukzor/template.python-project/`
 
 ### Pre-commit Hook Order
 
