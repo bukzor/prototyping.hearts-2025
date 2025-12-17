@@ -25,7 +25,7 @@ def apply_pass(
         )
 
     player = state.current_player
-    hand = state.hands[player]
+    hand = state.players[player].hand
 
     if not all(c in hand for c in cards):
         return ActionResult(
@@ -67,10 +67,10 @@ def execute_passes(state: GameState) -> None:
         target = pass_target(player, direction)
         received[target].extend(cards)
         for card in cards:
-            state.hands[player].remove(card)
+            state.players[player].hand.remove(card)
 
     for player, cards in received.items():
-        state.hands[player].update(cards)
+        state.players[player].hand.update(cards)
 
     state.pending_passes.clear()
 
@@ -78,5 +78,5 @@ def execute_passes(state: GameState) -> None:
 def start_playing_phase(state: GameState) -> None:
     """Transition to playing phase."""
     state.phase = Phase.PLAYING
-    state.current_player = find_two_of_clubs_holder(state.hands)  # type: ignore[assignment]
+    state.current_player = find_two_of_clubs_holder(state.players)  # type: ignore[assignment]
     state.lead_player = state.current_player

@@ -15,11 +15,14 @@ class DescribeNewGame:
     def it_deals_13_cards_to_each_player(self) -> None:
         game = new_game(seed=42)
         for i in range(4):
-            assert len(game.hands[i]) == 13, (i, len(game.hands[i]))
+            assert len(game.players[i].hand) == 13, (
+                i,
+                len(game.players[i].hand),
+            )
 
     def it_uses_all_52_cards(self) -> None:
         game = new_game(seed=42)
-        all_cards = [c for h in game.hands for c in h]
+        all_cards = [c for p in game.players for c in p.hand]
         assert len(all_cards) == 52
         assert len(set(all_cards)) == 52
 
@@ -29,8 +32,8 @@ class DescribeNewGame:
 
     def it_starts_with_zero_scores(self) -> None:
         game = new_game(seed=42)
-        assert game.scores == [0, 0, 0, 0]
-        assert game.round_scores == [0, 0, 0, 0]
+        assert [p.score for p in game.players] == [0, 0, 0, 0]
+        assert [p.round_score for p in game.players] == [0, 0, 0, 0]
 
     def it_has_left_pass_direction_for_round_zero(self) -> None:
         game = new_game(seed=42)
@@ -43,10 +46,14 @@ class DescribeNewGame:
     def it_is_reproducible_with_seed(self) -> None:
         game1 = new_game(seed=123)
         game2 = new_game(seed=123)
-        assert game1.hands == game2.hands
+        assert [p.hand for p in game1.players] == [
+            p.hand for p in game2.players
+        ]
 
     def it_is_different_without_seed(self) -> None:
         game1 = new_game()
         game2 = new_game()
         # Very unlikely to be identical
-        assert game1.hands != game2.hands
+        assert [p.hand for p in game1.players] != [
+            p.hand for p in game2.players
+        ]

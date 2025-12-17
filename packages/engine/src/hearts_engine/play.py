@@ -18,7 +18,7 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
         )
 
     player = state.current_player
-    hand = state.hands[player]
+    hand = state.players[player].hand
 
     if card not in hand:
         return ActionResult(ok=False, error="Card not in hand", new_state=None)
@@ -30,7 +30,7 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
         )
 
     new_state = state.copy()
-    new_state.hands[player].remove(card)
+    new_state.players[player].hand.remove(card)
     new_state.trick[player] = card
 
     if card.suit == Suit.HEARTS:
@@ -49,10 +49,10 @@ def complete_trick(state: GameState) -> None:
     from .round import complete_round
 
     winner = trick_winner(state.trick, state.lead_player)
-    state.tricks_won[winner].append(state.trick)
+    state.players[winner].tricks_won.append(state.trick)
     state.trick = Trick()
     state.lead_player = winner
     state.current_player = winner
 
-    if all(len(h) == 0 for h in state.hands):
+    if all(len(p.hand) == 0 for p in state.players):
         complete_round(state)

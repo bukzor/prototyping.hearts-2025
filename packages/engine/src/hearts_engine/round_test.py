@@ -22,7 +22,7 @@ def _get_to_playing(seed: int = 42) -> GameState:
     """Helper to skip past passing phase."""
     game: GameState = new_game(seed=seed)
     for i in range(4):
-        cards = game.hands[i].draw(3)
+        cards = game.players[i].hand.draw(3)
         result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
         assert result.ok
         assert result.new_state is not None
@@ -50,7 +50,7 @@ class DescribeRoundCompletion:
         game = self._play_full_round(game)
         # After round, cumulative scores should sum to 26 (all point cards)
         # (round_scores gets reset when new round starts)
-        total_points = sum(game.scores)
+        total_points = sum(p.score for p in game.players)
         assert (
             total_points == 26 or total_points == -26
         ), f"Total points should be 26 or -26 (moon), got {total_points}"
@@ -59,7 +59,7 @@ class DescribeRoundCompletion:
         game = _get_to_playing()
         game = self._play_full_round(game)
         # Hands should be empty OR refilled for new round
-        total_cards = sum(len(h) for h in game.hands)
+        total_cards = sum(len(p.hand) for p in game.players)
         assert total_cards in (
             0,
             52,
@@ -91,18 +91,18 @@ class DescribeMoonShooting:
             2: Card(Suit.CLUBS, Rank.TWO),
             3: Card(Suit.CLUBS, Rank.THREE),
         })
-        game.tricks_won[0] = hearts_tricks + [final_trick]
+        game.players[0].tricks_won = hearts_tricks + [final_trick]
 
         result = apply_action(game, ChooseMoonOption(add_to_others=True))
         assert result.ok, result.error
         assert result.new_state is not None
         # Others should have +26
         for i in range(1, 4):
-            assert result.new_state.scores[i] == 26, (
+            assert result.new_state.players[i].score == 26, (
                 i,
-                result.new_state.scores[i],
+                result.new_state.players[i].score,
             )
-        assert result.new_state.scores[0] == 0
+        assert result.new_state.players[0].score == 0
 
     def it_allows_subtract_from_self(self) -> None:
         game = new_game(seed=42)
@@ -122,12 +122,12 @@ class DescribeMoonShooting:
             2: Card(Suit.CLUBS, Rank.TWO),
             3: Card(Suit.CLUBS, Rank.THREE),
         })
-        game.tricks_won[0] = hearts_tricks + [final_trick]
+        game.players[0].tricks_won = hearts_tricks + [final_trick]
 
         result = apply_action(game, ChooseMoonOption(add_to_others=False))
         assert result.ok, result.error
         assert result.new_state is not None
-        assert result.new_state.scores[0] == -26
+        assert result.new_state.players[0].score == -26
 
 
 class DescribeGameEnd:
@@ -135,13 +135,19 @@ class DescribeGameEnd:
 
     def it_ends_game_at_100_points(self) -> None:
         game = new_game(seed=42)
-        game.scores = [100, 50, 30, 20]
+        game.players[0].score = 100
+        game.players[1].score = 50
+        game.players[2].score = 30
+        game.players[3].score = 20
         check_game_end(game)
         assert game.phase == Phase.GAME_END
 
     def it_starts_new_round_under_100(self) -> None:
         game = new_game(seed=42)
-        game.scores = [50, 30, 20, 10]
+        game.players[0].score = 50
+        game.players[1].score = 30
+        game.players[2].score = 20
+        game.players[3].score = 10
         old_round = game.round_number
         check_game_end(game)
         assert game.phase != Phase.GAME_END

@@ -13,6 +13,7 @@ from .card import Trick
 if TYPE_CHECKING:
     from .state import GameState
     from .state import PlayerAction
+    from .state import PlayerState
 
 
 def is_point_card(card: Card) -> bool:
@@ -66,20 +67,20 @@ def cards_of_suit(hand: Iterable[Card], suit: Suit) -> list[Card]:
 
 def is_first_trick(state: GameState) -> bool:
     """Check if this is the first trick of the round."""
-    return all(len(ts) == 0 for ts in state.tricks_won.values())
+    return all(len(p.tricks_won) == 0 for p in state.players)
 
 
 def can_lead_hearts(state: GameState) -> bool:
     """Check if hearts can be led."""
     if state.hearts_broken:
         return True
-    hand = state.hands[state.current_player]
+    hand = state.players[state.current_player].hand
     return all(c.suit == Suit.HEARTS for c in hand)
 
 
 def valid_leads(state: GameState) -> list[Card]:
     """Get valid cards to lead with."""
-    hand = state.hands[state.current_player]
+    hand = state.players[state.current_player].hand
 
     if is_first_trick(state):
         assert TWO_OF_CLUBS in hand, (hand, state.current_player)
@@ -96,7 +97,7 @@ def valid_follows(state: GameState) -> list[Card]:
     """Get valid cards when following a trick."""
     assert len(state.trick) > 0
     assert state.lead_player is not None
-    hand = state.hands[state.current_player]
+    hand = state.players[state.current_player].hand
     lead_suit = state.trick[state.lead_player].suit
 
     if has_suit(hand, lead_suit):
@@ -120,7 +121,7 @@ def valid_pass_selections(state: GameState) -> list[tuple[Card, Card, Card]]:
     """Get all valid 3-card combinations for passing."""
     from itertools import combinations
 
-    hand = state.hands[state.current_player]
+    hand = state.players[state.current_player].hand
     return list(combinations(hand, 3))  # type: ignore[return-value]
 
 
@@ -151,16 +152,16 @@ def valid_actions(state: GameState) -> list[PlayerAction]:
 
 def check_shot_moon(state: GameState) -> PlayerId | None:
     """Check if any player shot the moon. Returns player id or None."""
-    for player, tricks in state.tricks_won.items():
-        points = round_points(tricks)
+    for i, player in enumerate(state.players):
+        points = round_points(player.tricks_won)
         if points == 26:
-            return player
+            return i  # type: ignore[return-value]
     return None
 
 
-def find_two_of_clubs_holder(hands: list[list[Card]]) -> int:
+def find_two_of_clubs_holder(players: list[PlayerState]) -> int:
     """Find which player has the 2 of clubs."""
-    for i, hand in enumerate(hands):
-        if TWO_OF_CLUBS in hand:
+    for i, player in enumerate(players):
+        if TWO_OF_CLUBS in player.hand:
             return i
     raise AssertionError("No player has 2 of clubs")

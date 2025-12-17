@@ -22,7 +22,7 @@ class DescribeGameInvariants:
     @settings(max_examples=20)
     def it_always_deals_valid_hands(self, seed: int) -> None:
         game = new_game(seed=seed)
-        all_cards = [c for h in game.hands for c in h]
+        all_cards = [c for p in game.players for c in p.hand]
         assert len(all_cards) == 52
         assert len(set(all_cards)) == 52
 
@@ -30,7 +30,7 @@ class DescribeGameInvariants:
     @settings(max_examples=20)
     def it_always_has_two_of_clubs_somewhere(self, seed: int) -> None:
         game = new_game(seed=seed)
-        all_cards = [c for h in game.hands for c in h]
+        all_cards = [c for p in game.players for c in p.hand]
         assert TWO_OF_CLUBS in all_cards
 
     @given(st.integers(min_value=0, max_value=1000))
@@ -57,13 +57,13 @@ class DescribeStatefulInvariants:
         game: GameState = new_game(seed=seed)
         # Complete passing phase
         for i in range(4):
-            cards = game.hands[i].draw(3)
+            cards = game.players[i].hand.draw(3)
             result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
             assert result.ok
             assert result.new_state is not None
             game = result.new_state
 
-        all_cards = [c for h in game.hands for c in h]
+        all_cards = [c for p in game.players for c in p.hand]
         assert (
             len(all_cards) == 52
         ), f"Lost cards during passing: {len(all_cards)}"
@@ -76,7 +76,7 @@ class DescribeStatefulInvariants:
         game: GameState = new_game(seed=seed)
         # Complete passing
         for i in range(4):
-            cards = game.hands[i].draw(3)
+            cards = game.players[i].hand.draw(3)
             result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
             assert result.ok
             assert result.new_state is not None
@@ -95,12 +95,12 @@ class DescribeStatefulInvariants:
             game = result.new_state
 
             # Count all cards
-            hand_cards = [c for h in game.hands for c in h]
+            hand_cards = [c for p in game.players for c in p.hand]
             trick_cards = list(game.trick.values())
             won_cards = [
                 c
-                for ts in game.tricks_won.values()
-                for t in ts
+                for p in game.players
+                for t in p.tricks_won
                 for c in t.values()
             ]
             total = len(hand_cards) + len(trick_cards) + len(won_cards)

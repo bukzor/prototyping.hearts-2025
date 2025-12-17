@@ -80,6 +80,16 @@ def pass_target(player: PlayerId, direction: PassDirection) -> PlayerId:
 
 
 @dataclass(slots=True)
+class PlayerState:
+    """State for a single player."""
+
+    hand: Hand
+    score: int = 0
+    round_score: int = 0
+    tricks_won: list[Trick] = field(default_factory=lambda: list[Trick]())
+
+
+@dataclass(slots=True)
 class GameState:
     """Complete game state."""
 
@@ -94,10 +104,7 @@ class GameState:
     dealer: PlayerId
 
     # Player state (index = PlayerId)
-    hands: list[Hand]
-    scores: list[int]  # Cumulative
-    round_scores: list[int]  # Current round
-    tricks_won: dict[PlayerId, list[Trick]]  # Tricks won per player this round
+    players: list[PlayerState]
 
     # Current trick
     trick: Trick
@@ -124,12 +131,15 @@ class GameState:
             phase=self.phase,
             round_number=self.round_number,
             dealer=self.dealer,
-            hands=[Hand(h) for h in self.hands],
-            scores=list(self.scores),
-            round_scores=list(self.round_scores),
-            tricks_won={
-                p: [Trick(t) for t in ts] for p, ts in self.tricks_won.items()
-            },
+            players=[
+                PlayerState(
+                    hand=Hand(p.hand),
+                    score=p.score,
+                    round_score=p.round_score,
+                    tricks_won=[Trick(t) for t in p.tricks_won],
+                )
+                for p in self.players
+            ],
             trick=Trick(self.trick),
             lead_player=self.lead_player,
             current_player=self.current_player,

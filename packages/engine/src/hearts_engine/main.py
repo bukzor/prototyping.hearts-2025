@@ -11,6 +11,7 @@ from .state import ChooseMoonOption
 from .state import GameState
 from .state import Phase
 from .state import PlayCard
+from .state import PlayerState
 from .state import SelectPass
 
 if TYPE_CHECKING:
@@ -36,10 +37,7 @@ def new_game(game_id: str | None = None, seed: int | None = None) -> GameState:
         phase=Phase.PASSING,
         round_number=0,
         dealer=0,
-        hands=hands,
-        scores=[0, 0, 0, 0],
-        round_scores=[0, 0, 0, 0],
-        tricks_won={0: [], 1: [], 2: [], 3: []},
+        players=[PlayerState(hand=h) for h in hands],
         trick=Trick(),
         lead_player=None,
         current_player=0,  # Start with player 0 for passing

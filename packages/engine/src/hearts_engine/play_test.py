@@ -13,7 +13,7 @@ def _get_to_playing(seed: int = 42) -> GameState:
     """Helper to skip past passing phase."""
     game: GameState = new_game(seed=seed)
     for i in range(4):
-        cards = game.hands[i].draw(3)
+        cards = game.players[i].hand.draw(3)
         result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
         assert result.ok
         assert result.new_state is not None
@@ -27,13 +27,15 @@ class DescribePlayPhase:
     def it_starts_with_two_of_clubs_holder(self) -> None:
         game = _get_to_playing()
         holder = game.current_player
-        assert TWO_OF_CLUBS in game.hands[holder]
+        assert TWO_OF_CLUBS in game.players[holder].hand
 
     def it_requires_two_of_clubs_first(self) -> None:
         game = _get_to_playing()
         # Try playing something else
         holder = game.current_player
-        other_cards = [c for c in game.hands[holder] if c != TWO_OF_CLUBS]
+        other_cards = [
+            c for c in game.players[holder].hand if c != TWO_OF_CLUBS
+        ]
         if other_cards:
             result = apply_action(game, PlayCard(card=other_cards[0]))
             assert not result.ok
@@ -65,7 +67,7 @@ class DescribeFollowingSuit:
     def it_must_follow_suit_if_able(self) -> None:
         game = self._setup_trick_in_progress()
         player = game.current_player
-        hand = game.hands[player]
+        hand = game.players[player].hand
         assert game.lead_player is not None
         lead_suit = game.trick[game.lead_player].suit
 
@@ -80,7 +82,7 @@ class DescribeFollowingSuit:
     def it_can_play_anything_if_void(self) -> None:
         game = self._setup_trick_in_progress()
         player = game.current_player
-        hand = game.hands[player]
+        hand = game.players[player].hand
         assert game.lead_player is not None
         lead_suit = game.trick[game.lead_player].suit
 
@@ -137,7 +139,7 @@ class DescribeTrickCompletion:
         game = _get_to_playing()
         game = self._play_full_trick(game)
         total_cards_won = sum(
-            len(t) for ts in game.tricks_won.values() for t in ts
+            len(t) for p in game.players for t in p.tricks_won
         )
         assert (
             total_cards_won == 4
