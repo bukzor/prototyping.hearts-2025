@@ -25,8 +25,9 @@ See [.claude/todo.d/](../../.claude/todo.d/) for current work.
 - [Pass-the-controller](../features.kb/pass-the-controller.md) multiplayer (4
   players, 1 terminal)
 - [Core rules](../rules.kb/) only (no JD variant)
-- Basic [bot](../features.kb/bots.md) for playtesting (simple heuristics,
-  opt-in)
+- [010-basic bot](../features.kb/bots.kb/010-basic.md) for playtesting (simple
+  heuristics, opt-in)
+- Log-style CLI output (not ncurses)
 
 **Out:**
 
