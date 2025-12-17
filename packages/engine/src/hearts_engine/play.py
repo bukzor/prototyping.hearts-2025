@@ -31,7 +31,7 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
 
     new_state = state.copy()
     new_state.players[player].hand.remove(card)
-    new_state.trick[player] = card
+    new_state.trick = new_state.trick.with_play(player, card)
 
     if card.suit == Suit.HEARTS:
         new_state.hearts_broken = True

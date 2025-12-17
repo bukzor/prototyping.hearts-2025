@@ -61,30 +61,39 @@ class DescribeTrickPoints:
     """Tests for trick scoring."""
 
     def it_sums_point_cards(self) -> None:
-        trick = Trick({
-            0: Card(Suit.HEARTS, Rank.TWO),
-            1: Card(Suit.HEARTS, Rank.THREE),
-            2: Card(Suit.CLUBS, Rank.ACE),
-            3: Card(Suit.DIAMONDS, Rank.KING),
-        })
+        trick = Trick(
+            cards=(
+                Card(Suit.HEARTS, Rank.TWO),
+                Card(Suit.HEARTS, Rank.THREE),
+                Card(Suit.CLUBS, Rank.ACE),
+                Card(Suit.DIAMONDS, Rank.KING),
+            ),
+            lead=0,
+        )
         assert trick_points(trick) == 2
 
     def it_counts_queen_of_spades(self) -> None:
-        trick = Trick({
-            0: QUEEN_OF_SPADES,
-            1: Card(Suit.CLUBS, Rank.ACE),
-            2: Card(Suit.CLUBS, Rank.KING),
-            3: Card(Suit.CLUBS, Rank.QUEEN),
-        })
+        trick = Trick(
+            cards=(
+                QUEEN_OF_SPADES,
+                Card(Suit.CLUBS, Rank.ACE),
+                Card(Suit.CLUBS, Rank.KING),
+                Card(Suit.CLUBS, Rank.QUEEN),
+            ),
+            lead=0,
+        )
         assert trick_points(trick) == 13
 
     def it_handles_all_hearts_plus_queen(self) -> None:
-        trick = Trick({
-            0: Card(Suit.HEARTS, Rank.ACE),
-            1: Card(Suit.HEARTS, Rank.KING),
-            2: Card(Suit.HEARTS, Rank.QUEEN),
-            3: QUEEN_OF_SPADES,
-        })
+        trick = Trick(
+            cards=(
+                Card(Suit.HEARTS, Rank.ACE),
+                Card(Suit.HEARTS, Rank.KING),
+                Card(Suit.HEARTS, Rank.QUEEN),
+                QUEEN_OF_SPADES,
+            ),
+            lead=0,
+        )
         assert trick_points(trick) == 16
 
 
@@ -92,32 +101,41 @@ class DescribeTrickWinner:
     """Tests for trick winner determination."""
 
     def it_picks_highest_of_led_suit(self) -> None:
-        trick = Trick({
-            0: Card(Suit.CLUBS, Rank.TWO),
-            1: Card(Suit.CLUBS, Rank.ACE),
-            2: Card(Suit.CLUBS, Rank.KING),
-            3: Card(Suit.CLUBS, Rank.QUEEN),
-        })
+        trick = Trick(
+            cards=(
+                Card(Suit.CLUBS, Rank.TWO),
+                Card(Suit.CLUBS, Rank.ACE),
+                Card(Suit.CLUBS, Rank.KING),
+                Card(Suit.CLUBS, Rank.QUEEN),
+            ),
+            lead=0,
+        )
         winner = trick_winner(trick, lead_player=0)
         assert winner == 1
 
     def it_ignores_off_suit_cards(self) -> None:
-        trick = Trick({
-            0: Card(Suit.CLUBS, Rank.TWO),
-            1: Card(Suit.HEARTS, Rank.ACE),  # Off suit
-            2: Card(Suit.CLUBS, Rank.THREE),
-            3: Card(Suit.SPADES, Rank.ACE),  # Off suit
-        })
+        trick = Trick(
+            cards=(
+                Card(Suit.CLUBS, Rank.TWO),
+                Card(Suit.HEARTS, Rank.ACE),  # Off suit
+                Card(Suit.CLUBS, Rank.THREE),
+                Card(Suit.SPADES, Rank.ACE),  # Off suit
+            ),
+            lead=0,
+        )
         winner = trick_winner(trick, lead_player=0)
         assert winner == 2
 
     def it_leader_wins_if_all_off_suit(self) -> None:
-        trick = Trick({
-            0: Card(Suit.CLUBS, Rank.TWO),
-            1: Card(Suit.HEARTS, Rank.ACE),
-            2: Card(Suit.DIAMONDS, Rank.ACE),
-            3: Card(Suit.SPADES, Rank.ACE),
-        })
+        trick = Trick(
+            cards=(
+                Card(Suit.CLUBS, Rank.TWO),
+                Card(Suit.HEARTS, Rank.ACE),
+                Card(Suit.DIAMONDS, Rank.ACE),
+                Card(Suit.SPADES, Rank.ACE),
+            ),
+            lead=0,
+        )
         winner = trick_winner(trick, lead_player=0)
         assert winner == 0
 
@@ -153,7 +171,7 @@ class DescribeTrickWinnerProperties:
     def it_always_returns_a_player_from_the_trick(
         self, four_cards: list[Card], players: list[int]
     ) -> None:
-        trick = Trick({
+        trick = Trick.from_dict({
             players[i]: four_cards[i] for i in range(4)  # type: ignore[index]
         })
         winner = trick_winner(trick, lead_player=players[0])  # type: ignore[arg-type]
@@ -166,7 +184,7 @@ class DescribeTrickWinnerProperties:
     def it_returns_a_card_from_the_trick(
         self, four_cards: list[Card], players: list[int]
     ) -> None:
-        trick = Trick({
+        trick = Trick.from_dict({
             players[i]: four_cards[i] for i in range(4)  # type: ignore[index]
         })
         winner = trick_winner(trick, lead_player=players[0])  # type: ignore[arg-type]

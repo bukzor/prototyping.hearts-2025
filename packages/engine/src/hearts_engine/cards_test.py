@@ -100,16 +100,27 @@ class DescribeDeck:
 
 
 class DescribeTrick:
-    """Tests for Trick dict subclass."""
+    """Tests for Trick tuple subclass."""
 
     def it_stores_player_to_card_mapping(self) -> None:
         card = Card(Suit.HEARTS, Rank.ACE)
-        trick: Trick = Trick({2: card})
+        trick: Trick = Trick.from_dict({2: card})
         assert trick[2] == card
 
-    def it_is_a_dict(self) -> None:
+    def it_is_a_dataclass(self) -> None:
+        from dataclasses import is_dataclass
+
         trick: Trick = Trick()
-        assert isinstance(trick, dict)
+        assert is_dataclass(trick)
+
+    def it_is_immutable(self) -> None:
+        trick = Trick()
+        try:
+            trick[0] = Card(Suit.HEARTS, Rank.ACE)  # type: ignore[index]
+        except TypeError:
+            pass
+        else:
+            raise AssertionError("Should have raised TypeError")
 
 
 # Hypothesis strategies

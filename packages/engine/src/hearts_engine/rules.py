@@ -44,13 +44,14 @@ def trick_winner(trick: Trick, lead_player: PlayerId | None) -> PlayerId:
     """Determine winner of a trick."""
     assert len(trick) == 4, len(trick)
     assert lead_player is not None
-    lead_suit = trick[lead_player].suit
+    lead_card = trick[lead_player]
+    assert lead_card is not None
+    lead_suit = lead_card.suit
     winner = lead_player
     for player, card in trick.items():
-        if (
-            card.suit == lead_suit
-            and card.rank.order > trick[winner].rank.order
-        ):
+        winner_card = trick[winner]
+        assert winner_card is not None
+        if card.suit == lead_suit and card.rank.order > winner_card.rank.order:
             winner = player
     return winner
 
@@ -98,7 +99,9 @@ def valid_follows(state: GameState) -> list[Card]:
     assert len(state.trick) > 0
     assert state.lead_player is not None
     hand = state.players[state.current_player].hand
-    lead_suit = state.trick[state.lead_player].suit
+    lead_card = state.trick[state.lead_player]
+    assert lead_card is not None
+    lead_suit = lead_card.suit
 
     if has_suit(hand, lead_suit):
         return cards_of_suit(hand, lead_suit)
@@ -140,6 +143,7 @@ def valid_actions(state: GameState) -> list[PlayerAction]:
             cards = valid_plays(state)
             return [PlayCard(card=c) for c in cards]
         case Phase.ROUND_END:
+            # TODO: should check all the time, not just round end.
             if check_shot_moon(state) == state.current_player:
                 return [
                     ChooseMoonOption(add_to_others=False),

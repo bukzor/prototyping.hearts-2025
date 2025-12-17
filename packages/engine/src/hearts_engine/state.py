@@ -136,13 +136,15 @@ class GameState:
                     hand=Hand(p.hand),
                     score=p.score,
                     round_score=p.round_score,
-                    tricks_won=[Trick(t) for t in p.tricks_won],
+                    tricks_won=list(
+                        p.tricks_won
+                    ),  # Trick is frozen, no need to copy
                 )
                 for p in self.players
             ],
-            trick=Trick(self.trick),
+            trick=self.trick,  # Trick is frozen, no need to copy
             lead_player=self.lead_player,
             current_player=self.current_player,
             hearts_broken=self.hearts_broken,
-            pending_passes={k: v for k, v in self.pending_passes.items()},
+            pending_passes=dict(self.pending_passes),
         )

@@ -69,7 +69,9 @@ class DescribeFollowingSuit:
         player = game.current_player
         hand = game.players[player].hand
         assert game.lead_player is not None
-        lead_suit = game.trick[game.lead_player].suit
+        lead_card = game.trick[game.lead_player]
+        assert lead_card is not None
+        lead_suit = lead_card.suit
 
         has_lead_suit = any(c.suit == lead_suit for c in hand)
         if has_lead_suit:
@@ -84,7 +86,9 @@ class DescribeFollowingSuit:
         player = game.current_player
         hand = game.players[player].hand
         assert game.lead_player is not None
-        lead_suit = game.trick[game.lead_player].suit
+        lead_card = game.trick[game.lead_player]
+        assert lead_card is not None
+        lead_suit = lead_card.suit
 
         has_lead_suit = any(c.suit == lead_suit for c in hand)
         if not has_lead_suit:

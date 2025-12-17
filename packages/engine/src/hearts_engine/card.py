@@ -1,5 +1,6 @@
 """Single card types for Hearts."""
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
@@ -104,10 +105,55 @@ PlayerId = Literal[0, 1, 2, 3]
 PLAYER_IDS: tuple[PlayerId, ...] = (0, 1, 2, 3)
 
 
-class Trick(dict[PlayerId, Card]):
-    """Cards played in a trick, keyed by player."""
+@dataclass(frozen=True, slots=True)
+class Trick:
+    """Cards played in a trick, indexed by player position 0-3."""
 
-    pass
+    cards: tuple[Card | None, Card | None, Card | None, Card | None] = (
+        None,
+        None,
+        None,
+        None,
+    )
+    lead: PlayerId | None = None
+
+    def __getitem__(self, player: PlayerId) -> Card | None:
+        return self.cards[player]
+
+    def __len__(self) -> int:
+        """Number of cards played (non-None slots)."""
+        return sum(1 for c in self.cards if c is not None)
+
+    def items(self) -> Iterator[tuple[PlayerId, Card]]:
+        """Yield (player_id, card) pairs for played cards."""
+        for pid, card in enumerate(self.cards):
+            if card is not None:
+                yield pid, card  # type: ignore[misc]
+
+    def values(self) -> Iterator[Card]:
+        """Yield cards that have been played."""
+        for card in self.cards:
+            if card is not None:
+                yield card
+
+    def with_play(self, player: PlayerId, card: Card) -> Trick:
+        """Return a new Trick with the given card added. Sets lead if first card."""
+        cards = list(self.cards)
+        cards[player] = card
+        lead = self.lead if self.lead is not None else player
+        return Trick(cards=tuple(cards), lead=lead)  # type: ignore[arg-type]
+
+    @classmethod
+    def from_dict(
+        cls, plays: dict[PlayerId, Card], lead: PlayerId | None = None
+    ) -> Trick:
+        """Construct from a dict. Lead defaults to first key if not specified."""
+        if lead is None and plays:
+            lead = next(iter(plays))  # type: ignore[assignment]
+        return cls(
+            cards=(plays.get(0), plays.get(1), plays.get(2), plays.get(3)),
+            lead=lead,
+        )
 
 
 TWO_OF_CLUBS = Card(Suit.CLUBS, Rank.TWO)
