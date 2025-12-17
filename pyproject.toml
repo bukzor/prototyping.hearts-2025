@@ -9,7 +9,7 @@ packages = []
 
 [project.optional-dependencies]
 dev = ["hearts-devenv[dev-test,dev-lint]"]
-dev-test = ["pytest", "pytest-cov", "covdefaults"]
+dev-test = ["pytest", "pytest-cov", "covdefaults", "hypothesis"]
 dev-lint = ["pre-commit", "black", "isort", "pyupgrade"]
 
 [dependency-groups]
@@ -53,6 +53,8 @@ addopts = "-vvvvv --durations=10 --doctest-modules --last-failed --strict-marker
 testpaths = ["packages"]
 norecursedirs = ["**/.*", "**/__pycache__", "**/node_modules"]
 python_files = ["*.py"]
+python_classes = ["Test", "Describe"]
+python_functions = ["test_", "it_"]
 log_cli_level = "0"
 
 [tool.coverage.run]
