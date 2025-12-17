@@ -37,6 +37,11 @@ Web UI for browser-based play.
 - Preact + TypeScript + Vite for renderer-web
 - GameState as JSON over HTTP/WebSocket
 
+## Notes
+
+- Unicode playing card glyphs (U+1F0A0 block) may work well here - can size via
+  CSS unlike CLI where they're fixed to terminal font size
+
 ## Package Structure
 
 ```

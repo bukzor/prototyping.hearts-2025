@@ -20,6 +20,15 @@ class Suit(Enum):
     def __str__(self) -> str:
         return self.symbol
 
+    def __tty__(self) -> str:
+        match self:
+            case Suit.HEARTS | Suit.DIAMONDS:
+                return f"\033[91m{self.symbol}\033[0m"
+            case Suit.CLUBS | Suit.SPADES:
+                return f"\033[90m{self.symbol}\033[0m"
+            case _:
+                raise AssertionError(self)
+
 
 class Rank(Enum):
     """Card ranks with numeric values for comparison."""
@@ -46,6 +55,9 @@ class Rank(Enum):
     def __str__(self) -> str:
         return self.display
 
+    def __tty__(self) -> str:
+        return self.display
+
 
 @dataclass(frozen=True, slots=True)
 class Card:
@@ -59,6 +71,9 @@ class Card:
 
     def __repr__(self) -> str:
         return f"Card({self.suit.name}, {self.rank.name})"
+
+    def __tty__(self) -> str:
+        return f"{self.rank}{self.suit.__tty__()}"
 
     def __lt__(self, other: object) -> bool:
         if not isinstance(other, Card):

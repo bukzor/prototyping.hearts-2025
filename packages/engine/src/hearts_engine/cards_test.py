@@ -7,6 +7,7 @@ from hearts_engine.cards import Play
 from hearts_engine.cards import Rank
 from hearts_engine.cards import Suit
 from hearts_engine.cards import create_deck
+from hearts_engine.tty import SupportsTTY
 from hypothesis import given
 from hypothesis import strategies as st
 
@@ -115,3 +116,64 @@ class DescribeCardProperties:
         eq = a == b
         gt = b < a
         assert sum([lt, eq, gt]) == 1
+
+
+# ANSI color codes
+RED = "\033[91m"  # bright red
+BLACK = "\033[90m"  # bright black (dark gray)
+RESET = "\033[0m"
+
+
+class DescribeSuitTTY:
+    """Tests for Suit.__tty__."""
+
+    def it_implements_supports_tty(self) -> None:
+        assert isinstance(Suit.HEARTS, SupportsTTY)
+
+    def it_colors_hearts_red(self) -> None:
+        assert Suit.HEARTS.__tty__() == f"{RED}♥{RESET}"
+
+    def it_colors_diamonds_red(self) -> None:
+        assert Suit.DIAMONDS.__tty__() == f"{RED}♦{RESET}"
+
+    def it_colors_clubs_black(self) -> None:
+        assert Suit.CLUBS.__tty__() == f"{BLACK}♣{RESET}"
+
+    def it_colors_spades_black(self) -> None:
+        assert Suit.SPADES.__tty__() == f"{BLACK}♠{RESET}"
+
+
+class DescribeRankTTY:
+    """Tests for Rank.__tty__."""
+
+    def it_implements_supports_tty(self) -> None:
+        assert isinstance(Rank.ACE, SupportsTTY)
+
+    def it_returns_display_value(self) -> None:
+        # Rank has no color - just returns display
+        assert Rank.ACE.__tty__() == "A"
+        assert Rank.TEN.__tty__() == "10"
+        assert Rank.TWO.__tty__() == "2"
+
+
+class DescribeCardTTY:
+    """Tests for Card.__tty__."""
+
+    def it_implements_supports_tty(self) -> None:
+        assert isinstance(Card(Suit.HEARTS, Rank.ACE), SupportsTTY)
+
+    def it_colors_hearts_red(self) -> None:
+        card = Card(Suit.HEARTS, Rank.ACE)
+        assert card.__tty__() == f"A{RED}♥{RESET}"
+
+    def it_colors_diamonds_red(self) -> None:
+        card = Card(Suit.DIAMONDS, Rank.QUEEN)
+        assert card.__tty__() == f"Q{RED}♦{RESET}"
+
+    def it_colors_clubs_black(self) -> None:
+        card = Card(Suit.CLUBS, Rank.TWO)
+        assert card.__tty__() == f"2{BLACK}♣{RESET}"
+
+    def it_colors_spades_black(self) -> None:
+        card = Card(Suit.SPADES, Rank.KING)
+        assert card.__tty__() == f"K{BLACK}♠{RESET}"
