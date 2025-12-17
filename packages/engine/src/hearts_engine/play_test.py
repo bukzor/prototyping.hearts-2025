@@ -1,18 +1,19 @@
 """Tests for playing phase."""
 
-from hearts_engine.card import TWO_OF_CLUBS
-from hearts_engine.engine.main import apply_action
-from hearts_engine.engine.main import new_game
-from hearts_engine.state import GameState
-from hearts_engine.state import PlayCard
-from hearts_engine.state import SelectPass
+from .card import TWO_OF_CLUBS
+from .main import apply_action
+from .main import new_game
+from .rules import valid_actions
+from .state import GameState
+from .state import PlayCard
+from .state import SelectPass
 
 
 def _get_to_playing(seed: int = 42) -> GameState:
     """Helper to skip past passing phase."""
     game: GameState = new_game(seed=seed)
     for i in range(4):
-        cards = tuple(game.hands[i][:3])
+        cards = game.hands[i].draw(3)
         result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
         assert result.ok
         assert result.new_state is not None
@@ -115,7 +116,7 @@ class DescribeTrickCompletion:
     def _play_full_trick(self, game: GameState) -> GameState:
         """Play 4 cards to complete a trick."""
         for _ in range(4):
-            valid = game.valid_actions()
+            valid = valid_actions(game)
             assert valid, "No valid actions"
             result = apply_action(game, valid[0])
             assert result.ok, result.error

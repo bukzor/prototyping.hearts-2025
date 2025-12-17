@@ -3,9 +3,9 @@
 from typing import Protocol
 from typing import runtime_checkable
 
-from hearts_engine.card import Card
-from hearts_engine.cards import Cards
-from hearts_engine.cards import Hand
+from .card import Card
+from .cards import Cards
+from .cards import Hand
 
 
 @runtime_checkable

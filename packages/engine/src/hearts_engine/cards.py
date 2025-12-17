@@ -1,8 +1,11 @@
 """Card collections for Hearts."""
 
-from hearts_engine.card import Card
-from hearts_engine.card import Rank
-from hearts_engine.card import Suit
+import random
+from random import Random
+
+from .card import Card
+from .card import Rank
+from .card import Suit
 
 
 class Cards(set[Card]):
@@ -15,6 +18,10 @@ class Cards(set[Card]):
             result.setdefault(card.suit, []).append(card)
         return result
 
+    def draw(self, n: int, rng: Random = random.seed.__self__) -> Cards:
+        """Draw n random cards from this collection."""
+        return Cards(rng.sample(tuple(self), n))
+
 
 class Hand(Cards):
     """A player's hand."""
@@ -23,11 +30,17 @@ class Hand(Cards):
 
 
 class Deck(Cards):
-    """A deck of cards."""
+    """A standard 52-card deck."""
 
-    pass
+    def __init__(self) -> None:
+        super().__init__(Card(suit, rank) for suit in Suit for rank in Rank)
 
-
-def create_deck() -> list[Card]:
-    """Create a standard 52-card deck."""
-    return [Card(suit, rank) for suit in Suit for rank in Rank]
+    def deal_hands(self, rng: Random = random.seed.__self__) -> list[Hand]:
+        """Deal deck into 4 hands of 13 cards."""
+        remaining = Cards(self)
+        hands: list[Hand] = []
+        for _ in range(4):
+            drawn = remaining.draw(13, rng)
+            hands.append(Hand(drawn))
+            remaining -= drawn
+        return hands

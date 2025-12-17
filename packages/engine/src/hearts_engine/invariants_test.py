@@ -1,16 +1,18 @@
 """Property-based tests for game invariants."""
 
-from hearts_engine.card import TWO_OF_CLUBS
-from hearts_engine.engine.main import apply_action
-from hearts_engine.engine.main import new_game
-from hearts_engine.state import GameState
-from hearts_engine.state import PassDirection
-from hearts_engine.state import Phase
-from hearts_engine.state import SelectPass
-from hearts_engine.state import pass_direction_for_round
 from hypothesis import given
 from hypothesis import settings
 from hypothesis import strategies as st
+
+from .card import TWO_OF_CLUBS
+from .main import apply_action
+from .main import new_game
+from .rules import valid_actions
+from .state import GameState
+from .state import PassDirection
+from .state import Phase
+from .state import SelectPass
+from .state import pass_direction_for_round
 
 
 class DescribeGameInvariants:
@@ -55,7 +57,7 @@ class DescribeStatefulInvariants:
         game: GameState = new_game(seed=seed)
         # Complete passing phase
         for i in range(4):
-            cards = tuple(game.hands[i][:3])
+            cards = game.hands[i].draw(3)
             result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
             assert result.ok
             assert result.new_state is not None
@@ -74,7 +76,7 @@ class DescribeStatefulInvariants:
         game: GameState = new_game(seed=seed)
         # Complete passing
         for i in range(4):
-            cards = tuple(game.hands[i][:3])
+            cards = game.hands[i].draw(3)
             result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
             assert result.ok
             assert result.new_state is not None
@@ -84,7 +86,7 @@ class DescribeStatefulInvariants:
         for _ in range(20):
             if game.phase != Phase.PLAYING:
                 break
-            valid = game.valid_actions()
+            valid = valid_actions(game)
             if not valid:
                 break
             result = apply_action(game, valid[0])
@@ -110,7 +112,7 @@ class DescribeStatefulInvariants:
             if game.phase == Phase.GAME_END:
                 return  # Success
 
-            valid = game.valid_actions()
+            valid = valid_actions(game)
             if not valid:
                 break
             result = apply_action(game, valid[0])

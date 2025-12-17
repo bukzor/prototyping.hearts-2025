@@ -1,16 +1,17 @@
 """Hearts game rules and validation."""
 
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
-from hearts_engine.card import QUEEN_OF_SPADES
-from hearts_engine.card import TWO_OF_CLUBS
-from hearts_engine.card import Card
-from hearts_engine.card import Play
-from hearts_engine.card import Suit
+from .card import QUEEN_OF_SPADES
+from .card import TWO_OF_CLUBS
+from .card import Card
+from .card import Play
+from .card import Suit
 
 if TYPE_CHECKING:
-    from hearts_engine.state import GameState
-    from hearts_engine.state import PlayerAction
+    from .state import GameState
+    from .state import PlayerAction
 
 
 def is_point_card(card: Card) -> bool:
@@ -51,12 +52,12 @@ def trick_winner(plays: list[Play]) -> Play:
     return winning
 
 
-def has_suit(hand: list[Card], suit: Suit) -> bool:
+def has_suit(hand: Iterable[Card], suit: Suit) -> bool:
     """Check if hand contains a card of the given suit."""
     return any(c.suit == suit for c in hand)
 
 
-def cards_of_suit(hand: list[Card], suit: Suit) -> list[Card]:
+def cards_of_suit(hand: Iterable[Card], suit: Suit) -> list[Card]:
     """Get all cards of a suit from hand."""
     return [c for c in hand if c.suit == suit]
 
@@ -122,10 +123,10 @@ def valid_pass_selections(state: GameState) -> list[tuple[Card, Card, Card]]:
 
 def valid_actions(state: GameState) -> list[PlayerAction]:
     """Get all valid actions for current player."""
-    from hearts_engine.state import ChooseMoonOption
-    from hearts_engine.state import Phase
-    from hearts_engine.state import PlayCard
-    from hearts_engine.state import SelectPass
+    from .state import ChooseMoonOption
+    from .state import Phase
+    from .state import PlayCard
+    from .state import SelectPass
 
     match state.phase:
         case Phase.PASSING:

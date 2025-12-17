@@ -1,8 +1,8 @@
 """Tests for game creation."""
 
-from hearts_engine.engine.main import new_game
-from hearts_engine.state import PassDirection
-from hearts_engine.state import Phase
+from .main import new_game
+from .state import PassDirection
+from .state import Phase
 
 
 class DescribeNewGame:

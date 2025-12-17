@@ -1,9 +1,9 @@
 """Tests for Player protocol."""
 
-from hearts_engine.card import Card
-from hearts_engine.cards import Cards
-from hearts_engine.cards import Hand
-from hearts_engine.player import Player
+from .card import Card
+from .cards import Cards
+from .cards import Hand
+from .player import Player
 
 
 class DescribePlayer:

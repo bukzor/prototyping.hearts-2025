@@ -3,15 +3,17 @@
 import random
 import uuid
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from hearts_engine.cards import create_deck
-from hearts_engine.state import ChooseMoonOption
-from hearts_engine.state import GameState
-from hearts_engine.state import Phase
-from hearts_engine.state import PlayCard
-from hearts_engine.state import PlayerAction
-from hearts_engine.state import SelectPass
-from hearts_engine.state import hands_from_deck
+from .cards import Deck
+from .state import ChooseMoonOption
+from .state import GameState
+from .state import Phase
+from .state import PlayCard
+from .state import SelectPass
+
+if TYPE_CHECKING:
+    from .state import PlayerAction
 
 
 @dataclass(frozen=True, slots=True)
@@ -26,9 +28,7 @@ class ActionResult:
 def new_game(game_id: str | None = None, seed: int | None = None) -> GameState:
     """Create a new game with shuffled deck."""
     rng = random.Random(seed)
-    deck = create_deck()
-    rng.shuffle(deck)
-    hands = hands_from_deck(deck)
+    hands = Deck().deal_hands(rng)
 
     return GameState(
         game_id=game_id or str(uuid.uuid4()),
@@ -49,9 +49,9 @@ def new_game(game_id: str | None = None, seed: int | None = None) -> GameState:
 
 def apply_action(state: GameState, action: PlayerAction) -> ActionResult:
     """Apply an action to the game state."""
-    from hearts_engine.engine.passing import apply_pass
-    from hearts_engine.engine.play import apply_play
-    from hearts_engine.engine.round import apply_moon_choice
+    from .passing import apply_pass
+    from .play import apply_play
+    from .round import apply_moon_choice
 
     match action:
         case SelectPass(cards=cards):

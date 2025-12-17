@@ -1,7 +1,7 @@
 """Tests for tty module."""
 
-from hearts_engine.tty import SupportsTTY
-from hearts_engine.tty import format
+from .tty import SupportsTTY
+from .tty import format
 
 
 class DescribeSupportsTTY:

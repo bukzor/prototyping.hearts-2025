@@ -1,13 +1,13 @@
 """Hearts game engine - passing phase."""
 
-from hearts_engine.card import Card
-from hearts_engine.card import PlayerId
-from hearts_engine.engine.main import ActionResult
-from hearts_engine.rules import find_two_of_clubs_holder
-from hearts_engine.state import GameState
-from hearts_engine.state import PassDirection
-from hearts_engine.state import Phase
-from hearts_engine.state import pass_target
+from .card import Card
+from .card import PlayerId
+from .main import ActionResult
+from .rules import find_two_of_clubs_holder
+from .state import GameState
+from .state import PassDirection
+from .state import Phase
+from .state import pass_target
 
 
 def apply_pass(
@@ -70,7 +70,7 @@ def execute_passes(state: GameState) -> None:
             state.hands[player].remove(card)
 
     for player, cards in received.items():
-        state.hands[player].extend(cards)
+        state.hands[player].update(cards)
 
     state.pending_passes.clear()
 

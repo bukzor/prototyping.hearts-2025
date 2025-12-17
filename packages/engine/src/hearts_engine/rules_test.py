@@ -1,18 +1,19 @@
 """Tests for rules module."""
 
-from hearts_engine.card import QUEEN_OF_SPADES
-from hearts_engine.card import TWO_OF_CLUBS
-from hearts_engine.card import Card
-from hearts_engine.card import Play
-from hearts_engine.card import Rank
-from hearts_engine.card import Suit
-from hearts_engine.rules import card_points
-from hearts_engine.rules import has_suit
-from hearts_engine.rules import is_point_card
-from hearts_engine.rules import trick_points
-from hearts_engine.rules import trick_winner
 from hypothesis import given
 from hypothesis import strategies as st
+
+from .card import QUEEN_OF_SPADES
+from .card import TWO_OF_CLUBS
+from .card import Card
+from .card import Play
+from .card import Rank
+from .card import Suit
+from .rules import card_points
+from .rules import has_suit
+from .rules import is_point_card
+from .rules import trick_points
+from .rules import trick_winner
 
 
 class DescribeIsPointCard:
@@ -180,8 +181,7 @@ class DescribePointCardProperties:
     @given(cards)
     def it_total_points_is_26(self, _: Card) -> None:
         # All hearts (13) + queen of spades (13) = 26
-        from hearts_engine.cards import create_deck
+        from .cards import Deck
 
-        deck = create_deck()
-        total = sum(card_points(c) for c in deck)
+        total = sum(card_points(c) for c in Deck())
         assert total == 26

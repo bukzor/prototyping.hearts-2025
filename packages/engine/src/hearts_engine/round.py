@@ -1,16 +1,13 @@
 """Hearts game engine - round and game lifecycle."""
 
-import random
-
-from hearts_engine.cards import create_deck
-from hearts_engine.engine.main import ActionResult
-from hearts_engine.rules import check_shot_moon
-from hearts_engine.rules import find_two_of_clubs_holder
-from hearts_engine.rules import round_points
-from hearts_engine.state import GameState
-from hearts_engine.state import PassDirection
-from hearts_engine.state import Phase
-from hearts_engine.state import hands_from_deck
+from .cards import Deck
+from .main import ActionResult
+from .rules import check_shot_moon
+from .rules import find_two_of_clubs_holder
+from .rules import round_points
+from .state import GameState
+from .state import PassDirection
+from .state import Phase
 
 LOSING_SCORE = 100
 
@@ -81,10 +78,7 @@ def start_new_round(state: GameState) -> None:
     state.round_number += 1
     state.dealer = (state.dealer + 1) % 4  # type: ignore[assignment]
 
-    rng = random.Random()
-    deck = create_deck()
-    rng.shuffle(deck)
-    state.hands = hands_from_deck(deck)
+    state.hands = Deck().deal_hands()
 
     state.round_scores = [0, 0, 0, 0]
     state.tricks_won = [[], [], [], []]

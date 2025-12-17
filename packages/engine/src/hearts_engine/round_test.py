@@ -1,25 +1,26 @@
 """Tests for round and game lifecycle."""
 
-from hearts_engine.card import QUEEN_OF_SPADES
-from hearts_engine.card import Card
-from hearts_engine.card import Rank
-from hearts_engine.card import Suit
-from hearts_engine.engine.main import apply_action
-from hearts_engine.engine.main import new_game
-from hearts_engine.engine.round import check_game_end
-from hearts_engine.engine.round import start_new_round
-from hearts_engine.state import ChooseMoonOption
-from hearts_engine.state import GameState
-from hearts_engine.state import PassDirection
-from hearts_engine.state import Phase
-from hearts_engine.state import SelectPass
+from .card import QUEEN_OF_SPADES
+from .card import Card
+from .card import Rank
+from .card import Suit
+from .main import apply_action
+from .main import new_game
+from .round import check_game_end
+from .round import start_new_round
+from .rules import valid_actions
+from .state import ChooseMoonOption
+from .state import GameState
+from .state import PassDirection
+from .state import Phase
+from .state import SelectPass
 
 
 def _get_to_playing(seed: int = 42) -> GameState:
     """Helper to skip past passing phase."""
     game: GameState = new_game(seed=seed)
     for i in range(4):
-        cards = tuple(game.hands[i][:3])
+        cards = game.hands[i].draw(3)
         result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
         assert result.ok
         assert result.new_state is not None
@@ -33,7 +34,7 @@ class DescribeRoundCompletion:
     def _play_full_round(self, game: GameState) -> GameState:
         """Play all 13 tricks."""
         for _ in range(13 * 4):  # 13 tricks, 4 cards each
-            valid = game.valid_actions()
+            valid = valid_actions(game)
             if not valid:
                 break  # Round/game ended
             result = apply_action(game, valid[0])

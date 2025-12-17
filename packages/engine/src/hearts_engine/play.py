@@ -1,13 +1,13 @@
 """Hearts game engine - playing phase."""
 
-from hearts_engine.card import Card
-from hearts_engine.card import Play
-from hearts_engine.card import Suit
-from hearts_engine.engine.main import ActionResult
-from hearts_engine.rules import trick_winner
-from hearts_engine.rules import valid_plays
-from hearts_engine.state import GameState
-from hearts_engine.state import Phase
+from .card import Card
+from .card import Play
+from .card import Suit
+from .main import ActionResult
+from .rules import trick_winner
+from .rules import valid_plays
+from .state import GameState
+from .state import Phase
 
 
 def apply_play(state: GameState, card: Card) -> ActionResult:
@@ -46,7 +46,7 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
 
 def complete_trick(state: GameState) -> None:
     """Complete a trick and determine winner."""
-    from hearts_engine.engine.round import complete_round
+    from .round import complete_round
 
     winner = trick_winner(state.trick)
     cards_won = [p.card for p in state.trick]

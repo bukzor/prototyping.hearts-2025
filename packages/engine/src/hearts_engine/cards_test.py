@@ -1,18 +1,18 @@
 """Tests for cards module."""
 
-from hearts_engine.card import QUEEN_OF_SPADES
-from hearts_engine.card import TWO_OF_CLUBS
-from hearts_engine.card import Card
-from hearts_engine.card import Play
-from hearts_engine.card import Rank
-from hearts_engine.card import Suit
-from hearts_engine.cards import Cards
-from hearts_engine.cards import Deck
-from hearts_engine.cards import Hand
-from hearts_engine.cards import create_deck
-from hearts_engine.tty import SupportsTTY
 from hypothesis import given
 from hypothesis import strategies as st
+
+from .card import QUEEN_OF_SPADES
+from .card import TWO_OF_CLUBS
+from .card import Card
+from .card import Play
+from .card import Rank
+from .card import Suit
+from .cards import Cards
+from .cards import Deck
+from .cards import Hand
+from .tty import SupportsTTY
 
 
 class DescribeCard:
@@ -70,31 +70,31 @@ class DescribeCard:
         assert Card.from_string("Qs") == Card(Suit.SPADES, Rank.QUEEN)
 
 
-class DescribeCreateDeck:
-    """Tests for deck creation."""
+class DescribeDeck:
+    """Tests for Deck."""
 
     def it_has_52_cards(self) -> None:
-        deck = create_deck()
+        deck = Deck()
         assert len(deck) == 52
 
     def it_has_13_of_each_suit(self) -> None:
-        deck = create_deck()
+        deck = Deck()
         for suit in Suit:
             count = sum(1 for c in deck if c.suit == suit)
             assert count == 13, (suit, count)
 
     def it_has_4_of_each_rank(self) -> None:
-        deck = create_deck()
+        deck = Deck()
         for rank in Rank:
             count = sum(1 for c in deck if c.rank == rank)
             assert count == 4, (rank, count)
 
     def it_has_no_duplicates(self) -> None:
-        deck = create_deck()
+        deck = Deck()
         assert len(set(deck)) == 52
 
     def it_includes_special_cards(self) -> None:
-        deck = create_deck()
+        deck = Deck()
         assert TWO_OF_CLUBS in deck
         assert QUEEN_OF_SPADES in deck
 
@@ -232,11 +232,3 @@ class DescribeHand:
     def it_is_a_cards(self) -> None:
         hand = Hand([Card(Suit.HEARTS, Rank.ACE)])
         assert isinstance(hand, Cards)
-
-
-class DescribeDeck:
-    """Tests for Deck subclass."""
-
-    def it_is_a_cards(self) -> None:
-        deck = Deck([Card(Suit.HEARTS, Rank.ACE)])
-        assert isinstance(deck, Cards)

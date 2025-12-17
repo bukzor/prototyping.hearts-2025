@@ -3,14 +3,11 @@
 from dataclasses import dataclass
 from dataclasses import field
 from enum import Enum
-from typing import TYPE_CHECKING
 
-from hearts_engine.card import Card
-from hearts_engine.card import Play
-from hearts_engine.card import PlayerId
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
+from .card import Card
+from .card import Play
+from .card import PlayerId
+from .cards import Hand
 
 
 class Phase(Enum):
@@ -97,7 +94,7 @@ class GameState:
     dealer: PlayerId
 
     # Player state (index = PlayerId)
-    hands: list[list[Card]]
+    hands: list[Hand]
     scores: list[int]  # Cumulative
     round_scores: list[int]  # Current round
     tricks_won: list[list[list[Card]]]  # Cards won per player this round
@@ -120,12 +117,6 @@ class GameState:
         """Current pass direction."""
         return pass_direction_for_round(self.round_number)
 
-    def valid_actions(self) -> list[PlayerAction]:
-        """Compute valid actions for current player."""
-        from hearts_engine.rules import valid_actions
-
-        return valid_actions(self)
-
     def copy(self) -> GameState:
         """Create a deep copy of the state."""
         return GameState(
@@ -133,7 +124,7 @@ class GameState:
             phase=self.phase,
             round_number=self.round_number,
             dealer=self.dealer,
-            hands=[list(h) for h in self.hands],
+            hands=[Hand(h) for h in self.hands],
             scores=list(self.scores),
             round_scores=list(self.round_scores),
             tricks_won=[[list(t) for t in p] for p in self.tricks_won],
@@ -143,9 +134,3 @@ class GameState:
             hearts_broken=self.hearts_broken,
             pending_passes={k: v for k, v in self.pending_passes.items()},
         )
-
-
-def hands_from_deck(deck: Sequence[Card]) -> list[list[Card]]:
-    """Deal a deck into 4 hands of 13 cards."""
-    assert len(deck) == 52, len(deck)
-    return [list(deck[i * 13 : (i + 1) * 13]) for i in range(4)]
