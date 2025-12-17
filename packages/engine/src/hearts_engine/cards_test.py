@@ -3,6 +3,9 @@
 from hearts_engine.cards import QUEEN_OF_SPADES
 from hearts_engine.cards import TWO_OF_CLUBS
 from hearts_engine.cards import Card
+from hearts_engine.cards import Cards
+from hearts_engine.cards import Deck
+from hearts_engine.cards import Hand
 from hearts_engine.cards import Play
 from hearts_engine.cards import Rank
 from hearts_engine.cards import Suit
@@ -37,14 +40,34 @@ class DescribeCard:
 
     def it_compares_by_suit_then_rank(self) -> None:
         cards = [
-            Card(Suit.SPADES, Rank.ACE),
-            Card(Suit.CLUBS, Rank.TWO),
             Card(Suit.HEARTS, Rank.KING),
+            Card(Suit.SPADES, Rank.ACE),
+            Card(Suit.CLUBS, Rank.ACE),  # ace before two in input
+            Card(Suit.DIAMONDS, Rank.QUEEN),
+            Card(
+                Suit.CLUBS, Rank.TWO
+            ),  # two after ace - test fails if rank ignored
         ]
         sorted_cards = sorted(cards)
-        assert sorted_cards[0].suit == Suit.CLUBS
-        assert sorted_cards[1].suit == Suit.HEARTS
-        assert sorted_cards[2].suit == Suit.SPADES
+        # Clubs < Diamonds < Spades < Hearts, then by rank (ace high)
+        assert sorted_cards == [
+            Card(Suit.CLUBS, Rank.TWO),
+            Card(Suit.CLUBS, Rank.ACE),
+            Card(Suit.DIAMONDS, Rank.QUEEN),
+            Card(Suit.SPADES, Rank.ACE),
+            Card(Suit.HEARTS, Rank.KING),
+        ]
+
+    def it_parses_keyboard_input(self) -> None:
+        # Lowercase suit letters for easy typing
+        assert Card.from_string("ah") == Card(Suit.HEARTS, Rank.ACE)
+        assert Card.from_string("2c") == Card(Suit.CLUBS, Rank.TWO)
+        assert Card.from_string("10d") == Card(Suit.DIAMONDS, Rank.TEN)
+        assert Card.from_string("qs") == Card(Suit.SPADES, Rank.QUEEN)
+        # Case insensitive
+        assert Card.from_string("2H") == Card(Suit.HEARTS, Rank.TWO)
+        assert Card.from_string("AH") == Card(Suit.HEARTS, Rank.ACE)
+        assert Card.from_string("Qs") == Card(Suit.SPADES, Rank.QUEEN)
 
 
 class DescribeCreateDeck:
@@ -177,3 +200,43 @@ class DescribeCardTTY:
     def it_colors_spades_black(self) -> None:
         card = Card(Suit.SPADES, Rank.KING)
         assert card.__tty__() == f"K{BLACK}♠{RESET}"
+
+
+class DescribeCards:
+    """Tests for Cards collection."""
+
+    def it_is_a_set_of_card(self) -> None:
+        cards = Cards([Card(Suit.HEARTS, Rank.ACE)])
+        assert isinstance(cards, set)
+        assert len(cards) == 1
+
+    def it_groups_by_suit(self) -> None:
+        cards = Cards([
+            Card(Suit.HEARTS, Rank.KING),
+            Card(Suit.CLUBS, Rank.ACE),
+            Card(Suit.CLUBS, Rank.TWO),
+        ])
+        grouped = cards.group()
+        assert grouped[Suit.CLUBS] == [
+            Card(Suit.CLUBS, Rank.TWO),
+            Card(Suit.CLUBS, Rank.ACE),
+        ]
+        assert grouped[Suit.HEARTS] == [Card(Suit.HEARTS, Rank.KING)]
+        assert Suit.DIAMONDS not in grouped
+        assert Suit.SPADES not in grouped
+
+
+class DescribeHand:
+    """Tests for Hand subclass."""
+
+    def it_is_a_cards(self) -> None:
+        hand = Hand([Card(Suit.HEARTS, Rank.ACE)])
+        assert isinstance(hand, Cards)
+
+
+class DescribeDeck:
+    """Tests for Deck subclass."""
+
+    def it_is_a_cards(self) -> None:
+        deck = Deck([Card(Suit.HEARTS, Rank.ACE)])
+        assert isinstance(deck, Cards)

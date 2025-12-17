@@ -163,7 +163,7 @@ class DescribeTrickWinnerProperties:
         st.lists(cards, min_size=4, max_size=4, unique=True),
         st.permutations([0, 1, 2, 3]),
     )
-    def it_winner_card_is_in_trick(
+    def it_returns_a_card_from_the_trick(
         self, four_cards: list[Card], players: list[int]
     ) -> None:
         plays = [

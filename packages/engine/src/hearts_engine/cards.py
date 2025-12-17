@@ -6,12 +6,12 @@ from typing import Literal
 
 
 class Suit(Enum):
-    """Card suits."""
+    """Card suits. Order: Clubs < Diamonds < Spades < Hearts."""
 
     CLUBS = ("clubs", "♣")
     DIAMONDS = ("diamonds", "♦")
-    HEARTS = ("hearts", "♥")
     SPADES = ("spades", "♠")
+    HEARTS = ("hearts", "♥")
 
     def __init__(self, value: str, symbol: str) -> None:
         self._value_ = value
@@ -59,12 +59,29 @@ class Rank(Enum):
         return self.display
 
 
+SUIT_KEYS = {
+    "c": Suit.CLUBS,
+    "d": Suit.DIAMONDS,
+    "s": Suit.SPADES,
+    "h": Suit.HEARTS,
+}
+RANK_KEYS = {r.display.lower(): r for r in Rank}
+
+
 @dataclass(frozen=True, slots=True)
 class Card:
     """An immutable playing card."""
 
     suit: Suit
     rank: Rank
+
+    @classmethod
+    def from_string(cls, s: str) -> Card:
+        """Parse a card from keyboard input like '2h' or 'qs'."""
+        s = s.lower()
+        suit = SUIT_KEYS[s[-1]]
+        rank = RANK_KEYS[s[:-1]]
+        return cls(suit, rank)
 
     def __str__(self) -> str:
         return f"{self.rank}{self.suit}"
@@ -102,3 +119,26 @@ def create_deck() -> list[Card]:
 
 TWO_OF_CLUBS = Card(Suit.CLUBS, Rank.TWO)
 QUEEN_OF_SPADES = Card(Suit.SPADES, Rank.QUEEN)
+
+
+class Cards(set[Card]):
+    """Collection of cards with group operation."""
+
+    def group(self) -> dict[Suit, list[Card]]:
+        """Return cards grouped by suit, sorted within each group."""
+        result: dict[Suit, list[Card]] = {}
+        for card in sorted(self):
+            result.setdefault(card.suit, []).append(card)
+        return result
+
+
+class Hand(Cards):
+    """A player's hand."""
+
+    pass
+
+
+class Deck(Cards):
+    """A deck of cards."""
+
+    pass

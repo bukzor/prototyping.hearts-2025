@@ -51,7 +51,6 @@ minversion = "6.0"
 xfail_strict = true
 addopts = "-vvvvv --durations=10 --doctest-modules --last-failed --strict-markers"
 testpaths = ["packages"]
-norecursedirs = ["**/.*", "**/__pycache__", "**/node_modules"]
 python_files = ["*.py"]
 python_classes = ["Test", "Describe"]
 python_functions = ["test_", "it_"]
