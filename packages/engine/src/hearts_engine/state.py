@@ -5,9 +5,9 @@ from dataclasses import field
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from hearts_engine.cards import Card
-from hearts_engine.cards import Play
-from hearts_engine.cards import PlayerId
+from hearts_engine.card import Card
+from hearts_engine.card import Play
+from hearts_engine.card import PlayerId
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

@@ -1,6 +1,6 @@
 """Tests for Player protocol."""
 
-from hearts_engine.cards import Card
+from hearts_engine.card import Card
 from hearts_engine.cards import Cards
 from hearts_engine.cards import Hand
 from hearts_engine.player import Player

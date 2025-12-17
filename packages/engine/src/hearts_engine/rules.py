@@ -2,11 +2,11 @@
 
 from typing import TYPE_CHECKING
 
-from hearts_engine.cards import QUEEN_OF_SPADES
-from hearts_engine.cards import TWO_OF_CLUBS
-from hearts_engine.cards import Card
-from hearts_engine.cards import Play
-from hearts_engine.cards import Suit
+from hearts_engine.card import QUEEN_OF_SPADES
+from hearts_engine.card import TWO_OF_CLUBS
+from hearts_engine.card import Card
+from hearts_engine.card import Play
+from hearts_engine.card import Suit
 
 if TYPE_CHECKING:
     from hearts_engine.state import GameState

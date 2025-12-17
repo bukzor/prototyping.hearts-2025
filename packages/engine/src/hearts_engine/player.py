@@ -3,7 +3,7 @@
 from typing import Protocol
 from typing import runtime_checkable
 
-from hearts_engine.cards import Card
+from hearts_engine.card import Card
 from hearts_engine.cards import Cards
 from hearts_engine.cards import Hand
 

@@ -1,6 +1,6 @@
 """Tests for game engine."""
 
-from hearts_engine.cards import TWO_OF_CLUBS
+from hearts_engine.card import TWO_OF_CLUBS
 from hearts_engine.cards import create_deck
 from hearts_engine.engine import apply_action
 from hearts_engine.engine import new_game
@@ -351,10 +351,10 @@ class DescribeMoonShooting:
         game.phase = Phase.ROUND_END
         game.current_player = 0
         # Give player 0 all point cards in tricks_won
-        from hearts_engine.cards import QUEEN_OF_SPADES
-        from hearts_engine.cards import Card
-        from hearts_engine.cards import Rank
-        from hearts_engine.cards import Suit
+        from hearts_engine.card import QUEEN_OF_SPADES
+        from hearts_engine.card import Card
+        from hearts_engine.card import Rank
+        from hearts_engine.card import Suit
 
         all_hearts = [Card(Suit.HEARTS, r) for r in Rank]
         game.tricks_won[0] = [all_hearts, [QUEEN_OF_SPADES]]
@@ -376,10 +376,10 @@ class DescribeMoonShooting:
         game = new_game(seed=42)
         game.phase = Phase.ROUND_END
         game.current_player = 0
-        from hearts_engine.cards import QUEEN_OF_SPADES
-        from hearts_engine.cards import Card
-        from hearts_engine.cards import Rank
-        from hearts_engine.cards import Suit
+        from hearts_engine.card import QUEEN_OF_SPADES
+        from hearts_engine.card import Card
+        from hearts_engine.card import Rank
+        from hearts_engine.card import Suit
 
         all_hearts = [Card(Suit.HEARTS, r) for r in Rank]
         game.tricks_won[0] = [all_hearts, [QUEEN_OF_SPADES]]

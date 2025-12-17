@@ -1,11 +1,11 @@
 """Tests for rules module."""
 
-from hearts_engine.cards import QUEEN_OF_SPADES
-from hearts_engine.cards import TWO_OF_CLUBS
-from hearts_engine.cards import Card
-from hearts_engine.cards import Play
-from hearts_engine.cards import Rank
-from hearts_engine.cards import Suit
+from hearts_engine.card import QUEEN_OF_SPADES
+from hearts_engine.card import TWO_OF_CLUBS
+from hearts_engine.card import Card
+from hearts_engine.card import Play
+from hearts_engine.card import Rank
+from hearts_engine.card import Suit
 from hearts_engine.rules import card_points
 from hearts_engine.rules import has_suit
 from hearts_engine.rules import is_point_card

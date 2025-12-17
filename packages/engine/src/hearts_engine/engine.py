@@ -5,10 +5,10 @@ import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from hearts_engine.cards import Card
-from hearts_engine.cards import Play
-from hearts_engine.cards import PlayerId
-from hearts_engine.cards import Suit
+from hearts_engine.card import Card
+from hearts_engine.card import Play
+from hearts_engine.card import PlayerId
+from hearts_engine.card import Suit
 from hearts_engine.cards import create_deck
 from hearts_engine.rules import check_shot_moon
 from hearts_engine.rules import find_two_of_clubs_holder
