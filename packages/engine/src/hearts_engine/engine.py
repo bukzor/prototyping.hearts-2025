@@ -28,7 +28,7 @@ from hearts_engine.state import pass_target
 if TYPE_CHECKING:
     pass
 
-WINNING_SCORE = 100
+LOSING_SCORE = 100
 
 
 @dataclass(frozen=True, slots=True)
@@ -249,7 +249,7 @@ def apply_moon_choice(state: GameState, add_to_others: bool) -> ActionResult:
 
 def check_game_end(state: GameState) -> None:
     """Check if game should end."""
-    if any(s >= WINNING_SCORE for s in state.scores):
+    if any(s >= LOSING_SCORE for s in state.scores):
         state.phase = Phase.GAME_END
     else:
         start_new_round(state)
