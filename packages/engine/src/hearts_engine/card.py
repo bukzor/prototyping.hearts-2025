@@ -104,12 +104,10 @@ PlayerId = Literal[0, 1, 2, 3]
 PLAYER_IDS: tuple[PlayerId, ...] = (0, 1, 2, 3)
 
 
-@dataclass(frozen=True, slots=True)
-class Play:
-    """A card played by a player."""
+class Trick(dict[PlayerId, Card]):
+    """Cards played in a trick, keyed by player."""
 
-    player: PlayerId
-    card: Card
+    pass
 
 
 TWO_OF_CLUBS = Card(Suit.CLUBS, Rank.TWO)

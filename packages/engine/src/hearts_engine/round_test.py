@@ -1,9 +1,11 @@
 """Tests for round and game lifecycle."""
 
+from .card import PLAYER_IDS
 from .card import QUEEN_OF_SPADES
 from .card import Card
 from .card import Rank
 from .card import Suit
+from .card import Trick
 from .main import apply_action
 from .main import new_game
 from .round import check_game_end
@@ -72,9 +74,24 @@ class DescribeMoonShooting:
         game = new_game(seed=42)
         game.phase = Phase.ROUND_END
         game.current_player = 0
-        # Give player 0 all point cards in tricks_won
-        all_hearts = [Card(Suit.HEARTS, r) for r in Rank]
-        game.tricks_won[0] = [all_hearts, [QUEEN_OF_SPADES]]
+        # Give player 0 all point cards in tricks_won (13 hearts + queen of spades)
+        # Create tricks with all hearts (need 4 tricks of 4 cards = 16, but we only have 13 hearts)
+        # For scoring, we just need tricks containing the point cards
+        hearts_tricks = [
+            Trick({
+                p: Card(Suit.HEARTS, list(Rank)[k + i])
+                for i, p in enumerate(PLAYER_IDS)
+            })
+            for k in range(0, 12, 4)  # 3 tricks of 4 hearts each = 12 hearts
+        ]
+        # Last heart + queen of spades in final trick
+        final_trick = Trick({
+            0: Card(Suit.HEARTS, Rank.ACE),
+            1: QUEEN_OF_SPADES,
+            2: Card(Suit.CLUBS, Rank.TWO),
+            3: Card(Suit.CLUBS, Rank.THREE),
+        })
+        game.tricks_won[0] = hearts_tricks + [final_trick]
 
         result = apply_action(game, ChooseMoonOption(add_to_others=True))
         assert result.ok, result.error
@@ -91,8 +108,21 @@ class DescribeMoonShooting:
         game = new_game(seed=42)
         game.phase = Phase.ROUND_END
         game.current_player = 0
-        all_hearts = [Card(Suit.HEARTS, r) for r in Rank]
-        game.tricks_won[0] = [all_hearts, [QUEEN_OF_SPADES]]
+        # Same setup as above
+        hearts_tricks = [
+            Trick({
+                p: Card(Suit.HEARTS, list(Rank)[k + i])
+                for i, p in enumerate(PLAYER_IDS)
+            })
+            for k in range(0, 12, 4)
+        ]
+        final_trick = Trick({
+            0: Card(Suit.HEARTS, Rank.ACE),
+            1: QUEEN_OF_SPADES,
+            2: Card(Suit.CLUBS, Rank.TWO),
+            3: Card(Suit.CLUBS, Rank.THREE),
+        })
+        game.tricks_won[0] = hearts_tricks + [final_trick]
 
         result = apply_action(game, ChooseMoonOption(add_to_others=False))
         assert result.ok, result.error

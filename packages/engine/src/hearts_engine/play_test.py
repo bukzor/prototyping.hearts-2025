@@ -66,7 +66,8 @@ class DescribeFollowingSuit:
         game = self._setup_trick_in_progress()
         player = game.current_player
         hand = game.hands[player]
-        lead_suit = game.trick[0].card.suit
+        assert game.lead_player is not None
+        lead_suit = game.trick[game.lead_player].suit
 
         has_lead_suit = any(c.suit == lead_suit for c in hand)
         if has_lead_suit:
@@ -80,7 +81,8 @@ class DescribeFollowingSuit:
         game = self._setup_trick_in_progress()
         player = game.current_player
         hand = game.hands[player]
-        lead_suit = game.trick[0].card.suit
+        assert game.lead_player is not None
+        lead_suit = game.trick[game.lead_player].suit
 
         has_lead_suit = any(c.suit == lead_suit for c in hand)
         if not has_lead_suit:
@@ -134,7 +136,9 @@ class DescribeTrickCompletion:
     def it_awards_cards_to_winner(self) -> None:
         game = _get_to_playing()
         game = self._play_full_trick(game)
-        total_cards_won = sum(len(t) for p in game.tricks_won for t in p)
+        total_cards_won = sum(
+            len(t) for ts in game.tricks_won.values() for t in ts
+        )
         assert (
             total_cards_won == 4
         ), f"Expected 4 cards won, got {total_cards_won}"

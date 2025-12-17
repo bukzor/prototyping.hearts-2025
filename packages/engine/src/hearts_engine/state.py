@@ -5,8 +5,8 @@ from dataclasses import field
 from enum import Enum
 
 from .card import Card
-from .card import Play
 from .card import PlayerId
+from .card import Trick
 from .cards import Hand
 
 
@@ -97,10 +97,10 @@ class GameState:
     hands: list[Hand]
     scores: list[int]  # Cumulative
     round_scores: list[int]  # Current round
-    tricks_won: list[list[list[Card]]]  # Cards won per player this round
+    tricks_won: dict[PlayerId, list[Trick]]  # Tricks won per player this round
 
     # Current trick
-    trick: list[Play]
+    trick: Trick
     lead_player: PlayerId | None
     current_player: PlayerId
 
@@ -127,8 +127,10 @@ class GameState:
             hands=[Hand(h) for h in self.hands],
             scores=list(self.scores),
             round_scores=list(self.round_scores),
-            tricks_won=[[list(t) for t in p] for p in self.tricks_won],
-            trick=list(self.trick),
+            tricks_won={
+                p: [Trick(t) for t in ts] for p, ts in self.tricks_won.items()
+            },
+            trick=Trick(self.trick),
             lead_player=self.lead_player,
             current_player=self.current_player,
             hearts_broken=self.hearts_broken,

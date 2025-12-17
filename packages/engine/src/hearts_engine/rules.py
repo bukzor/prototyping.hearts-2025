@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING
 from .card import QUEEN_OF_SPADES
 from .card import TWO_OF_CLUBS
 from .card import Card
-from .card import Play
+from .card import PlayerId
 from .card import Suit
+from .card import Trick
 
 if TYPE_CHECKING:
     from .state import GameState
@@ -28,28 +29,29 @@ def card_points(card: Card) -> int:
     return 0
 
 
-def trick_points(cards: list[Card]) -> int:
+def trick_points(trick: Trick) -> int:
     """Calculate total points in a trick."""
-    return sum(card_points(c) for c in cards)
+    return sum(card_points(c) for c in trick.values())
 
 
-def round_points(tricks: list[list[Card]]) -> int:
+def round_points(tricks: list[Trick]) -> int:
     """Calculate total points from tricks won in a round."""
     return sum(trick_points(t) for t in tricks)
 
 
-def trick_winner(plays: list[Play]) -> Play:
+def trick_winner(trick: Trick, lead_player: PlayerId | None) -> PlayerId:
     """Determine winner of a trick."""
-    assert len(plays) == 4, len(plays)
-    lead_suit = plays[0].card.suit
-    winning = plays[0]
-    for play in plays[1:]:
+    assert len(trick) == 4, len(trick)
+    assert lead_player is not None
+    lead_suit = trick[lead_player].suit
+    winner = lead_player
+    for player, card in trick.items():
         if (
-            play.card.suit == lead_suit
-            and play.card.rank.order > winning.card.rank.order
+            card.suit == lead_suit
+            and card.rank.order > trick[winner].rank.order
         ):
-            winning = play
-    return winning
+            winner = player
+    return winner
 
 
 def has_suit(hand: Iterable[Card], suit: Suit) -> bool:
@@ -64,7 +66,7 @@ def cards_of_suit(hand: Iterable[Card], suit: Suit) -> list[Card]:
 
 def is_first_trick(state: GameState) -> bool:
     """Check if this is the first trick of the round."""
-    return all(len(p) == 0 for p in state.tricks_won)
+    return all(len(ts) == 0 for ts in state.tricks_won.values())
 
 
 def can_lead_hearts(state: GameState) -> bool:
@@ -93,8 +95,9 @@ def valid_leads(state: GameState) -> list[Card]:
 def valid_follows(state: GameState) -> list[Card]:
     """Get valid cards when following a trick."""
     assert len(state.trick) > 0
+    assert state.lead_player is not None
     hand = state.hands[state.current_player]
-    lead_suit = state.trick[0].card.suit
+    lead_suit = state.trick[state.lead_player].suit
 
     if has_suit(hand, lead_suit):
         return cards_of_suit(hand, lead_suit)
@@ -146,12 +149,12 @@ def valid_actions(state: GameState) -> list[PlayerAction]:
             return []
 
 
-def check_shot_moon(state: GameState) -> int | None:
+def check_shot_moon(state: GameState) -> PlayerId | None:
     """Check if any player shot the moon. Returns player id or None."""
-    for i, tricks in enumerate(state.tricks_won):
+    for player, tricks in state.tricks_won.items():
         points = round_points(tricks)
         if points == 26:
-            return i
+            return player
     return None
 
 

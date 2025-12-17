@@ -96,8 +96,13 @@ class DescribeStatefulInvariants:
 
             # Count all cards
             hand_cards = [c for h in game.hands for c in h]
-            trick_cards = [p.card for p in game.trick]
-            won_cards = [c for p in game.tricks_won for t in p for c in t]
+            trick_cards = list(game.trick.values())
+            won_cards = [
+                c
+                for ts in game.tricks_won.values()
+                for t in ts
+                for c in t.values()
+            ]
             total = len(hand_cards) + len(trick_cards) + len(won_cards)
             assert total == 52, f"Card count mismatch: {total}"
 

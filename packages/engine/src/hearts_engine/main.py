@@ -5,6 +5,7 @@ import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from .card import Trick
 from .cards import Deck
 from .state import ChooseMoonOption
 from .state import GameState
@@ -38,8 +39,8 @@ def new_game(game_id: str | None = None, seed: int | None = None) -> GameState:
         hands=hands,
         scores=[0, 0, 0, 0],
         round_scores=[0, 0, 0, 0],
-        tricks_won=[[], [], [], []],
-        trick=[],
+        tricks_won={0: [], 1: [], 2: [], 3: []},
+        trick=Trick(),
         lead_player=None,
         current_player=0,  # Start with player 0 for passing
         hearts_broken=False,

@@ -1,8 +1,8 @@
 """Hearts game engine - playing phase."""
 
 from .card import Card
-from .card import Play
 from .card import Suit
+from .card import Trick
 from .main import ActionResult
 from .rules import trick_winner
 from .rules import valid_plays
@@ -31,7 +31,7 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
 
     new_state = state.copy()
     new_state.hands[player].remove(card)
-    new_state.trick.append(Play(player=player, card=card))
+    new_state.trick[player] = card
 
     if card.suit == Suit.HEARTS:
         new_state.hearts_broken = True
@@ -48,12 +48,11 @@ def complete_trick(state: GameState) -> None:
     """Complete a trick and determine winner."""
     from .round import complete_round
 
-    winner = trick_winner(state.trick)
-    cards_won = [p.card for p in state.trick]
-    state.tricks_won[winner.player].append(cards_won)
-    state.trick = []
-    state.lead_player = winner.player
-    state.current_player = winner.player
+    winner = trick_winner(state.trick, state.lead_player)
+    state.tricks_won[winner].append(state.trick)
+    state.trick = Trick()
+    state.lead_player = winner
+    state.current_player = winner
 
     if all(len(h) == 0 for h in state.hands):
         complete_round(state)

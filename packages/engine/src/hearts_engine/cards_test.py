@@ -6,9 +6,9 @@ from hypothesis import strategies as st
 from .card import QUEEN_OF_SPADES
 from .card import TWO_OF_CLUBS
 from .card import Card
-from .card import Play
 from .card import Rank
 from .card import Suit
+from .card import Trick
 from .cards import Cards
 from .cards import Deck
 from .cards import Hand
@@ -99,14 +99,17 @@ class DescribeDeck:
         assert QUEEN_OF_SPADES in deck
 
 
-class DescribePlay:
-    """Tests for Play dataclass."""
+class DescribeTrick:
+    """Tests for Trick dict subclass."""
 
-    def it_stores_player_and_card(self) -> None:
+    def it_stores_player_to_card_mapping(self) -> None:
         card = Card(Suit.HEARTS, Rank.ACE)
-        play = Play(player=2, card=card)
-        assert play.player == 2
-        assert play.card == card
+        trick: Trick = Trick({2: card})
+        assert trick[2] == card
+
+    def it_is_a_dict(self) -> None:
+        trick: Trick = Trick()
+        assert isinstance(trick, dict)
 
 
 # Hypothesis strategies

@@ -1,5 +1,6 @@
 """Hearts game engine - round and game lifecycle."""
 
+from .card import Trick
 from .cards import Deck
 from .main import ActionResult
 from .rules import check_shot_moon
@@ -26,10 +27,10 @@ def complete_round(state: GameState) -> None:
 
 def apply_normal_scoring(state: GameState) -> None:
     """Apply normal round scoring (no moon shot)."""
-    for i in range(4):
-        points = round_points(state.tricks_won[i])
-        state.round_scores[i] = points
-        state.scores[i] += points
+    for player, tricks in state.tricks_won.items():
+        points = round_points(tricks)
+        state.round_scores[player] = points
+        state.scores[player] += points
 
 
 def apply_moon_choice(state: GameState, add_to_others: bool) -> ActionResult:
@@ -81,8 +82,8 @@ def start_new_round(state: GameState) -> None:
     state.hands = Deck().deal_hands()
 
     state.round_scores = [0, 0, 0, 0]
-    state.tricks_won = [[], [], [], []]
-    state.trick = []
+    state.tricks_won = {0: [], 1: [], 2: [], 3: []}
+    state.trick = Trick()
     state.lead_player = None
     state.hearts_broken = False
     state.pending_passes = {}
