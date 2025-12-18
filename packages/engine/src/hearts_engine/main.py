@@ -37,12 +37,12 @@ def new_game(game_id: str | None = None, seed: int | None = None) -> GameState:
         phase=Phase.PASSING,
         round_number=0,
         dealer=0,
-        players=[PlayerState(hand=h) for h in hands],
+        players=tuple(PlayerState(hand=h) for h in hands),  # type: ignore[arg-type]
         trick=Trick(),
         lead_player=None,
         current_player=0,  # Start with player 0 for passing
         hearts_broken=False,
-        pending_passes={},
+        pending_passes=(None, None, None, None),
     )
 
 

@@ -9,6 +9,7 @@ from .rules import round_points
 from .state import GameState
 from .state import PassDirection
 from .state import Phase
+from .state import update_player
 
 LOSING_SCORE = 100
 
@@ -27,10 +28,14 @@ def complete_round(state: GameState) -> None:
 
 def apply_normal_scoring(state: GameState) -> None:
     """Apply normal round scoring (no moon shot)."""
-    for player in state.players:
+    for i, player in enumerate(state.players):
         points = round_points(player.tricks_won)
-        player.round_score = points
-        player.score += points
+        state.players = update_player(
+            state.players,
+            i,  # type: ignore[arg-type]
+            round_score=points,
+            score=player.score + points,
+        )
 
 
 def apply_moon_choice(state: GameState, add_to_others: bool) -> ActionResult:
@@ -51,16 +56,33 @@ def apply_moon_choice(state: GameState, add_to_others: bool) -> ActionResult:
     if add_to_others:
         for i, player in enumerate(new_state.players):
             if i != shooter:
-                player.score += 26
-                player.round_score = 26
+                new_state.players = update_player(
+                    new_state.players,
+                    i,  # type: ignore[arg-type]
+                    score=player.score + 26,
+                    round_score=26,
+                )
             else:
-                player.round_score = 0
+                new_state.players = update_player(
+                    new_state.players,
+                    i,  # type: ignore[arg-type]
+                    round_score=0,
+                )
     else:
-        new_state.players[shooter].score -= 26
-        new_state.players[shooter].round_score = -26
-        for i, player in enumerate(new_state.players):
+        shooter_player = new_state.players[shooter]
+        new_state.players = update_player(
+            new_state.players,
+            shooter,
+            score=shooter_player.score - 26,
+            round_score=-26,
+        )
+        for i in range(4):
             if i != shooter:
-                player.round_score = 0
+                new_state.players = update_player(
+                    new_state.players,
+                    i,  # type: ignore[arg-type]
+                    round_score=0,
+                )
 
     check_game_end(new_state)
     return ActionResult(ok=True, error=None, new_state=new_state)
@@ -80,15 +102,19 @@ def start_new_round(state: GameState) -> None:
     state.dealer = (state.dealer + 1) % 4  # type: ignore[assignment]
 
     hands = Deck().deal_hands()
-    for i, player in enumerate(state.players):
-        player.hand = hands[i]
-        player.round_score = 0
-        player.tricks_won = []
+    for i in range(4):
+        state.players = update_player(
+            state.players,
+            i,  # type: ignore[arg-type]
+            hand=hands[i],
+            round_score=0,
+            tricks_won=(),
+        )
 
     state.trick = Trick()
     state.lead_player = None
     state.hearts_broken = False
-    state.pending_passes = {}
+    state.pending_passes = (None, None, None, None)  # type: ignore[assignment]
 
     if state.pass_direction == PassDirection.HOLD:
         state.phase = Phase.PLAYING

@@ -17,7 +17,7 @@ class DescribePassPhase:
         result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
         assert result.ok, result.error
         assert result.new_state is not None
-        assert 0 in result.new_state.pending_passes
+        assert result.new_state.pending_passes[0] is not None
 
     def it_rejects_cards_not_in_hand(self) -> None:
         game = new_game(seed=42)

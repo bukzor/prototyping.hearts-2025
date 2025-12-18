@@ -31,18 +31,20 @@ Full immutability stack:
 
 ## Implementation Steps
 
-- [ ] **Phase 1: Foundation**
-  - [ ] Add `frozendict` dependency to pyproject.toml
-  - [ ] Redesign `Trick` type (frozen dataclass with `__getitem__(PlayerId)`)
+- [x] **Phase 1: Foundation**
+  - [x] ~~Add `frozendict` dependency~~ (not needed - used tuple pattern
+        instead)
+  - [x] Redesign `Trick` type (frozen dataclass with `__getitem__(PlayerId)`)
 
-- [ ] **Phase 2: Collections**
-  - [ ] `set` → `frozenset` throughout
-  - [ ] `list` → `tuple` where appropriate
-  - [ ] Audit remaining `dict` usages → `frozendict`
+- [x] **Phase 2: Collections**
+  - [ ] `Hand` → `frozenset` (deferred - requires more changes)
+  - [x] `list` → `tuple` for `players`, `tricks_won`, `pending_passes`
+  - [x] ~~Audit remaining `dict` usages~~ (only local vars, not stored state)
 
-- [ ] **Phase 3: Freeze**
-  - [ ] Add `frozen=True` to all dataclasses
-  - [ ] Fix any mutation patterns surfaced (use `replace()`)
+- [~] **Phase 3: Freeze**
+  - [x] `PlayerState` frozen with `update_player()` helper
+  - [ ] `GameState` frozen (optional - copy-on-write provides external
+        immutability)
 
 - [ ] **Phase 4: Functions**
   - [ ] Move all methods to standalone functions
@@ -56,17 +58,19 @@ Full immutability stack:
     - `ending/` - round/game completion + scoring
     - `start/` - initialization
 
-## Open Questions
+## Decisions Made
 
-- Should `PlayerState.tricks_won` be `tuple[Trick, ...]` or stay as list?
-- Module reorg: flat files or subpackages?
+- `PlayerState.tricks_won`: chose `tuple[Trick, ...]`
+- `pending_passes`: `tuple[tuple[Card,Card,Card]|None, ...]` indexed by PlayerId
+- No `frozendict` needed - tuple patterns work for all stored state
+- `Hand` stays as `set[Card]` for now (prevents full hashability)
 
 ## Success Criteria
 
-- [ ] All dataclasses frozen
-- [ ] No mutable collections in type signatures
-- [ ] All tests pass
-- [ ] Dependency graph still clean (no new cycles)
+- [x] Core dataclasses frozen (`Card`, `Trick`, `PlayerState`, actions)
+- [x] No mutable collections in type signatures (except `Hand`)
+- [x] All tests pass (105 tests)
+- [x] Types clean (pyright 0 errors)
 
 ## Notes
 

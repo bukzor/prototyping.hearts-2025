@@ -1,7 +1,6 @@
 """Game state types for Hearts."""
 
 from dataclasses import dataclass
-from dataclasses import field
 from enum import Enum
 
 from .card import Card
@@ -79,14 +78,29 @@ def pass_target(player: PlayerId, direction: PassDirection) -> PlayerId:
     return (player + offset) % 4  # type: ignore[return-value]
 
 
-@dataclass(slots=True)
+@dataclass(frozen=True, slots=True)
 class PlayerState:
     """State for a single player."""
 
     hand: Hand
     score: int = 0
     round_score: int = 0
-    tricks_won: list[Trick] = field(default_factory=lambda: list[Trick]())
+    tricks_won: tuple[Trick, ...] = ()
+
+
+from dataclasses import replace as _replace
+from typing import Any
+
+
+def update_player(
+    players: tuple[PlayerState, PlayerState, PlayerState, PlayerState],
+    player_id: PlayerId,
+    **changes: Any,
+) -> tuple[PlayerState, PlayerState, PlayerState, PlayerState]:
+    """Return new players tuple with one player updated via replace()."""
+    new_player = _replace(players[player_id], **changes)
+    result = players[:player_id] + (new_player,) + players[player_id + 1 :]
+    return result  # type: ignore[return-value]
 
 
 @dataclass(slots=True)
@@ -104,7 +118,7 @@ class GameState:
     dealer: PlayerId
 
     # Player state (index = PlayerId)
-    players: list[PlayerState]
+    players: tuple[PlayerState, PlayerState, PlayerState, PlayerState]
 
     # Current trick
     trick: Trick
@@ -114,10 +128,13 @@ class GameState:
     # Derived state
     hearts_broken: bool
 
-    # Pass phase state
-    pending_passes: dict[PlayerId, tuple[Card, Card, Card]] = field(
-        default_factory=lambda: dict[PlayerId, tuple[Card, Card, Card]]()
-    )
+    # Pass phase state (indexed by PlayerId, None = not yet selected)
+    pending_passes: tuple[
+        tuple[Card, Card, Card] | None,
+        tuple[Card, Card, Card] | None,
+        tuple[Card, Card, Card] | None,
+        tuple[Card, Card, Card] | None,
+    ] = (None, None, None, None)
 
     @property
     def pass_direction(self) -> PassDirection:
@@ -131,20 +148,18 @@ class GameState:
             phase=self.phase,
             round_number=self.round_number,
             dealer=self.dealer,
-            players=[
+            players=tuple(
                 PlayerState(
                     hand=Hand(p.hand),
                     score=p.score,
                     round_score=p.round_score,
-                    tricks_won=list(
-                        p.tricks_won
-                    ),  # Trick is frozen, no need to copy
+                    tricks_won=p.tricks_won,  # tuple is immutable
                 )
                 for p in self.players
-            ],
+            ),  # type: ignore[arg-type]
             trick=self.trick,  # Trick is frozen, no need to copy
             lead_player=self.lead_player,
             current_player=self.current_player,
             hearts_broken=self.hearts_broken,
-            pending_passes=dict(self.pending_passes),
+            pending_passes=self.pending_passes,  # tuple is immutable
         )

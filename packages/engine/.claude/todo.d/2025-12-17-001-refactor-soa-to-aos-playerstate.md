@@ -1,4 +1,6 @@
-# Refactor: SOA → AOS with PlayerState
+# Refactor: SOA → AOS with PlayerState (DONE)
+
+**Status:** Completed in commits 14cba21, 49da2a8
 
 ## Summary
 

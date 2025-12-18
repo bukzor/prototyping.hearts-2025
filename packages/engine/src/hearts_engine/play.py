@@ -8,6 +8,7 @@ from .rules import trick_winner
 from .rules import valid_plays
 from .state import GameState
 from .state import Phase
+from .state import update_player
 
 
 def apply_play(state: GameState, card: Card) -> ActionResult:
@@ -49,7 +50,8 @@ def complete_trick(state: GameState) -> None:
     from .round import complete_round
 
     winner = trick_winner(state.trick, state.lead_player)
-    state.players[winner].tricks_won.append(state.trick)
+    new_tricks = (*state.players[winner].tricks_won, state.trick)
+    state.players = update_player(state.players, winner, tricks_won=new_tricks)
     state.trick = Trick()
     state.lead_player = winner
     state.current_player = winner

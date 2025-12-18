@@ -1,6 +1,7 @@
 """Hearts game rules and validation."""
 
 from collections.abc import Iterable
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 from .card import QUEEN_OF_SPADES
@@ -35,7 +36,7 @@ def trick_points(trick: Trick) -> int:
     return sum(card_points(c) for c in trick.values())
 
 
-def round_points(tricks: list[Trick]) -> int:
+def round_points(tricks: Iterable[Trick]) -> int:
     """Calculate total points from tricks won in a round."""
     return sum(trick_points(t) for t in tricks)
 
@@ -163,7 +164,7 @@ def check_shot_moon(state: GameState) -> PlayerId | None:
     return None
 
 
-def find_two_of_clubs_holder(players: list[PlayerState]) -> int:
+def find_two_of_clubs_holder(players: Sequence[PlayerState]) -> int:
     """Find which player has the 2 of clubs."""
     for i, player in enumerate(players):
         if TWO_OF_CLUBS in player.hand:

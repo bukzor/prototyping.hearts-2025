@@ -15,6 +15,7 @@ from .state import GameState
 from .state import PassDirection
 from .state import Phase
 from .state import SelectPass
+from .state import update_player
 
 
 def _get_to_playing(seed: int = 42) -> GameState:
@@ -77,7 +78,7 @@ class DescribeMoonShooting:
         # Create tricks with all hearts (need 4 tricks of 4 cards = 16, but we only have 13 hearts)
         # For scoring, we just need tricks containing the point cards
         ranks = list(Rank)
-        hearts_tricks = [
+        hearts_tricks = tuple(
             Trick(
                 cards=(
                     Card(Suit.HEARTS, ranks[k]),
@@ -88,7 +89,7 @@ class DescribeMoonShooting:
                 lead=0,
             )
             for k in range(0, 12, 4)  # 3 tricks of 4 hearts each = 12 hearts
-        ]
+        )
         # Last heart + queen of spades in final trick
         final_trick = Trick(
             cards=(
@@ -99,7 +100,9 @@ class DescribeMoonShooting:
             ),
             lead=0,
         )
-        game.players[0].tricks_won = hearts_tricks + [final_trick]
+        game.players = update_player(
+            game.players, 0, tricks_won=hearts_tricks + (final_trick,)
+        )
 
         result = apply_action(game, ChooseMoonOption(add_to_others=True))
         assert result.ok, result.error
@@ -118,7 +121,7 @@ class DescribeMoonShooting:
         game.current_player = 0
         # Same setup as above
         ranks = list(Rank)
-        hearts_tricks = [
+        hearts_tricks = tuple(
             Trick(
                 cards=(
                     Card(Suit.HEARTS, ranks[k]),
@@ -129,7 +132,7 @@ class DescribeMoonShooting:
                 lead=0,
             )
             for k in range(0, 12, 4)
-        ]
+        )
         final_trick = Trick(
             cards=(
                 Card(Suit.HEARTS, Rank.ACE),
@@ -139,7 +142,9 @@ class DescribeMoonShooting:
             ),
             lead=0,
         )
-        game.players[0].tricks_won = hearts_tricks + [final_trick]
+        game.players = update_player(
+            game.players, 0, tricks_won=hearts_tricks + (final_trick,)
+        )
 
         result = apply_action(game, ChooseMoonOption(add_to_others=False))
         assert result.ok, result.error
@@ -152,19 +157,19 @@ class DescribeGameEnd:
 
     def it_ends_game_at_100_points(self) -> None:
         game = new_game(seed=42)
-        game.players[0].score = 100
-        game.players[1].score = 50
-        game.players[2].score = 30
-        game.players[3].score = 20
+        game.players = update_player(game.players, 0, score=100)
+        game.players = update_player(game.players, 1, score=50)
+        game.players = update_player(game.players, 2, score=30)
+        game.players = update_player(game.players, 3, score=20)
         check_game_end(game)
         assert game.phase == Phase.GAME_END
 
     def it_starts_new_round_under_100(self) -> None:
         game = new_game(seed=42)
-        game.players[0].score = 50
-        game.players[1].score = 30
-        game.players[2].score = 20
-        game.players[3].score = 10
+        game.players = update_player(game.players, 0, score=50)
+        game.players = update_player(game.players, 1, score=30)
+        game.players = update_player(game.players, 2, score=20)
+        game.players = update_player(game.players, 3, score=10)
         old_round = game.round_number
         check_game_end(game)
         assert game.phase != Phase.GAME_END
