@@ -4,10 +4,10 @@ set -euo pipefail
 dot="$1"
 stem="$(dirname "$1")/$(basename "$1" .dot)"
 
-fdp < "$dot"|
+dot < "$dot"|
   gvcolor |
-  tee >(fdp -Tsvg -o "$stem.svg") |
-  fdp -Tpng -o "$stem.png"
+  tee >(neato -n -Tsvg -o "$stem.svg") |
+  neato -n -Tpng -o "$stem.png"
 
 open "$stem.svg"
 
