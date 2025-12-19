@@ -45,8 +45,6 @@ class DescribePlayerState:
         with pytest.raises(dataclasses.FrozenInstanceError):
             ps.score = 100  # type: ignore[misc]
 
-    def it_is_not_yet_hashable_because_hand_is_mutable(self) -> None:
-        # TODO: Hand needs to be frozenset for full hashability
+    def it_is_hashable(self) -> None:
         ps = PlayerState(hand=Hand())
-        with pytest.raises(TypeError, match="unhashable"):
-            hash(ps)
+        hash(ps)  # should not raise

@@ -3,6 +3,7 @@
 from .card import Card
 from .card import Suit
 from .card import Trick
+from .cards import Hand
 from .main import ActionResult
 from .rules import trick_winner
 from .rules import valid_plays
@@ -31,7 +32,8 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
         )
 
     new_state = state.copy()
-    new_state.players[player].hand.remove(card)
+    new_hand = Hand(hand - {card})
+    new_state.players = update_player(new_state.players, player, hand=new_hand)
     new_state.trick = new_state.trick.with_play(player, card)
 
     if card.suit == Suit.HEARTS:

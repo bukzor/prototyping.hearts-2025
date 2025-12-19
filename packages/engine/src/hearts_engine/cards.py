@@ -1,15 +1,22 @@
 """Card collections for Hearts."""
 
 import random
+from collections.abc import Set as AbstractSet
 from random import Random
+from typing import Self
 
 from .card import Card
 from .card import Rank
 from .card import Suit
 
 
-class Cards(set[Card]):
+class Cards(frozenset[Card]):
     """Collection of cards with group operation."""
+
+    def __sub__(self, other: AbstractSet[Card]) -> Self:
+        """Return self minus other, preserving type."""
+        cls = type(self)
+        return cls(super().__sub__(other))
 
     def group(self) -> dict[Suit, list[Card]]:
         """Return cards grouped by suit, sorted within each group."""
@@ -32,8 +39,10 @@ class Hand(Cards):
 class Deck(Cards):
     """A standard 52-card deck."""
 
-    def __init__(self) -> None:
-        super().__init__(Card(suit, rank) for suit in Suit for rank in Rank)
+    def __new__(cls) -> Deck:
+        return super().__new__(
+            cls, (Card(suit, rank) for suit in Suit for rank in Rank)
+        )
 
     def deal_hands(self, rng: Random = random.seed.__self__) -> list[Hand]:
         """Deal deck into 4 hands of 13 cards."""

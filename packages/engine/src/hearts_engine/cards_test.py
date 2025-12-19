@@ -219,9 +219,9 @@ class DescribeCardTTY:
 class DescribeCards:
     """Tests for Cards collection."""
 
-    def it_is_a_set_of_card(self) -> None:
+    def it_is_a_frozenset_of_card(self) -> None:
         cards = Cards([Card(Suit.HEARTS, Rank.ACE)])
-        assert isinstance(cards, set)
+        assert isinstance(cards, frozenset)
         assert len(cards) == 1
 
     def it_groups_by_suit(self) -> None:
