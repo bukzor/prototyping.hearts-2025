@@ -11,14 +11,13 @@ Engine uses mutable dataclasses and collections. This makes reasoning about
 state changes harder, prevents hashability (can't use states as dict keys), and
 complicates potential undo/replay features.
 
-## Current Situation (updated 2025-12-18)
+## Current Situation (updated 2025-12-19)
 
-Most dataclasses frozen. Remaining:
+Most dataclasses frozen. `Hand`/`Cards` now frozenset-based. Remaining:
 
 - `GameState` not frozen (uses `.copy()` for external immutability)
-- `Hand` is mutable `set[Card]` (blocks full hashability)
-- Local mutable collections in `passing.py`, `cards.py`
 - Methods still on: `Trick`, `Cards`, `Deck`, `GameState`
+- Validation functions now return `Iterator[Card]` (bonus refactor)
 
 ## Proposed Solution
 
@@ -38,9 +37,10 @@ Full immutability stack:
         instead)
   - [x] Redesign `Trick` type (frozen dataclass with `__getitem__(PlayerId)`)
 
-- [~] **Phase 2: Collections**
-  - [ ] `Hand` → `frozenset` (deferred - requires more changes)
+- [x] **Phase 2: Collections**
+  - [x] `Cards` → `frozenset[Card]` (Hand inherits)
   - [x] `list` → `tuple` for `players`, `tricks_won`, `pending_passes`
+  - [x] Added `Cards.of_suit()`, `not_of_suit()`, `hearts()` filter methods
   - [ ] `Cards.group()` returns `dict[Suit, list[Card]]` → consider frozen
   - [ ] `Deck.deal_hands()` returns `list[Hand]` → `tuple[Hand, ...]`
   - [ ] `passing.py:70` uses `dict[PlayerId, list[Card]]` locally
@@ -72,13 +72,16 @@ Full immutability stack:
 - `PlayerState.tricks_won`: chose `tuple[Trick, ...]`
 - `pending_passes`: `tuple[tuple[Card,Card,Card]|None, ...]` indexed by PlayerId
 - No `frozendict` needed - tuple patterns work for all stored state
-- `Hand` stays as `set[Card]` for now (prevents full hashability)
+- `Cards` uses `frozenset[Card]` with `__sub__` override preserving subclass
+  type
+- Validation functions (`valid_leads`, `valid_plays`, etc.) return
+  `Iterator[Card]`
 
 ## Success Criteria
 
 - [x] Core dataclasses frozen (`Card`, `Trick`, `PlayerState`, actions)
 - [ ] All dataclasses frozen (including `GameState`)
-- [ ] `Hand` → `frozenset` for full hashability
+- [x] `Hand` → `frozenset` for full hashability
 - [ ] No methods with non-self args (except alt constructors)
 - [ ] Module structure matches dependency clusters
 - [x] All tests pass
