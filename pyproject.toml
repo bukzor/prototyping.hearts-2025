@@ -79,3 +79,4 @@ reportConstantRedefinition = "error"
 reportIncompatibleVariableOverride = "error"
 reportMissingImports = "error"
 reportMissingTypeStubs = false
+reportUnusedImport = "error"

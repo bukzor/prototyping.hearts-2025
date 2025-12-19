@@ -59,7 +59,11 @@ Full immutability stack:
   - [ ] Keep: self-only (`items`, `values`, `group`), alt constructors
         (`from_dict`), dunders
 
-- [ ] **Phase 5: Modules**
+- [ ] **Phase 5: Types consolidation**
+  - [ ] Move "ubiquitous" types to `hearts_engine.types`
+  - [ ] Use a sub-package if we near 300 LOC
+
+- [ ] **Phase 6: Modules**
   - [ ] Reorganize to match cluster structure:
     - `play/` - card play validation
     - `actions/` - action types and dispatch

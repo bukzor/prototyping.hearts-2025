@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from enum import Enum
 
 from .card import Card
-from .card import PlayerId
 from .card import Trick
 from .cards import Hand
+from .types import PlayerId
 
 
 class Phase(Enum):

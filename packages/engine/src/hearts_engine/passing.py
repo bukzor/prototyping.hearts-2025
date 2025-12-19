@@ -1,8 +1,6 @@
 """Hearts game engine - passing phase."""
 
-from .card import PLAYER_IDS
 from .card import Card
-from .card import PlayerId
 from .cards import Hand
 from .main import ActionResult
 from .rules import find_two_of_clubs_holder
@@ -11,6 +9,8 @@ from .state import PassDirection
 from .state import Phase
 from .state import pass_target
 from .state import update_player
+from .types import PLAYER_IDS
+from .types import PlayerId
 
 
 def apply_pass(

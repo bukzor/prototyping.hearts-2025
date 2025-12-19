@@ -10,6 +10,7 @@ from .state import GameState
 from .state import PassDirection
 from .state import Phase
 from .state import update_player
+from .types import PLAYER_IDS
 
 LOSING_SCORE = 100
 
@@ -101,14 +102,9 @@ def start_new_round(state: GameState) -> None:
     state.round_number += 1
     state.dealer = (state.dealer + 1) % 4  # type: ignore[assignment]
 
-    hands = Deck().deal_hands()
-    for i in range(4):
+    for pid, hand in zip(PLAYER_IDS, Deck().deal_hands()):
         state.players = update_player(
-            state.players,
-            i,  # type: ignore[arg-type]
-            hand=hands[i],
-            round_score=0,
-            tricks_won=(),
+            state.players, pid, hand=hand, round_score=0, tricks_won=()
         )
 
     state.trick = Trick()

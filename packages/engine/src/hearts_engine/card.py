@@ -3,7 +3,8 @@
 from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum
-from typing import Literal
+
+from .types import PlayerId
 
 
 class Suit(Enum):
@@ -99,10 +100,6 @@ class Card:
         if self.suit != other.suit:
             return list(Suit).index(self.suit) < list(Suit).index(other.suit)
         return self.rank.order < other.rank.order
-
-
-PlayerId = Literal[0, 1, 2, 3]
-PLAYER_IDS: tuple[PlayerId, ...] = (0, 1, 2, 3)
 
 
 @dataclass(frozen=True, slots=True)

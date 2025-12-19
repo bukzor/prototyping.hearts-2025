@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING
 from .card import QUEEN_OF_SPADES
 from .card import TWO_OF_CLUBS
 from .card import Card
-from .card import PlayerId
 from .card import Suit
 from .card import Trick
 from .cards import Cards
+from .types import PlayerId
 
 if TYPE_CHECKING:
     from .state import GameState

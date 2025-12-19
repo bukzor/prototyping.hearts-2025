@@ -1,6 +1,7 @@
 """Card collections for Hearts."""
 
 import random
+from collections.abc import Iterator
 from collections.abc import Set as AbstractSet
 from random import Random
 from typing import Self
@@ -55,12 +56,10 @@ class Deck(Cards):
             cls, (Card(suit, rank) for suit in Suit for rank in Rank)
         )
 
-    def deal_hands(self, rng: Random = random.seed.__self__) -> list[Hand]:
+    def deal_hands(self, rng: Random = random.seed.__self__) -> Iterator[Hand]:
         """Deal deck into 4 hands of 13 cards."""
         remaining = Cards(self)
-        hands: list[Hand] = []
         for _ in range(4):
             drawn = remaining.draw(13, rng)
-            hands.append(Hand(drawn))
+            yield Hand(drawn)
             remaining -= drawn
-        return hands

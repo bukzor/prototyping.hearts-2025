@@ -30,14 +30,15 @@ class ActionResult:
 def new_game(game_id: str | None = None, seed: int | None = None) -> GameState:
     """Create a new game with shuffled deck."""
     rng = random.Random(seed)
-    hands = Deck().deal_hands(rng)
 
     return GameState(
         game_id=game_id or str(uuid.uuid4()),
         phase=Phase.PASSING,
         round_number=0,
         dealer=0,
-        players=tuple(PlayerState(hand=h) for h in hands),  # type: ignore[arg-type]
+        players=tuple(
+            PlayerState(hand=h) for h in Deck().deal_hands(rng)
+        ),  # type: ignore[arg-type]
         trick=Trick(),
         lead_player=None,
         current_player=0,  # Start with player 0 for passing
