@@ -120,9 +120,8 @@ class GameState:
     # Player state (index = PlayerId)
     players: tuple[PlayerState, PlayerState, PlayerState, PlayerState]
 
-    # Current trick
+    # Current trick (lead is set even before first card played)
     trick: Trick
-    lead_player: PlayerId | None
     current_player: PlayerId
 
     # Derived state

@@ -27,8 +27,10 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
     if card not in hand:
         return ActionResult(ok=False, error="Card not in hand", new_state=None)
 
-    valid = valid_plays(state)
-    if card not in valid:
+    is_first = all(len(p.tricks_won) == 0 for p in state.players)
+    if card not in valid_plays(
+        hand, state.trick, is_first, state.hearts_broken
+    ):
         return ActionResult(
             ok=False, error=f"Invalid play: {card}", new_state=None
         )
@@ -53,7 +55,7 @@ def complete_trick(state: GameState) -> GameState:
     """Complete a trick and determine winner."""
     from .round import complete_round
 
-    winner = trick_winner(state.trick, state.lead_player)
+    winner = trick_winner(state.trick)
     state = replace(
         state,
         players=update_player(
@@ -61,8 +63,7 @@ def complete_trick(state: GameState) -> GameState:
             winner,
             tricks_won=(*state.players[winner].tricks_won, state.trick),
         ),
-        trick=Trick(),
-        lead_player=winner,
+        trick=Trick(lead=winner),
         current_player=winner,
     )
 

@@ -5,6 +5,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import Enum
 
+from .types import PLAYER_IDS
 from .types import PlayerId
 
 
@@ -124,9 +125,9 @@ class Trick:
 
     def items(self) -> Iterator[tuple[PlayerId, Card]]:
         """Yield (player_id, card) pairs for played cards."""
-        for pid, card in enumerate(self.cards):
+        for pid, card in zip(PLAYER_IDS, self.cards):
             if card is not None:
-                yield pid, card  # type: ignore[misc]
+                yield pid, card
 
     def values(self) -> Iterator[Card]:
         """Yield cards that have been played."""

@@ -110,7 +110,7 @@ class DescribeTrickWinner:
             ),
             lead=0,
         )
-        winner = trick_winner(trick, lead_player=0)
+        winner = trick_winner(trick)
         assert winner == 1
 
     def it_ignores_off_suit_cards(self) -> None:
@@ -123,7 +123,7 @@ class DescribeTrickWinner:
             ),
             lead=0,
         )
-        winner = trick_winner(trick, lead_player=0)
+        winner = trick_winner(trick)
         assert winner == 2
 
     def it_leader_wins_if_all_off_suit(self) -> None:
@@ -136,7 +136,7 @@ class DescribeTrickWinner:
             ),
             lead=0,
         )
-        winner = trick_winner(trick, lead_player=0)
+        winner = trick_winner(trick)
         assert winner == 0
 
 
@@ -174,7 +174,7 @@ class DescribeTrickWinnerProperties:
         trick = Trick.from_dict({
             players[i]: four_cards[i] for i in range(4)  # type: ignore[index]
         })
-        winner = trick_winner(trick, lead_player=players[0])  # type: ignore[arg-type]
+        winner = trick_winner(trick)
         assert winner in players
 
     @given(
@@ -187,7 +187,7 @@ class DescribeTrickWinnerProperties:
         trick = Trick.from_dict({
             players[i]: four_cards[i] for i in range(4)  # type: ignore[index]
         })
-        winner = trick_winner(trick, lead_player=players[0])  # type: ignore[arg-type]
+        winner = trick_winner(trick)
         assert trick[winner] in four_cards
 
 

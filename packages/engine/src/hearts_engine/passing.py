@@ -3,6 +3,7 @@
 from dataclasses import replace
 
 from .card import Card
+from .card import Trick
 from .cards import Hand
 from .main import ActionResult
 from .rules import find_two_of_clubs_holder
@@ -108,10 +109,10 @@ def execute_passes(state: GameState) -> GameState:
 
 def start_playing_phase(state: GameState) -> GameState:
     """Transition to playing phase."""
-    current_player = find_two_of_clubs_holder(state.players)
+    leader = find_two_of_clubs_holder(state.players)
     return replace(
         state,
         phase=Phase.PLAYING,
-        current_player=current_player,
-        lead_player=current_player,
+        trick=Trick(lead=leader),
+        current_player=leader,
     )

@@ -68,8 +68,8 @@ class DescribeFollowingSuit:
         game = self._setup_trick_in_progress()
         player = game.current_player
         hand = game.players[player].hand
-        assert game.lead_player is not None
-        lead_card = game.trick[game.lead_player]
+        assert game.trick.lead is not None
+        lead_card = game.trick[game.trick.lead]
         assert lead_card is not None
         lead_suit = lead_card.suit
 
@@ -85,8 +85,8 @@ class DescribeFollowingSuit:
         game = self._setup_trick_in_progress()
         player = game.current_player
         hand = game.players[player].hand
-        assert game.lead_player is not None
-        lead_card = game.trick[game.lead_player]
+        assert game.trick.lead is not None
+        lead_card = game.trick[game.trick.lead]
         assert lead_card is not None
         lead_suit = lead_card.suit
 
@@ -152,5 +152,5 @@ class DescribeTrickCompletion:
     def it_sets_winner_as_next_lead(self) -> None:
         game = _get_to_playing()
         game = self._play_full_trick(game)
-        # Winner should be current player and lead player
-        assert game.current_player == game.lead_player
+        # Winner should be current player and lead of next trick
+        assert game.current_player == game.trick.lead

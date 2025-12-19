@@ -40,7 +40,6 @@ def new_game(game_id: str | None = None, seed: int | None = None) -> GameState:
             PlayerState(hand=h) for h in Deck().deal_hands(rng)
         ),  # type: ignore[arg-type]
         trick=Trick(),
-        lead_player=None,
         current_player=0,  # Start with player 0 for passing
         hearts_broken=False,
         pending_passes=(None, None, None, None),

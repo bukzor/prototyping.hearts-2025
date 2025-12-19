@@ -31,13 +31,10 @@ def complete_round(state: GameState) -> GameState:
 def apply_normal_scoring(state: GameState) -> GameState:
     """Apply normal round scoring (no moon shot)."""
     players = state.players
-    for i, player in enumerate(players):
+    for pid, player in zip(PLAYER_IDS, players):
         points = round_points(player.tricks_won)
         players = update_player(
-            players,
-            i,  # type: ignore[arg-type]
-            round_score=points,
-            score=player.score + points,
+            players, pid, round_score=points, score=player.score + points
         )
     return replace(state, players=players)
 
@@ -57,18 +54,13 @@ def apply_moon_choice(state: GameState, add_to_others: bool) -> ActionResult:
 
     players = state.players
     if add_to_others:
-        for i, player in enumerate(players):
-            if i != shooter:
+        for pid, player in zip(PLAYER_IDS, players):
+            if pid != shooter:
                 players = update_player(
-                    players,
-                    i,  # type: ignore[arg-type]
-                    score=player.score + 26,
-                    round_score=26,
+                    players, pid, score=player.score + 26, round_score=26
                 )
             else:
-                players = update_player(
-                    players, i, round_score=0  # type: ignore[arg-type]
-                )
+                players = update_player(players, pid, round_score=0)
     else:
         players = update_player(
             players,
@@ -76,11 +68,9 @@ def apply_moon_choice(state: GameState, add_to_others: bool) -> ActionResult:
             score=players[shooter].score - 26,
             round_score=-26,
         )
-        for i in range(4):
-            if i != shooter:
-                players = update_player(
-                    players, i, round_score=0  # type: ignore[arg-type]
-                )
+        for pid in PLAYER_IDS:
+            if pid != shooter:
+                players = update_player(players, pid, round_score=0)
 
     state = replace(state, players=players)
     state = check_game_end(state)
@@ -111,20 +101,20 @@ def start_new_round(state: GameState) -> GameState:
     )
     if direction == PassDirection.HOLD:
         phase = Phase.PLAYING
-        current_player: PlayerId = find_two_of_clubs_holder(players)  # type: ignore[assignment]
-        lead_player: PlayerId | None = current_player
+        leader = find_two_of_clubs_holder(players)
+        trick = Trick(lead=leader)
+        current_player = leader
     else:
         phase = Phase.PASSING
-        current_player = 0
-        lead_player = None
+        trick = Trick()
+        current_player: PlayerId = 0
 
     return replace(
         state,
         round_number=round_number,
         dealer=dealer,
         players=players,
-        trick=Trick(),
-        lead_player=lead_player,
+        trick=trick,
         current_player=current_player,
         hearts_broken=False,
         pending_passes=(None, None, None, None),
