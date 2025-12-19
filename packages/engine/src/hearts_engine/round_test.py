@@ -1,5 +1,7 @@
 """Tests for round and game lifecycle."""
 
+from dataclasses import replace
+
 from .card import QUEEN_OF_SPADES
 from .card import Card
 from .card import Rank
@@ -72,8 +74,6 @@ class DescribeMoonShooting:
     def it_allows_add_to_others(self) -> None:
         # Create a state where player shot the moon
         game = new_game(seed=42)
-        game.phase = Phase.ROUND_END
-        game.current_player = 0
         # Give player 0 all point cards in tricks_won (13 hearts + queen of spades)
         # Create tricks with all hearts (need 4 tricks of 4 cards = 16, but we only have 13 hearts)
         # For scoring, we just need tricks containing the point cards
@@ -100,8 +100,11 @@ class DescribeMoonShooting:
             ),
             lead=0,
         )
-        game.players = update_player(
+        players = update_player(
             game.players, 0, tricks_won=hearts_tricks + (final_trick,)
+        )
+        game = replace(
+            game, phase=Phase.ROUND_END, current_player=0, players=players
         )
 
         result = apply_action(game, ChooseMoonOption(add_to_others=True))
@@ -117,8 +120,6 @@ class DescribeMoonShooting:
 
     def it_allows_subtract_from_self(self) -> None:
         game = new_game(seed=42)
-        game.phase = Phase.ROUND_END
-        game.current_player = 0
         # Same setup as above
         ranks = list(Rank)
         hearts_tricks = tuple(
@@ -142,8 +143,11 @@ class DescribeMoonShooting:
             ),
             lead=0,
         )
-        game.players = update_player(
+        players = update_player(
             game.players, 0, tricks_won=hearts_tricks + (final_trick,)
+        )
+        game = replace(
+            game, phase=Phase.ROUND_END, current_player=0, players=players
         )
 
         result = apply_action(game, ChooseMoonOption(add_to_others=False))
@@ -157,26 +161,28 @@ class DescribeGameEnd:
 
     def it_ends_game_at_100_points(self) -> None:
         game = new_game(seed=42)
-        game.players = update_player(game.players, 0, score=100)
-        game.players = update_player(game.players, 1, score=50)
-        game.players = update_player(game.players, 2, score=30)
-        game.players = update_player(game.players, 3, score=20)
-        check_game_end(game)
+        players = update_player(game.players, 0, score=100)
+        players = update_player(players, 1, score=50)
+        players = update_player(players, 2, score=30)
+        players = update_player(players, 3, score=20)
+        game = replace(game, players=players)
+        game = check_game_end(game)
         assert game.phase == Phase.GAME_END
 
     def it_starts_new_round_under_100(self) -> None:
         game = new_game(seed=42)
-        game.players = update_player(game.players, 0, score=50)
-        game.players = update_player(game.players, 1, score=30)
-        game.players = update_player(game.players, 2, score=20)
-        game.players = update_player(game.players, 3, score=10)
+        players = update_player(game.players, 0, score=50)
+        players = update_player(players, 1, score=30)
+        players = update_player(players, 2, score=20)
+        players = update_player(players, 3, score=10)
+        game = replace(game, players=players)
         old_round = game.round_number
-        check_game_end(game)
+        game = check_game_end(game)
         assert game.phase != Phase.GAME_END
         assert game.round_number == old_round + 1
 
     def it_rotates_pass_direction(self) -> None:
         game = new_game(seed=42)
         assert game.pass_direction == PassDirection.LEFT
-        start_new_round(game)
+        game = start_new_round(game)
         assert game.pass_direction == PassDirection.RIGHT

@@ -1,5 +1,7 @@
 """Hearts game engine - passing phase."""
 
+from dataclasses import replace
+
 from .card import Card
 from .cards import Hand
 from .main import ActionResult
@@ -40,21 +42,26 @@ def apply_pass(
             ok=False, error="Must select 3 different cards", new_state=None
         )
 
-    new_state = state.copy()
     # Create new tuple with this player's selection
-    passes = list(new_state.pending_passes)
-    passes[player] = cards
-    new_state.pending_passes = tuple(passes)  # type: ignore[assignment]
+    pending = (
+        state.pending_passes[:player]
+        + (cards,)
+        + state.pending_passes[player + 1 :]
+    )
+    state = replace(state, pending_passes=pending)  # type: ignore[arg-type]
 
-    if all(p is not None for p in new_state.pending_passes):
-        execute_passes(new_state)
-        start_playing_phase(new_state)
+    if all(p is not None for p in state.pending_passes):
+        state = execute_passes(state)
+        state = start_playing_phase(state)
     else:
-        new_state.current_player = next_player_for_passing(
-            new_state.current_player, new_state.pending_passes
+        state = replace(
+            state,
+            current_player=next_player_for_passing(
+                player, state.pending_passes
+            ),
         )
 
-    return ActionResult(ok=True, error=None, new_state=new_state)
+    return ActionResult(ok=True, error=None, new_state=state)
 
 
 def next_player_for_passing(
@@ -74,30 +81,37 @@ def next_player_for_passing(
     return current_player
 
 
-def execute_passes(state: GameState) -> None:
+def execute_passes(state: GameState) -> GameState:
     """Execute all pending passes."""
-    direction = state.pass_direction
     received: dict[PlayerId, list[Card]] = {0: [], 1: [], 2: [], 3: []}
 
+    players = state.players
     # First pass: remove cards from each player's hand and track received
     for player in PLAYER_IDS:
         cards = state.pending_passes[player]
         assert cards is not None, player
-        target = pass_target(player, direction)
-        received[target].extend(cards)
-        new_hand = Hand(state.players[player].hand - set(cards))
-        state.players = update_player(state.players, player, hand=new_hand)
+        received[pass_target(player, state.pass_direction)].extend(cards)
+        players = update_player(
+            players, player, hand=Hand(players[player].hand - set(cards))
+        )
 
     # Second pass: add received cards to each player's hand
     for player, cards in received.items():
-        new_hand = Hand(state.players[player].hand | set(cards))
-        state.players = update_player(state.players, player, hand=new_hand)
+        players = update_player(
+            players, player, hand=Hand(players[player].hand | set(cards))
+        )
 
-    state.pending_passes = (None, None, None, None)  # type: ignore[assignment]
+    return replace(
+        state, players=players, pending_passes=(None, None, None, None)
+    )
 
 
-def start_playing_phase(state: GameState) -> None:
+def start_playing_phase(state: GameState) -> GameState:
     """Transition to playing phase."""
-    state.phase = Phase.PLAYING
-    state.current_player = find_two_of_clubs_holder(state.players)  # type: ignore[assignment]
-    state.lead_player = state.current_player
+    current_player = find_two_of_clubs_holder(state.players)
+    return replace(
+        state,
+        phase=Phase.PLAYING,
+        current_player=current_player,
+        lead_player=current_player,
+    )

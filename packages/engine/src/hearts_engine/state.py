@@ -103,7 +103,7 @@ def update_player(
     return result  # type: ignore[return-value]
 
 
-@dataclass(slots=True)
+@dataclass(frozen=True, slots=True)
 class GameState:
     """Complete game state."""
 
@@ -140,26 +140,3 @@ class GameState:
     def pass_direction(self) -> PassDirection:
         """Current pass direction."""
         return pass_direction_for_round(self.round_number)
-
-    def copy(self) -> GameState:
-        """Create a deep copy of the state."""
-        return GameState(
-            game_id=self.game_id,
-            phase=self.phase,
-            round_number=self.round_number,
-            dealer=self.dealer,
-            players=tuple(
-                PlayerState(
-                    hand=Hand(p.hand),
-                    score=p.score,
-                    round_score=p.round_score,
-                    tricks_won=p.tricks_won,  # tuple is immutable
-                )
-                for p in self.players
-            ),  # type: ignore[arg-type]
-            trick=self.trick,  # Trick is frozen, no need to copy
-            lead_player=self.lead_player,
-            current_player=self.current_player,
-            hearts_broken=self.hearts_broken,
-            pending_passes=self.pending_passes,  # tuple is immutable
-        )

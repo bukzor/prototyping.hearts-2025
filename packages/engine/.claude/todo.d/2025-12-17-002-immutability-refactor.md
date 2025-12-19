@@ -45,9 +45,9 @@ Full immutability stack:
   - [~] `Cards.group()` returns `dict[Suit, list[Card]]` - view method, low
     priority
 
-- [ ] **Phase 3: Freeze GameState**
+- [x] **Phase 3: Freeze GameState**
   - [x] `PlayerState` frozen with `update_player()` helper
-  - [ ] `GameState` frozen - mutation functions must return new state
+  - [x] `GameState` frozen - mutation functions return new state
 
 - [~] **Phase 4: Narrow Function Signatures** Reduce coupling: functions should
   depend only on what they use. Work recursively - narrowing leaves reveals
@@ -61,7 +61,11 @@ Full immutability stack:
   - [x] `next_player_for_passing(state)` →
         `next_player_for_passing(current_player, pending_passes)`
 
-  **Later passes:** TBD - discover as Pass 1 completes
+  **Pass 2 - Callers of Pass 1 functions:**
+  - [ ] `valid_leads(state)` → `valid_leads(hand, first_trick, hearts_broken)`
+  - [ ] `valid_follows(state)` → `valid_follows(hand, lead_suit, first_trick)`
+
+  **Later passes:** TBD
 
 - [ ] **Phase 5: Types consolidation**
   - [ ] Move "ubiquitous" types to `hearts_engine.types`

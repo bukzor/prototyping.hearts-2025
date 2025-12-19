@@ -1,5 +1,7 @@
 """Hearts game engine - playing phase."""
 
+from dataclasses import replace
+
 from .card import Card
 from .card import Suit
 from .card import Trick
@@ -31,32 +33,40 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
             ok=False, error=f"Invalid play: {card}", new_state=None
         )
 
-    new_state = state.copy()
-    new_hand = Hand(hand - {card})
-    new_state.players = update_player(new_state.players, player, hand=new_hand)
-    new_state.trick = new_state.trick.with_play(player, card)
+    trick = state.trick.with_play(player, card)
+    state = replace(
+        state,
+        players=update_player(state.players, player, hand=Hand(hand - {card})),
+        trick=trick,
+        hearts_broken=state.hearts_broken or card.suit == Suit.HEARTS,
+    )
 
-    if card.suit == Suit.HEARTS:
-        new_state.hearts_broken = True
-
-    if len(new_state.trick) == 4:
-        complete_trick(new_state)
+    if len(trick) == 4:
+        state = complete_trick(state)
     else:
-        new_state.current_player = (player + 1) % 4  # type: ignore[assignment]
+        state = replace(state, current_player=(player + 1) % 4)  # type: ignore[arg-type]
 
-    return ActionResult(ok=True, error=None, new_state=new_state)
+    return ActionResult(ok=True, error=None, new_state=state)
 
 
-def complete_trick(state: GameState) -> None:
+def complete_trick(state: GameState) -> GameState:
     """Complete a trick and determine winner."""
     from .round import complete_round
 
     winner = trick_winner(state.trick, state.lead_player)
-    new_tricks = (*state.players[winner].tricks_won, state.trick)
-    state.players = update_player(state.players, winner, tricks_won=new_tricks)
-    state.trick = Trick()
-    state.lead_player = winner
-    state.current_player = winner
+    state = replace(
+        state,
+        players=update_player(
+            state.players,
+            winner,
+            tricks_won=(*state.players[winner].tricks_won, state.trick),
+        ),
+        trick=Trick(),
+        lead_player=winner,
+        current_player=winner,
+    )
 
     if all(len(p.hand) == 0 for p in state.players):
-        complete_round(state)
+        state = complete_round(state)
+
+    return state
