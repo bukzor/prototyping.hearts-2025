@@ -17,7 +17,7 @@ LOSING_SCORE = 100
 
 def complete_round(state: GameState) -> None:
     """Complete a round and score it."""
-    shooter = check_shot_moon(state)
+    shooter = check_shot_moon(state.players)
     if shooter is not None:
         state.phase = Phase.ROUND_END
         state.current_player = shooter  # type: ignore[assignment]
@@ -46,7 +46,7 @@ def apply_moon_choice(state: GameState, add_to_others: bool) -> ActionResult:
             ok=False, error="Not in round end phase", new_state=None
         )
 
-    shooter = check_shot_moon(state)
+    shooter = check_shot_moon(state.players)
     if shooter is None or shooter != state.current_player:
         return ActionResult(
             ok=False, error="Not the moon shooter", new_state=None

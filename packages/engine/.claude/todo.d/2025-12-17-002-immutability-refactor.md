@@ -41,23 +41,27 @@ Full immutability stack:
   - [x] `Cards` → `frozenset[Card]` (Hand inherits)
   - [x] `list` → `tuple` for `players`, `tricks_won`, `pending_passes`
   - [x] Added `Cards.of_suit()`, `not_of_suit()`, `hearts()` filter methods
-  - [ ] `Cards.group()` returns `dict[Suit, list[Card]]` → consider frozen
-  - [ ] `Deck.deal_hands()` returns `list[Hand]` → `tuple[Hand, ...]`
-  - [ ] `passing.py:70` uses `dict[PlayerId, list[Card]]` locally
+  - [x] `Deck.deal_hands()` returns `Iterator[Hand]` (better than tuple)
+  - [~] `Cards.group()` returns `dict[Suit, list[Card]]` - view method, low
+    priority
 
-- [~] **Phase 3: Freeze**
+- [ ] **Phase 3: Freeze GameState**
   - [x] `PlayerState` frozen with `update_player()` helper
-  - [ ] `GameState` frozen (optional - copy-on-write provides external
-        immutability)
+  - [ ] `GameState` frozen - mutation functions must return new state
 
-- [ ] **Phase 4: Methods → Functions**
-  - [ ] `Trick.with_play(player, card)` → `trick_with_play(trick, player, card)`
-  - [ ] `Cards.draw(n, rng)` → `draw_cards(cards, n, rng)`
-  - [ ] `Deck.deal_hands(rng)` → `deal_hands(deck, rng)` or just
-        `deal_hands(rng)`
-  - [ ] `GameState.copy()` → remove (replace() works for frozen)
-  - [ ] Keep: self-only (`items`, `values`, `group`), alt constructors
-        (`from_dict`), dunders
+- [~] **Phase 4: Narrow Function Signatures** Reduce coupling: functions should
+  depend only on what they use. Work recursively - narrowing leaves reveals
+  second-order opportunities.
+
+  **Pass 1 - Leaf functions (no internal GameState deps):**
+  - [x] `is_first_trick(state)` → `is_first_trick(players)`
+  - [x] `can_lead_hearts(state)` → `can_lead_hearts(hand, hearts_broken)`
+  - [x] `valid_pass_selections(state)` → `valid_pass_selections(hand)`
+  - [x] `check_shot_moon(state)` → `check_shot_moon(players)`
+  - [x] `next_player_for_passing(state)` →
+        `next_player_for_passing(current_player, pending_passes)`
+
+  **Later passes:** TBD - discover as Pass 1 completes
 
 - [ ] **Phase 5: Types consolidation**
   - [ ] Move "ubiquitous" types to `hearts_engine.types`

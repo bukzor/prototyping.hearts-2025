@@ -11,6 +11,7 @@ from .card import Card
 from .card import Suit
 from .card import Trick
 from .cards import Cards
+from .cards import Hand
 from .types import PlayerId
 
 if TYPE_CHECKING:
@@ -69,16 +70,15 @@ def cards_of_suit(hand: Iterable[Card], suit: Suit) -> Iterator[Card]:
     return (c for c in hand if c.suit == suit)
 
 
-def is_first_trick(state: GameState) -> bool:
+def is_first_trick(players: Sequence[PlayerState]) -> bool:
     """Check if this is the first trick of the round."""
-    return all(len(p.tricks_won) == 0 for p in state.players)
+    return all(len(p.tricks_won) == 0 for p in players)
 
 
-def can_lead_hearts(state: GameState) -> bool:
+def can_lead_hearts(hand: Hand, hearts_broken: bool) -> bool:
     """Check if hearts can be led."""
-    if state.hearts_broken:
+    if hearts_broken:
         return True
-    hand = state.players[state.current_player].hand
     return not hand.not_of_suit(Suit.HEARTS)
 
 
@@ -86,12 +86,12 @@ def valid_leads(state: GameState) -> Iterator[Card]:
     """Get valid cards to lead with."""
     hand = state.players[state.current_player].hand
 
-    if is_first_trick(state):
+    if is_first_trick(state.players):
         assert TWO_OF_CLUBS in hand, (hand, state.current_player)
         yield TWO_OF_CLUBS
         return
 
-    if can_lead_hearts(state):
+    if can_lead_hearts(hand, state.hearts_broken):
         yield from hand
         return
 
@@ -113,7 +113,7 @@ def valid_follows(state: GameState) -> Iterator[Card]:
         yield from matching
         return
 
-    if is_first_trick(state):
+    if is_first_trick(state.players):
         non_points = Cards(c for c in hand if not is_point_card(c))
         yield from non_points or hand
         return
@@ -129,13 +129,10 @@ def valid_plays(state: GameState) -> Iterator[Card]:
         yield from valid_follows(state)
 
 
-def valid_pass_selections(
-    state: GameState,
-) -> Iterator[tuple[Card, Card, Card]]:
+def valid_pass_selections(hand: Hand) -> Iterator[tuple[Card, Card, Card]]:
     """Get all valid 3-card combinations for passing."""
     from itertools import combinations
 
-    hand = state.players[state.current_player].hand
     return combinations(hand, 3)  # type: ignore[return-value]
 
 
@@ -146,16 +143,17 @@ def valid_actions(state: GameState) -> list[PlayerAction]:
     from .state import PlayCard
     from .state import SelectPass
 
+    hand = state.players[state.current_player].hand
     match state.phase:
         case Phase.PASSING:
-            combos = valid_pass_selections(state)
+            combos = valid_pass_selections(hand)
             return [SelectPass(cards=c) for c in combos]
         case Phase.PLAYING:
             cards = valid_plays(state)
             return [PlayCard(card=c) for c in cards]
         case Phase.ROUND_END:
             # TODO: should check all the time, not just round end.
-            if check_shot_moon(state) == state.current_player:
+            if check_shot_moon(state.players) == state.current_player:
                 return [
                     ChooseMoonOption(add_to_others=False),
                     ChooseMoonOption(add_to_others=True),
@@ -165,9 +163,9 @@ def valid_actions(state: GameState) -> list[PlayerAction]:
             return []
 
 
-def check_shot_moon(state: GameState) -> PlayerId | None:
+def check_shot_moon(players: Sequence[PlayerState]) -> PlayerId | None:
     """Check if any player shot the moon. Returns player id or None."""
-    for i, player in enumerate(state.players):
+    for i, player in enumerate(players):
         points = round_points(player.tricks_won)
         if points == 26:
             return i  # type: ignore[return-value]

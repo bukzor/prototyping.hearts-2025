@@ -50,18 +50,28 @@ def apply_pass(
         execute_passes(new_state)
         start_playing_phase(new_state)
     else:
-        new_state.current_player = next_player_for_passing(new_state)
+        new_state.current_player = next_player_for_passing(
+            new_state.current_player, new_state.pending_passes
+        )
 
     return ActionResult(ok=True, error=None, new_state=new_state)
 
 
-def next_player_for_passing(state: GameState) -> PlayerId:
+def next_player_for_passing(
+    current_player: PlayerId,
+    pending_passes: tuple[
+        tuple[Card, Card, Card] | None,
+        tuple[Card, Card, Card] | None,
+        tuple[Card, Card, Card] | None,
+        tuple[Card, Card, Card] | None,
+    ],
+) -> PlayerId:
     """Get next player who needs to pass."""
     for i in range(4):
-        p: PlayerId = (state.current_player + 1 + i) % 4  # type: ignore[assignment]
-        if state.pending_passes[p] is None:
+        p: PlayerId = (current_player + 1 + i) % 4  # type: ignore[assignment]
+        if pending_passes[p] is None:
             return p
-    return state.current_player
+    return current_player
 
 
 def execute_passes(state: GameState) -> None:
