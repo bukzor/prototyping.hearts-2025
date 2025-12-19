@@ -13,13 +13,14 @@ from .card import Suit
 from .card import Trick
 from .cards import Cards
 from .cards import Hand
+from .state import GameState
+from .state import Phase
+from .state import PlayerState
 from .types import PLAYER_IDS
 from .types import PlayerId
 
 if TYPE_CHECKING:
-    from .state import GameState
     from .state import PlayerAction
-    from .state import PlayerState
 
 
 def is_point_card(card: Card) -> bool:
@@ -122,28 +123,29 @@ def valid_pass_selections(hand: Hand) -> Iterator[tuple[Card, Card, Card]]:
     return combinations(hand, 3)  # type: ignore[return-value]
 
 
-def valid_actions(state: GameState) -> list[PlayerAction]:
+def valid_actions(
+    phase: Phase,
+    current_player: PlayerId,
+    hand: Hand,
+    trick: Trick | None,
+    first_trick: bool,
+    hearts_broken: bool,
+    moon_shooter: PlayerId | None,
+) -> list[PlayerAction]:
     """Get all valid actions for current player."""
     from .state import ChooseMoonOption
-    from .state import Phase
     from .state import PlayCard
     from .state import SelectPass
 
-    hand = state.players[state.current_player].hand
-    match state.phase:
+    match phase:
         case Phase.PASSING:
-            combos = valid_pass_selections(hand)
-            return [SelectPass(cards=c) for c in combos]
+            return [SelectPass(cards=c) for c in valid_pass_selections(hand)]
         case Phase.PLAYING:
-            assert state.trick is not None
-            first_trick = is_first_trick(state.players)
-            cards = valid_plays(
-                hand, state.trick, first_trick, state.hearts_broken
-            )
+            assert trick is not None
+            cards = valid_plays(hand, trick, first_trick, hearts_broken)
             return [PlayCard(card=c) for c in cards]
         case Phase.ROUND_END:
-            # TODO: should check all the time, not just round end.
-            if check_shot_moon(state.players) == state.current_player:
+            if moon_shooter == current_player:
                 return [
                     ChooseMoonOption(add_to_others=False),
                     ChooseMoonOption(add_to_others=True),
@@ -151,6 +153,19 @@ def valid_actions(state: GameState) -> list[PlayerAction]:
             return []
         case Phase.GAME_END:
             return []
+
+
+def valid_actions_for_state(state: GameState) -> list[PlayerAction]:
+    """Extract args from GameState and call valid_actions."""
+    return valid_actions(
+        phase=state.phase,
+        current_player=state.current_player,
+        hand=state.players[state.current_player].hand,
+        trick=state.trick,
+        first_trick=is_first_trick(state.players),
+        hearts_broken=state.hearts_broken,
+        moon_shooter=check_shot_moon(state.players),
+    )
 
 
 def check_shot_moon(players: Sequence[PlayerState]) -> PlayerId | None:

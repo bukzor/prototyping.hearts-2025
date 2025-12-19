@@ -7,7 +7,7 @@ from hypothesis import strategies as st
 from .card import TWO_OF_CLUBS
 from .main import apply_action
 from .main import new_game
-from .rules import valid_actions
+from .rules import valid_actions_for_state
 from .state import GameState
 from .state import PassDirection
 from .state import Phase
@@ -87,7 +87,7 @@ class DescribeStatefulInvariants:
         for _ in range(20):
             if game.phase != Phase.PLAYING:
                 break
-            valid = valid_actions(game)
+            valid = valid_actions_for_state(game)
             if not valid:
                 break
             result = apply_action(game, valid[0])
@@ -118,7 +118,7 @@ class DescribeStatefulInvariants:
             if game.phase == Phase.GAME_END:
                 return  # Success
 
-            valid = valid_actions(game)
+            valid = valid_actions_for_state(game)
             if not valid:
                 break
             result = apply_action(game, valid[0])

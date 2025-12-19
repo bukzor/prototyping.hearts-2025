@@ -11,7 +11,7 @@ from .main import apply_action
 from .main import new_game
 from .round import check_game_end
 from .round import start_new_round
-from .rules import valid_actions
+from .rules import valid_actions_for_state
 from .state import ChooseMoonOption
 from .state import GameState
 from .state import PassDirection
@@ -39,7 +39,7 @@ class DescribeRoundCompletion:
     def _play_full_round(self, game: GameState) -> GameState:
         """Play all 13 tricks."""
         for _ in range(13 * 4):  # 13 tricks, 4 cards each
-            valid = valid_actions(game)
+            valid = valid_actions_for_state(game)
             if not valid:
                 break  # Round/game ended
             result = apply_action(game, valid[0])

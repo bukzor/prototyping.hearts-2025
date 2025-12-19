@@ -3,7 +3,7 @@
 from .card import TWO_OF_CLUBS
 from .main import apply_action
 from .main import new_game
-from .rules import valid_actions
+from .rules import valid_actions_for_state
 from .state import GameState
 from .state import PlayCard
 from .state import SelectPass
@@ -125,7 +125,7 @@ class DescribeTrickCompletion:
     def _play_full_trick(self, game: GameState) -> GameState:
         """Play 4 cards to complete a trick."""
         for _ in PLAYER_IDS:
-            valid = valid_actions(game)
+            valid = valid_actions_for_state(game)
             assert valid, "No valid actions"
             result = apply_action(game, valid[0])
             assert result.ok, result.error
