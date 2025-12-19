@@ -18,6 +18,17 @@ class Cards(frozenset[Card]):
         cls = type(self)
         return cls(super().__sub__(other))
 
+    def of_suit(self, suit: Suit) -> Self:
+        cls = type(self)
+        return cls(c for c in self if c.suit == suit)
+
+    def not_of_suit(self, suit: Suit) -> Self:
+        cls = type(self)
+        return cls(c for c in self if c.suit != suit)
+
+    def hearts(self) -> Self:
+        return self.of_suit(Suit.HEARTS)
+
     def group(self) -> dict[Suit, list[Card]]:
         """Return cards grouped by suit, sorted within each group."""
         result: dict[Suit, list[Card]] = {}

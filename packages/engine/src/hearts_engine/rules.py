@@ -1,6 +1,7 @@
 """Hearts game rules and validation."""
 
 from collections.abc import Iterable
+from collections.abc import Iterator
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
@@ -10,6 +11,7 @@ from .card import Card
 from .card import PlayerId
 from .card import Suit
 from .card import Trick
+from .cards import Cards
 
 if TYPE_CHECKING:
     from .state import GameState
@@ -62,9 +64,9 @@ def has_suit(hand: Iterable[Card], suit: Suit) -> bool:
     return any(c.suit == suit for c in hand)
 
 
-def cards_of_suit(hand: Iterable[Card], suit: Suit) -> list[Card]:
+def cards_of_suit(hand: Iterable[Card], suit: Suit) -> Iterator[Card]:
     """Get all cards of a suit from hand."""
-    return [c for c in hand if c.suit == suit]
+    return (c for c in hand if c.suit == suit)
 
 
 def is_first_trick(state: GameState) -> bool:
@@ -77,25 +79,27 @@ def can_lead_hearts(state: GameState) -> bool:
     if state.hearts_broken:
         return True
     hand = state.players[state.current_player].hand
-    return all(c.suit == Suit.HEARTS for c in hand)
+    return not hand.not_of_suit(Suit.HEARTS)
 
 
-def valid_leads(state: GameState) -> list[Card]:
+def valid_leads(state: GameState) -> Iterator[Card]:
     """Get valid cards to lead with."""
     hand = state.players[state.current_player].hand
 
     if is_first_trick(state):
         assert TWO_OF_CLUBS in hand, (hand, state.current_player)
-        return [TWO_OF_CLUBS]
+        yield TWO_OF_CLUBS
+        return
 
     if can_lead_hearts(state):
-        return list(hand)
+        yield from hand
+        return
 
-    non_hearts = [c for c in hand if c.suit != Suit.HEARTS]
-    return non_hearts if non_hearts else list(hand)
+    non_hearts = hand.not_of_suit(Suit.HEARTS)
+    yield from non_hearts or hand
 
 
-def valid_follows(state: GameState) -> list[Card]:
+def valid_follows(state: GameState) -> Iterator[Card]:
     """Get valid cards when following a trick."""
     assert len(state.trick) > 0
     assert state.lead_player is not None
@@ -104,29 +108,35 @@ def valid_follows(state: GameState) -> list[Card]:
     assert lead_card is not None
     lead_suit = lead_card.suit
 
-    if has_suit(hand, lead_suit):
-        return cards_of_suit(hand, lead_suit)
+    matching = hand.of_suit(lead_suit)
+    if matching:
+        yield from matching
+        return
 
     if is_first_trick(state):
-        non_points = [c for c in hand if not is_point_card(c)]
-        return non_points if non_points else list(hand)
+        non_points = Cards(c for c in hand if not is_point_card(c))
+        yield from non_points or hand
+        return
 
-    return list(hand)
+    yield from hand
 
 
-def valid_plays(state: GameState) -> list[Card]:
+def valid_plays(state: GameState) -> Iterator[Card]:
     """Get all valid cards to play."""
     if len(state.trick) == 0:
-        return valid_leads(state)
-    return valid_follows(state)
+        yield from valid_leads(state)
+    else:
+        yield from valid_follows(state)
 
 
-def valid_pass_selections(state: GameState) -> list[tuple[Card, Card, Card]]:
+def valid_pass_selections(
+    state: GameState,
+) -> Iterator[tuple[Card, Card, Card]]:
     """Get all valid 3-card combinations for passing."""
     from itertools import combinations
 
     hand = state.players[state.current_player].hand
-    return list(combinations(hand, 3))  # type: ignore[return-value]
+    return combinations(hand, 3)  # type: ignore[return-value]
 
 
 def valid_actions(state: GameState) -> list[PlayerAction]:
