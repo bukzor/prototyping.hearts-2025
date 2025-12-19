@@ -15,7 +15,6 @@ from .cards import Cards
 from .cards import Hand
 from .state import GameState
 from .state import Phase
-from .state import PlayerState
 from .types import PLAYER_IDS
 from .types import PlayerId
 
@@ -63,9 +62,9 @@ def trick_winner(trick: Trick) -> PlayerId:
     return winner
 
 
-def is_first_trick(players: Sequence[PlayerState]) -> bool:
+def is_first_trick(tricks_won: Sequence[tuple[Trick, ...]]) -> bool:
     """Check if this is the first trick of the round."""
-    return all(len(p.tricks_won) == 0 for p in players)
+    return all(len(tw) == 0 for tw in tricks_won)
 
 
 CardRestriction = Callable[[Cards], Cards]
@@ -157,28 +156,31 @@ def valid_actions(
 
 def valid_actions_for_state(state: GameState) -> list[PlayerAction]:
     """Extract args from GameState and call valid_actions."""
+    tricks_won = tuple(p.tricks_won for p in state.players)
     return valid_actions(
         phase=state.phase,
         current_player=state.current_player,
         hand=state.players[state.current_player].hand,
         trick=state.trick,
-        first_trick=is_first_trick(state.players),
+        first_trick=is_first_trick(tricks_won),
         hearts_broken=state.hearts_broken,
-        moon_shooter=check_shot_moon(state.players),
+        moon_shooter=check_shot_moon(tricks_won),
     )
 
 
-def check_shot_moon(players: Sequence[PlayerState]) -> PlayerId | None:
+def check_shot_moon(
+    tricks_won: Sequence[tuple[Trick, ...]],
+) -> PlayerId | None:
     """Check if any player shot the moon. Returns player id or None."""
-    for pid, player in zip(PLAYER_IDS, players):
-        if round_points(player.tricks_won) == 26:
+    for pid, tw in zip(PLAYER_IDS, tricks_won):
+        if round_points(tw) == 26:
             return pid
     return None
 
 
-def find_two_of_clubs_holder(players: Sequence[PlayerState]) -> PlayerId:
+def find_two_of_clubs_holder(hands: Sequence[Hand]) -> PlayerId:
     """Find which player has the 2 of clubs."""
-    for pid, player in zip(PLAYER_IDS, players):
-        if TWO_OF_CLUBS in player.hand:
+    for pid, hand in zip(PLAYER_IDS, hands):
+        if TWO_OF_CLUBS in hand:
             return pid
     raise AssertionError("No player has 2 of clubs")

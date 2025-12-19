@@ -1,21 +1,22 @@
 """Hearts game engine - playing phase."""
 
-from dataclasses import replace
+import dataclasses
+from random import Random
 
 from .card import Card
 from .card import Suit
 from .card import Trick
 from .cards import Hand
-from .main import ActionResult
 from .rules import is_first_trick
 from .rules import trick_winner
 from .rules import valid_plays
 from .state import GameState
 from .state import Phase
 from .state import update_player
+from .types import ActionResult
 
 
-def apply_play(state: GameState, card: Card) -> ActionResult:
+def apply_play(state: GameState, card: Card, random: Random) -> ActionResult:
     """Apply a card play."""
     if state.phase != Phase.PLAYING:
         return ActionResult(
@@ -29,7 +30,7 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
     if card not in hand:
         return ActionResult(ok=False, error="Card not in hand", new_state=None)
 
-    is_first = is_first_trick(state.players)
+    is_first = is_first_trick(tuple(p.tricks_won for p in state.players))
     if card not in valid_plays(
         hand, state.trick, is_first, state.hearts_broken
     ):
@@ -38,7 +39,7 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
         )
 
     trick = state.trick.with_play(player, card)
-    state = replace(
+    state = dataclasses.replace(
         state,
         players=update_player(state.players, player, hand=Hand(hand - {card})),
         trick=trick,
@@ -46,20 +47,20 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
     )
 
     if len(trick) == 4:
-        state = complete_trick(state)
+        state = complete_trick(state, random)
     else:
-        state = replace(state, current_player=(player + 1) % 4)  # type: ignore[arg-type]
+        state = dataclasses.replace(state, current_player=(player + 1) % 4)  # type: ignore[arg-type]
 
     return ActionResult(ok=True, error=None, new_state=state)
 
 
-def complete_trick(state: GameState) -> GameState:
+def complete_trick(state: GameState, random: Random) -> GameState:
     """Complete a trick and determine winner."""
     from .round import complete_round
 
     assert state.trick is not None
     winner = trick_winner(state.trick)
-    state = replace(
+    state = dataclasses.replace(
         state,
         players=update_player(
             state.players,
@@ -71,6 +72,6 @@ def complete_trick(state: GameState) -> GameState:
     )
 
     if all(len(p.hand) == 0 for p in state.players):
-        state = complete_round(state)
+        state = complete_round(state, random)
 
     return state

@@ -1,11 +1,10 @@
 """Hearts game engine - passing phase."""
 
-from dataclasses import replace
+import dataclasses
 
 from .card import Card
 from .card import Trick
 from .cards import Hand
-from .main import ActionResult
 from .rules import find_two_of_clubs_holder
 from .state import GameState
 from .state import PassDirection
@@ -13,6 +12,7 @@ from .state import Phase
 from .state import pass_target
 from .state import update_player
 from .types import PLAYER_IDS
+from .types import ActionResult
 from .types import PlayerId
 
 
@@ -49,13 +49,14 @@ def apply_pass(
         + (cards,)
         + state.pending_passes[player + 1 :]
     )
-    state = replace(state, pending_passes=pending)  # type: ignore[arg-type]
+    state = dataclasses.replace(state, pending_passes=pending)  # type: ignore[arg-type]
 
     if all(p is not None for p in state.pending_passes):
         state = execute_passes(state)
-        state = start_playing_phase(state)
+        leader = find_two_of_clubs_holder(tuple(p.hand for p in state.players))
+        state = start_playing_phase(state, leader)
     else:
-        state = replace(
+        state = dataclasses.replace(
             state,
             current_player=next_player_for_passing(
                 player, state.pending_passes
@@ -102,15 +103,14 @@ def execute_passes(state: GameState) -> GameState:
             players, player, hand=Hand(players[player].hand | set(cards))
         )
 
-    return replace(
+    return dataclasses.replace(
         state, players=players, pending_passes=(None, None, None, None)
     )
 
 
-def start_playing_phase(state: GameState) -> GameState:
+def start_playing_phase(state: GameState, leader: PlayerId) -> GameState:
     """Transition to playing phase."""
-    leader = find_two_of_clubs_holder(state.players)
-    return replace(
+    return dataclasses.replace(
         state,
         phase=Phase.PLAYING,
         trick=Trick(lead=leader),

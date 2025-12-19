@@ -1,5 +1,7 @@
 """Property-based tests for game invariants."""
 
+from random import Random
+
 from hypothesis import given
 from hypothesis import settings
 from hypothesis import strategies as st
@@ -22,7 +24,7 @@ class DescribeGameInvariants:
     @given(st.integers(min_value=0, max_value=1000))
     @settings(max_examples=20)
     def it_always_deals_valid_hands(self, seed: int) -> None:
-        game = new_game(seed=seed)
+        game = new_game(Random(seed))
         all_cards = [c for p in game.players for c in p.hand]
         assert len(all_cards) == 52
         assert len(set(all_cards)) == 52
@@ -30,7 +32,7 @@ class DescribeGameInvariants:
     @given(st.integers(min_value=0, max_value=1000))
     @settings(max_examples=20)
     def it_always_has_two_of_clubs_somewhere(self, seed: int) -> None:
-        game = new_game(seed=seed)
+        game = new_game(Random(seed))
         all_cards = [c for p in game.players for c in p.hand]
         assert TWO_OF_CLUBS in all_cards
 
@@ -55,11 +57,12 @@ class DescribeStatefulInvariants:
     @settings(max_examples=50)
     def it_conserves_cards_through_passing(self, seed: int) -> None:
         """All 52 cards present after passing phase."""
-        game: GameState = new_game(seed=seed)
+        random = Random(seed)
+        game: GameState = new_game(random)
         # Complete passing phase
         for i in PLAYER_IDS:
-            cards = game.players[i].hand.draw(3)
-            result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
+            cards = game.players[i].hand.draw(3, random)
+            result = apply_action(game, SelectPass(cards=cards), random)  # type: ignore[arg-type]
             assert result.ok
             assert result.new_state is not None
             game = result.new_state
@@ -74,11 +77,12 @@ class DescribeStatefulInvariants:
     @settings(max_examples=20)
     def it_conserves_cards_through_tricks(self, seed: int) -> None:
         """All cards accounted for at any point (hands + tricks_won + trick)."""
-        game: GameState = new_game(seed=seed)
+        random = Random(seed)
+        game: GameState = new_game(random)
         # Complete passing
         for i in PLAYER_IDS:
-            cards = game.players[i].hand.draw(3)
-            result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
+            cards = game.players[i].hand.draw(3, random)
+            result = apply_action(game, SelectPass(cards=cards), random)  # type: ignore[arg-type]
             assert result.ok
             assert result.new_state is not None
             game = result.new_state
@@ -90,7 +94,7 @@ class DescribeStatefulInvariants:
             valid = valid_actions_for_state(game)
             if not valid:
                 break
-            result = apply_action(game, valid[0])
+            result = apply_action(game, valid[0], random)
             assert result.ok, result.error
             assert result.new_state is not None
             game = result.new_state
@@ -111,7 +115,8 @@ class DescribeStatefulInvariants:
     @settings(max_examples=10, deadline=5000)
     def it_terminates_within_reasonable_actions(self, seed: int) -> None:
         """Game reaches GAME_END within bounded actions."""
-        game: GameState = new_game(seed=seed)
+        random = Random(seed)
+        game: GameState = new_game(random)
         max_actions = 1000  # Generous upper bound
 
         for _ in range(max_actions):
@@ -121,7 +126,7 @@ class DescribeStatefulInvariants:
             valid = valid_actions_for_state(game)
             if not valid:
                 break
-            result = apply_action(game, valid[0])
+            result = apply_action(game, valid[0], random)
             assert result.ok, result.error
             assert result.new_state is not None
             game = result.new_state

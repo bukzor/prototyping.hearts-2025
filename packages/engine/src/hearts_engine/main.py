@@ -1,8 +1,7 @@
 """Hearts game engine - entry points."""
 
-import random
 import uuid
-from dataclasses import dataclass
+from random import Random
 from typing import TYPE_CHECKING
 
 from .cards import Deck
@@ -12,24 +11,15 @@ from .state import Phase
 from .state import PlayCard
 from .state import PlayerState
 from .state import SelectPass
+from .types import ActionResult
 
 if TYPE_CHECKING:
     from .state import PlayerAction
 
 
-@dataclass(frozen=True, slots=True)
-class ActionResult:
-    """Result of applying an action."""
-
-    ok: bool
-    error: str | None
-    new_state: GameState | None
-
-
-def new_game(game_id: str | None = None, seed: int | None = None) -> GameState:
+def new_game(random: Random, game_id: str | None = None) -> GameState:
     """Create a new game with shuffled deck."""
-    rng = random.Random(seed)
-    players = tuple(PlayerState(hand=h) for h in Deck().deal_hands(rng))
+    players = tuple(PlayerState(hand=h) for h in Deck().deal_hands(random))
 
     return GameState(
         game_id=game_id or str(uuid.uuid4()),
@@ -44,7 +34,9 @@ def new_game(game_id: str | None = None, seed: int | None = None) -> GameState:
     )
 
 
-def apply_action(state: GameState, action: PlayerAction) -> ActionResult:
+def apply_action(
+    state: GameState, action: PlayerAction, random: Random
+) -> ActionResult:
     """Apply an action to the game state."""
     from .passing import apply_pass
     from .play import apply_play
@@ -54,6 +46,8 @@ def apply_action(state: GameState, action: PlayerAction) -> ActionResult:
         case SelectPass(cards=cards):
             return apply_pass(state, cards)
         case PlayCard(card=card):
-            return apply_play(state, card)
+            return apply_play(state, card, random)
         case ChooseMoonOption(add_to_others=add_to_others):
-            return apply_moon_choice(state, add_to_others)
+            return apply_moon_choice(state, add_to_others, random)
+        case _:
+            raise AssertionError(action)

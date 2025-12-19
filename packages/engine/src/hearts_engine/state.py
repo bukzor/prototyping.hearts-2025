@@ -1,7 +1,9 @@
 """Game state types for Hearts."""
 
+import dataclasses
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 from .card import Card
 from .card import Trick
@@ -88,15 +90,11 @@ class PlayerState:
     tricks_won: tuple[Trick, ...] = ()
 
 
-from dataclasses import replace as _replace
-from typing import Any
-
-
 def update_player(
     players: tuple[PlayerState, ...], player_id: PlayerId, **changes: Any
 ) -> tuple[PlayerState, ...]:
     """Return new players tuple with one player updated via replace()."""
-    new_player = _replace(players[player_id], **changes)
+    new_player = dataclasses.replace(players[player_id], **changes)
     return players[:player_id] + (new_player,) + players[player_id + 1 :]
 
 
