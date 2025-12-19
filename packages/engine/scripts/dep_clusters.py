@@ -6,25 +6,23 @@ from pathlib import Path
 
 # Known groupings - for filtering/clustering
 GROUPS: dict[str, set[str]] = {
-    "ubiquitous": {"Card", "GameState", "Suit", "Rank", "Phase", "Trick"},
-    "collections": {"Cards", "Player", "Hand", "Deck"},
+    "ubiquitous": {"Card", "GameState", "Suit", "Phase", "Rank", "Player"},
+    "collections": {"Trick", "Cards", "Hand", "Deck"},
     "tty": {"SupportsTTY", "format"},
 }
 
-EXCLUDE = set()
-# EXCLUDE = GROUPS["ubiquitous"] | GROUPS["collections"] | GROUPS["tty"]
+EXCLUDE = GROUPS["ubiquitous"] | GROUPS["collections"] | GROUPS["tty"]
 
 # Visual clusters - use "/" for nesting (e.g., "ending/scoring")
 CLUSTERS: dict[str, set[str]] = {
     "play": {
         "valid_plays",
-        "valid_follows",
-        "valid_leads",
         "is_first_trick",
-        "can_lead_hearts",
-        "has_suit",
-        "cards_of_suit",
         "is_point_card",
+        "no_point_cards",
+        "two_of_clubs_only",
+        "must_follow_suit",
+        "no_hearts",
     },
     "start": {
         "start_new_round",
@@ -49,6 +47,7 @@ CLUSTERS: dict[str, set[str]] = {
         "execute_passes",
         "pass_target",
         "pass_direction_for_round",
+        "PassDirection",
     },
     "ending": {
         "trick_winner",
@@ -154,7 +153,7 @@ def main() -> None:
     print("  splines=true")
     print("  nodesep=0.3")
     print("  ranksep=0.3")
-    # print('  size="7.5,10"')  # disabled to see natural size
+    print('  size="7.5,10"')  # disabled to see natural size
     # print("  ratio=compress")
     print('  node [style=filled fontsize=14 margin="0.01,0.005"]')
     print()

@@ -93,14 +93,11 @@ from typing import Any
 
 
 def update_player(
-    players: tuple[PlayerState, PlayerState, PlayerState, PlayerState],
-    player_id: PlayerId,
-    **changes: Any,
-) -> tuple[PlayerState, PlayerState, PlayerState, PlayerState]:
+    players: tuple[PlayerState, ...], player_id: PlayerId, **changes: Any
+) -> tuple[PlayerState, ...]:
     """Return new players tuple with one player updated via replace()."""
     new_player = _replace(players[player_id], **changes)
-    result = players[:player_id] + (new_player,) + players[player_id + 1 :]
-    return result  # type: ignore[return-value]
+    return players[:player_id] + (new_player,) + players[player_id + 1 :]
 
 
 @dataclass(frozen=True, slots=True)
@@ -118,10 +115,10 @@ class GameState:
     dealer: PlayerId
 
     # Player state (index = PlayerId)
-    players: tuple[PlayerState, PlayerState, PlayerState, PlayerState]
+    players: tuple[PlayerState, ...]
 
-    # Current trick (lead is set even before first card played)
-    trick: Trick
+    # Current trick (None during passing phase)
+    trick: Trick | None
     current_player: PlayerId
 
     # Derived state

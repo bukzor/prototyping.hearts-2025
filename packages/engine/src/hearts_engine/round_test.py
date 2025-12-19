@@ -18,12 +18,13 @@ from .state import PassDirection
 from .state import Phase
 from .state import SelectPass
 from .state import update_player
+from .types import PLAYER_IDS
 
 
 def _get_to_playing(seed: int = 42) -> GameState:
     """Helper to skip past passing phase."""
     game: GameState = new_game(seed=seed)
-    for i in range(4):
+    for i in PLAYER_IDS:
         cards = game.players[i].hand.draw(3)
         result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
         assert result.ok

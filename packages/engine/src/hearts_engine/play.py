@@ -7,6 +7,7 @@ from .card import Suit
 from .card import Trick
 from .cards import Hand
 from .main import ActionResult
+from .rules import is_first_trick
 from .rules import trick_winner
 from .rules import valid_plays
 from .state import GameState
@@ -20,6 +21,7 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
         return ActionResult(
             ok=False, error="Not in playing phase", new_state=None
         )
+    assert state.trick is not None
 
     player = state.current_player
     hand = state.players[player].hand
@@ -27,7 +29,7 @@ def apply_play(state: GameState, card: Card) -> ActionResult:
     if card not in hand:
         return ActionResult(ok=False, error="Card not in hand", new_state=None)
 
-    is_first = all(len(p.tricks_won) == 0 for p in state.players)
+    is_first = is_first_trick(state.players)
     if card not in valid_plays(
         hand, state.trick, is_first, state.hearts_broken
     ):
@@ -55,6 +57,7 @@ def complete_trick(state: GameState) -> GameState:
     """Complete a trick and determine winner."""
     from .round import complete_round
 
+    assert state.trick is not None
     winner = trick_winner(state.trick)
     state = replace(
         state,

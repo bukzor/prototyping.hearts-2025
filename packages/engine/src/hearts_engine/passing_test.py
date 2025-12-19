@@ -6,6 +6,7 @@ from .main import new_game
 from .state import GameState
 from .state import Phase
 from .state import SelectPass
+from .types import PLAYER_IDS
 
 
 class DescribePassPhase:
@@ -43,7 +44,7 @@ class DescribePassPhase:
 
     def it_transitions_to_playing_after_all_pass(self) -> None:
         game: GameState = new_game(seed=42)
-        for i in range(4):
+        for i in PLAYER_IDS:
             cards = game.players[i].hand.draw(3)
             result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
             assert result.ok, result.error

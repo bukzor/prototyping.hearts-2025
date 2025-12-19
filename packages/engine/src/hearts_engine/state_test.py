@@ -36,7 +36,7 @@ class DescribePlayerState:
         assert ps.tricks_won == ()
 
     def it_stores_tricks_won(self) -> None:
-        trick = Trick.from_dict({0: Card(Suit.HEARTS, Rank.ACE)})
+        trick = Trick.from_dict({0: Card(Suit.HEARTS, Rank.ACE)}, lead=0)
         ps = PlayerState(hand=Hand(), tricks_won=(trick,))
         assert ps.tricks_won == (trick,)
 

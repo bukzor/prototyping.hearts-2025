@@ -3,6 +3,7 @@
 from .main import new_game
 from .state import PassDirection
 from .state import Phase
+from .types import PLAYER_IDS
 
 
 class DescribeNewGame:
@@ -14,7 +15,7 @@ class DescribeNewGame:
 
     def it_deals_13_cards_to_each_player(self) -> None:
         game = new_game(seed=42)
-        for i in range(4):
+        for i in PLAYER_IDS:
             assert len(game.players[i].hand) == 13, (
                 i,
                 len(game.players[i].hand),

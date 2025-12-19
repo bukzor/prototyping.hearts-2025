@@ -1,5 +1,6 @@
 """Hearts game rules and validation."""
 
+from collections.abc import Callable
 from collections.abc import Iterable
 from collections.abc import Iterator
 from collections.abc import Sequence
@@ -61,71 +62,57 @@ def trick_winner(trick: Trick) -> PlayerId:
     return winner
 
 
-def has_suit(hand: Iterable[Card], suit: Suit) -> bool:
-    """Check if hand contains a card of the given suit."""
-    return any(c.suit == suit for c in hand)
-
-
-def cards_of_suit(hand: Iterable[Card], suit: Suit) -> Iterator[Card]:
-    """Get all cards of a suit from hand."""
-    return (c for c in hand if c.suit == suit)
-
-
 def is_first_trick(players: Sequence[PlayerState]) -> bool:
     """Check if this is the first trick of the round."""
     return all(len(p.tricks_won) == 0 for p in players)
 
 
-def can_lead_hearts(hand: Hand, hearts_broken: bool) -> bool:
-    """Check if hearts can be led."""
-    if hearts_broken:
-        return True
-    return not hand.not_of_suit(Suit.HEARTS)
+CardRestriction = Callable[[Cards], Cards]
 
 
-def valid_leads(
-    hand: Hand, is_first: bool, hearts_broken: bool
-) -> Iterator[Card]:
-    """Get valid cards to lead with."""
-    if is_first:
-        assert TWO_OF_CLUBS in hand
-        yield TWO_OF_CLUBS
-        return
-
-    if can_lead_hearts(hand, hearts_broken):
-        yield from hand
-        return
-
-    yield from hand.not_of_suit(Suit.HEARTS) or hand
+def must_follow_suit(lead_suit: Suit) -> CardRestriction:
+    """When following, must play matching suit if possible."""
+    return lambda cards: cards.of_suit(lead_suit)
 
 
-def valid_follows(
-    hand: Hand, lead_suit: Suit, is_first: bool
-) -> Iterator[Card]:
-    """Get valid cards when following a trick."""
-    matching = hand.of_suit(lead_suit)
-    if matching:
-        yield from matching
-        return
+def no_point_cards(cards: Cards) -> Cards:
+    return Cards(c for c in cards if not is_point_card(c))
 
-    if is_first:
-        yield from Cards(c for c in hand if not is_point_card(c)) or hand
-        return
 
-    yield from hand
+def two_of_clubs_only(cards: Cards) -> Cards:
+    assert TWO_OF_CLUBS in cards
+    return Cards([TWO_OF_CLUBS])
+
+
+def no_hearts(cards: Cards) -> Cards:
+    return cards.not_of_suit(Suit.HEARTS)
 
 
 def valid_plays(
-    hand: Hand, trick: Trick, is_first: bool, hearts_broken: bool
-) -> Iterator[Card]:
+    hand: Hand, trick: Trick, first_trick: bool, hearts_broken: bool
+) -> Cards:
     """Get all valid cards to play."""
-    if len(trick) == 0:
-        yield from valid_leads(hand, is_first, hearts_broken)
+    lead_card = trick[trick.lead]
+
+    restrictions: list[CardRestriction]
+    if lead_card is not None:
+        restrictions = [must_follow_suit(lead_card.suit)]
+        if first_trick:
+            restrictions.append(no_point_cards)
+    elif first_trick:
+        restrictions = [two_of_clubs_only]
+    elif hearts_broken:
+        restrictions = []
     else:
-        assert trick.lead is not None
-        lead_card = trick[trick.lead]
-        assert lead_card is not None
-        yield from valid_follows(hand, lead_card.suit, is_first)
+        restrictions = [no_hearts]
+
+    valid = Cards(hand)
+    for restrict in restrictions:
+        restricted = restrict(valid)
+        if restricted:
+            valid = restricted
+
+    return valid
 
 
 def valid_pass_selections(hand: Hand) -> Iterator[tuple[Card, Card, Card]]:
@@ -148,9 +135,10 @@ def valid_actions(state: GameState) -> list[PlayerAction]:
             combos = valid_pass_selections(hand)
             return [SelectPass(cards=c) for c in combos]
         case Phase.PLAYING:
-            is_first = is_first_trick(state.players)
+            assert state.trick is not None
+            first_trick = is_first_trick(state.players)
             cards = valid_plays(
-                hand, state.trick, is_first, state.hearts_broken
+                hand, state.trick, first_trick, state.hearts_broken
             )
             return [PlayCard(card=c) for c in cards]
         case Phase.ROUND_END:

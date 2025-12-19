@@ -10,7 +10,6 @@ from .card import Rank
 from .card import Suit
 from .card import Trick
 from .rules import card_points
-from .rules import has_suit
 from .rules import is_point_card
 from .rules import trick_points
 from .rules import trick_winner
@@ -140,20 +139,6 @@ class DescribeTrickWinner:
         assert winner == 0
 
 
-class DescribeHasSuit:
-    """Tests for suit checking."""
-
-    def it_finds_suit_in_hand(self) -> None:
-        hand = [Card(Suit.HEARTS, Rank.ACE), Card(Suit.CLUBS, Rank.TWO)]
-        assert has_suit(hand, Suit.HEARTS)
-        assert has_suit(hand, Suit.CLUBS)
-        assert not has_suit(hand, Suit.DIAMONDS)
-        assert not has_suit(hand, Suit.SPADES)
-
-    def it_handles_empty_hand(self) -> None:
-        assert not has_suit([], Suit.HEARTS)
-
-
 # Hypothesis strategies
 suits = st.sampled_from(list(Suit))
 ranks = st.sampled_from(list(Rank))
@@ -171,9 +156,11 @@ class DescribeTrickWinnerProperties:
     def it_always_returns_a_player_from_the_trick(
         self, four_cards: list[Card], players: list[int]
     ) -> None:
-        trick = Trick.from_dict({
-            players[i]: four_cards[i] for i in range(4)  # type: ignore[index]
-        })
+        lead, *_ = players
+        trick = Trick.from_dict(
+            dict(zip(players, four_cards)),  # type: ignore[arg-type]
+            lead=lead,  # type: ignore[arg-type]
+        )
         winner = trick_winner(trick)
         assert winner in players
 
@@ -184,9 +171,11 @@ class DescribeTrickWinnerProperties:
     def it_returns_a_card_from_the_trick(
         self, four_cards: list[Card], players: list[int]
     ) -> None:
-        trick = Trick.from_dict({
-            players[i]: four_cards[i] for i in range(4)  # type: ignore[index]
-        })
+        lead, *_ = players
+        trick = Trick.from_dict(
+            dict(zip(players, four_cards)),  # type: ignore[arg-type]
+            lead=lead,  # type: ignore[arg-type]
+        )
         winner = trick_winner(trick)
         assert trick[winner] in four_cards
 

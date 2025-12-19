@@ -104,17 +104,17 @@ class DescribeTrick:
 
     def it_stores_player_to_card_mapping(self) -> None:
         card = Card(Suit.HEARTS, Rank.ACE)
-        trick: Trick = Trick.from_dict({2: card})
+        trick: Trick = Trick.from_dict({2: card}, lead=2)
         assert trick[2] == card
 
     def it_is_a_dataclass(self) -> None:
         from dataclasses import is_dataclass
 
-        trick: Trick = Trick()
+        trick: Trick = Trick(lead=0)
         assert is_dataclass(trick)
 
     def it_is_immutable(self) -> None:
-        trick = Trick()
+        trick = Trick(lead=0)
         try:
             trick[0] = Card(Suit.HEARTS, Rank.ACE)  # type: ignore[index]
         except TypeError:

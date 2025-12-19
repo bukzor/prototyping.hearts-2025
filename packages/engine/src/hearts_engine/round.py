@@ -99,6 +99,7 @@ def start_new_round(state: GameState) -> GameState:
     direction = PassDirection(
         ("left", "right", "across", "hold")[round_number % 4]
     )
+    trick: Trick | None
     if direction == PassDirection.HOLD:
         phase = Phase.PLAYING
         leader = find_two_of_clubs_holder(players)
@@ -106,7 +107,7 @@ def start_new_round(state: GameState) -> GameState:
         current_player = leader
     else:
         phase = Phase.PASSING
-        trick = Trick()
+        trick = None
         current_player: PlayerId = 0
 
     return replace(

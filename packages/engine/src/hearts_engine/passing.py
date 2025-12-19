@@ -75,7 +75,7 @@ def next_player_for_passing(
     ],
 ) -> PlayerId:
     """Get next player who needs to pass."""
-    for i in range(4):
+    for i in PLAYER_IDS:
         p: PlayerId = (current_player + 1 + i) % 4  # type: ignore[assignment]
         if pending_passes[p] is None:
             return p

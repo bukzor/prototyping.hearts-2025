@@ -108,13 +108,13 @@ class Card:
 class Trick:
     """Cards played in a trick, indexed by player position 0-3."""
 
+    lead: PlayerId
     cards: tuple[Card | None, Card | None, Card | None, Card | None] = (
         None,
         None,
         None,
         None,
     )
-    lead: PlayerId | None = None
 
     def __getitem__(self, player: PlayerId) -> Card | None:
         return self.cards[player]
@@ -136,19 +136,15 @@ class Trick:
                 yield card
 
     def with_play(self, player: PlayerId, card: Card) -> Trick:
-        """Return a new Trick with the given card added. Sets lead if first card."""
+        """Return a new Trick with the given card added."""
         cards = list(self.cards)
         cards[player] = card
-        lead = self.lead if self.lead is not None else player
-        return Trick(cards=tuple(cards), lead=lead)  # type: ignore[arg-type]
+        return Trick(lead=self.lead, cards=tuple(cards))  # type: ignore[arg-type]
 
     @classmethod
     def from_dict(
-        cls, plays: Mapping[PlayerId, Card], lead: PlayerId | None = None
+        cls, plays: Mapping[PlayerId, Card], lead: PlayerId
     ) -> Trick:
-        """Construct from a dict. Lead defaults to first key if not specified."""
-        if lead is None and plays:
-            lead = next(iter(plays))  # type: ignore[assignment]
         return cls(
             cards=(plays.get(0), plays.get(1), plays.get(2), plays.get(3)),
             lead=lead,

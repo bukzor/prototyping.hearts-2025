@@ -7,12 +7,13 @@ from .rules import valid_actions
 from .state import GameState
 from .state import PlayCard
 from .state import SelectPass
+from .types import PLAYER_IDS
 
 
 def _get_to_playing(seed: int = 42) -> GameState:
     """Helper to skip past passing phase."""
     game: GameState = new_game(seed=seed)
-    for i in range(4):
+    for i in PLAYER_IDS:
         cards = game.players[i].hand.draw(3)
         result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
         assert result.ok
@@ -68,7 +69,7 @@ class DescribeFollowingSuit:
         game = self._setup_trick_in_progress()
         player = game.current_player
         hand = game.players[player].hand
-        assert game.trick.lead is not None
+        assert game.trick is not None
         lead_card = game.trick[game.trick.lead]
         assert lead_card is not None
         lead_suit = lead_card.suit
@@ -85,7 +86,7 @@ class DescribeFollowingSuit:
         game = self._setup_trick_in_progress()
         player = game.current_player
         hand = game.players[player].hand
-        assert game.trick.lead is not None
+        assert game.trick is not None
         lead_card = game.trick[game.trick.lead]
         assert lead_card is not None
         lead_suit = lead_card.suit
@@ -123,7 +124,7 @@ class DescribeTrickCompletion:
 
     def _play_full_trick(self, game: GameState) -> GameState:
         """Play 4 cards to complete a trick."""
-        for _ in range(4):
+        for _ in PLAYER_IDS:
             valid = valid_actions(game)
             assert valid, "No valid actions"
             result = apply_action(game, valid[0])
@@ -135,6 +136,7 @@ class DescribeTrickCompletion:
     def it_clears_trick_after_4_cards(self) -> None:
         game = _get_to_playing()
         game = self._play_full_trick(game)
+        assert game.trick is not None
         assert (
             len(game.trick) == 0
         ), f"Trick should be empty, got {len(game.trick)}"
@@ -153,4 +155,5 @@ class DescribeTrickCompletion:
         game = _get_to_playing()
         game = self._play_full_trick(game)
         # Winner should be current player and lead of next trick
+        assert game.trick is not None
         assert game.current_player == game.trick.lead

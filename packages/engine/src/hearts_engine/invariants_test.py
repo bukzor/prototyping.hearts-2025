@@ -13,6 +13,7 @@ from .state import PassDirection
 from .state import Phase
 from .state import SelectPass
 from .state import pass_direction_for_round
+from .types import PLAYER_IDS
 
 
 class DescribeGameInvariants:
@@ -56,7 +57,7 @@ class DescribeStatefulInvariants:
         """All 52 cards present after passing phase."""
         game: GameState = new_game(seed=seed)
         # Complete passing phase
-        for i in range(4):
+        for i in PLAYER_IDS:
             cards = game.players[i].hand.draw(3)
             result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
             assert result.ok
@@ -75,7 +76,7 @@ class DescribeStatefulInvariants:
         """All cards accounted for at any point (hands + tricks_won + trick)."""
         game: GameState = new_game(seed=seed)
         # Complete passing
-        for i in range(4):
+        for i in PLAYER_IDS:
             cards = game.players[i].hand.draw(3)
             result = apply_action(game, SelectPass(cards=cards))  # type: ignore[arg-type]
             assert result.ok
@@ -96,7 +97,7 @@ class DescribeStatefulInvariants:
 
             # Count all cards
             hand_cards = [c for p in game.players for c in p.hand]
-            trick_cards = list(game.trick.values())
+            trick_cards = list(game.trick.values()) if game.trick else []
             won_cards = [
                 c
                 for p in game.players

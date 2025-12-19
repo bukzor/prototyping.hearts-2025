@@ -5,7 +5,6 @@ import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .card import Trick
 from .cards import Deck
 from .state import ChooseMoonOption
 from .state import GameState
@@ -30,16 +29,15 @@ class ActionResult:
 def new_game(game_id: str | None = None, seed: int | None = None) -> GameState:
     """Create a new game with shuffled deck."""
     rng = random.Random(seed)
+    players = tuple(PlayerState(hand=h) for h in Deck().deal_hands(rng))
 
     return GameState(
         game_id=game_id or str(uuid.uuid4()),
         phase=Phase.PASSING,
         round_number=0,
         dealer=0,
-        players=tuple(
-            PlayerState(hand=h) for h in Deck().deal_hands(rng)
-        ),  # type: ignore[arg-type]
-        trick=Trick(),
+        players=players,
+        trick=None,
         current_player=0,  # Start with player 0 for passing
         hearts_broken=False,
         pending_passes=(None, None, None, None),

@@ -9,6 +9,7 @@ from typing import Self
 from .card import Card
 from .card import Rank
 from .card import Suit
+from .types import PLAYER_IDS
 
 
 class Cards(frozenset[Card]):
@@ -59,7 +60,7 @@ class Deck(Cards):
     def deal_hands(self, rng: Random = random.seed.__self__) -> Iterator[Hand]:
         """Deal deck into 4 hands of 13 cards."""
         remaining = Cards(self)
-        for _ in range(4):
+        for _ in PLAYER_IDS:
             drawn = remaining.draw(13, rng)
             yield Hand(drawn)
             remaining -= drawn
