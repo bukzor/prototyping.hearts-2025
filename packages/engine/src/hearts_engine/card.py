@@ -1,6 +1,7 @@
 """Single card types for Hearts."""
 
 from collections.abc import Iterator
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import Enum
 
@@ -142,7 +143,7 @@ class Trick:
 
     @classmethod
     def from_dict(
-        cls, plays: dict[PlayerId, Card], lead: PlayerId | None = None
+        cls, plays: Mapping[PlayerId, Card], lead: PlayerId | None = None
     ) -> Trick:
         """Construct from a dict. Lead defaults to first key if not specified."""
         if lead is None and plays:
