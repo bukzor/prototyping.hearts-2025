@@ -42,6 +42,13 @@ class Cards(frozenset[Card]):
         """Draw n random cards from this collection."""
         return Cards(rng.sample(tuple(self), n))
 
+    def draw_three(
+        self, rng: Random = random.seed.__self__
+    ) -> tuple[Card, Card, Card]:
+        """Draw 3 random cards, typed for passing."""
+        a, b, c = rng.sample(tuple(self), 3)
+        return (a, b, c)
+
 
 class Hand(Cards):
     """A player's hand."""

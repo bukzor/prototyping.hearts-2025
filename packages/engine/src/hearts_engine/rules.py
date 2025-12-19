@@ -119,7 +119,9 @@ def valid_pass_selections(hand: Hand) -> Iterator[tuple[Card, Card, Card]]:
     """Get all valid 3-card combinations for passing."""
     from itertools import combinations
 
-    return combinations(hand, 3)  # type: ignore[return-value]
+    for combo in combinations(hand, 3):
+        a, b, c = combo
+        yield (a, b, c)
 
 
 def valid_actions(

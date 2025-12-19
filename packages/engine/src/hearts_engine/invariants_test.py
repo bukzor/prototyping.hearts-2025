@@ -16,6 +16,7 @@ from .state import Phase
 from .state import SelectPass
 from .state import pass_direction_for_round
 from .types import PLAYER_IDS
+from .types import ActionSuccess
 
 
 class DescribeGameInvariants:
@@ -61,10 +62,9 @@ class DescribeStatefulInvariants:
         game: GameState = new_game(random)
         # Complete passing phase
         for i in PLAYER_IDS:
-            cards = game.players[i].hand.draw(3, random)
-            result = apply_action(game, SelectPass(cards=cards), random)  # type: ignore[arg-type]
-            assert result.ok
-            assert result.new_state is not None
+            cards = game.players[i].hand.draw_three(random)
+            result = apply_action(game, SelectPass(cards=cards), random)
+            assert isinstance(result, ActionSuccess), result
             game = result.new_state
 
         all_cards = [c for p in game.players for c in p.hand]
@@ -81,10 +81,9 @@ class DescribeStatefulInvariants:
         game: GameState = new_game(random)
         # Complete passing
         for i in PLAYER_IDS:
-            cards = game.players[i].hand.draw(3, random)
-            result = apply_action(game, SelectPass(cards=cards), random)  # type: ignore[arg-type]
-            assert result.ok
-            assert result.new_state is not None
+            cards = game.players[i].hand.draw_three(random)
+            result = apply_action(game, SelectPass(cards=cards), random)
+            assert isinstance(result, ActionSuccess), result
             game = result.new_state
 
         # Play some tricks (up to 20 cards played)
@@ -95,8 +94,7 @@ class DescribeStatefulInvariants:
             if not valid:
                 break
             result = apply_action(game, valid[0], random)
-            assert result.ok, result.error
-            assert result.new_state is not None
+            assert isinstance(result, ActionSuccess), result
             game = result.new_state
 
             # Count all cards
@@ -127,8 +125,7 @@ class DescribeStatefulInvariants:
             if not valid:
                 break
             result = apply_action(game, valid[0], random)
-            assert result.ok, result.error
-            assert result.new_state is not None
+            assert isinstance(result, ActionSuccess), result
             game = result.new_state
 
         # Game should have ended

@@ -20,6 +20,7 @@ from .state import Phase
 from .state import SelectPass
 from .state import update_player
 from .types import PLAYER_IDS
+from .types import ActionSuccess
 
 
 def _get_to_playing(seed: int = 42) -> tuple[GameState, Random]:
@@ -27,10 +28,9 @@ def _get_to_playing(seed: int = 42) -> tuple[GameState, Random]:
     random = Random(seed)
     game: GameState = new_game(random)
     for i in PLAYER_IDS:
-        cards = game.players[i].hand.draw(3, random)
-        result = apply_action(game, SelectPass(cards=cards), random)  # type: ignore[arg-type]
-        assert result.ok
-        assert result.new_state is not None
+        cards = game.players[i].hand.draw_three(random)
+        result = apply_action(game, SelectPass(cards=cards), random)
+        assert isinstance(result, ActionSuccess), result
         game = result.new_state
     return game, random
 
@@ -45,8 +45,7 @@ class DescribeRoundCompletion:
             if not valid:
                 break  # Round/game ended
             result = apply_action(game, valid[0], random)
-            assert result.ok, result.error
-            assert result.new_state is not None
+            assert isinstance(result, ActionSuccess), result
             game = result.new_state
         return game
 
@@ -114,8 +113,7 @@ class DescribeMoonShooting:
         result = apply_action(
             game, ChooseMoonOption(add_to_others=True), random
         )
-        assert result.ok, result.error
-        assert result.new_state is not None
+        assert isinstance(result, ActionSuccess), result
         # Others should have +26
         for i in range(1, 4):
             assert result.new_state.players[i].score == 26, (
@@ -160,8 +158,7 @@ class DescribeMoonShooting:
         result = apply_action(
             game, ChooseMoonOption(add_to_others=False), random
         )
-        assert result.ok, result.error
-        assert result.new_state is not None
+        assert isinstance(result, ActionSuccess), result
         assert result.new_state.players[0].score == -26
 
 

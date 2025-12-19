@@ -8,12 +8,17 @@ from .cards import Hand
 from .rules import find_two_of_clubs_holder
 from .state import GameState
 from .state import PassDirection
+from .state import PendingPasses
 from .state import Phase
 from .state import pass_target
+from .state import update_pending_passes
 from .state import update_player
 from .types import PLAYER_IDS
+from .types import ActionFailure
 from .types import ActionResult
+from .types import ActionSuccess
 from .types import PlayerId
+from .types import player_id
 
 
 def apply_pass(
@@ -21,35 +26,22 @@ def apply_pass(
 ) -> ActionResult:
     """Apply a pass selection."""
     if state.phase != Phase.PASSING:
-        return ActionResult(
-            ok=False, error="Not in passing phase", new_state=None
-        )
+        return ActionFailure(error="Not in passing phase")
 
     if state.pass_direction == PassDirection.HOLD:
-        return ActionResult(
-            ok=False, error="Hold round, no passing", new_state=None
-        )
+        return ActionFailure(error="Hold round, no passing")
 
     player = state.current_player
     hand = state.players[player].hand
 
     if not all(c in hand for c in cards):
-        return ActionResult(
-            ok=False, error="Cards not in hand", new_state=None
-        )
+        return ActionFailure(error="Cards not in hand")
 
     if len(set(cards)) != 3:
-        return ActionResult(
-            ok=False, error="Must select 3 different cards", new_state=None
-        )
+        return ActionFailure(error="Must select 3 different cards")
 
-    # Create new tuple with this player's selection
-    pending = (
-        state.pending_passes[:player]
-        + (cards,)
-        + state.pending_passes[player + 1 :]
-    )
-    state = dataclasses.replace(state, pending_passes=pending)  # type: ignore[arg-type]
+    pending = update_pending_passes(state.pending_passes, player, cards)
+    state = dataclasses.replace(state, pending_passes=pending)
 
     if all(p is not None for p in state.pending_passes):
         state = execute_passes(state)
@@ -63,21 +55,15 @@ def apply_pass(
             ),
         )
 
-    return ActionResult(ok=True, error=None, new_state=state)
+    return ActionSuccess(new_state=state)
 
 
 def next_player_for_passing(
-    current_player: PlayerId,
-    pending_passes: tuple[
-        tuple[Card, Card, Card] | None,
-        tuple[Card, Card, Card] | None,
-        tuple[Card, Card, Card] | None,
-        tuple[Card, Card, Card] | None,
-    ],
+    current_player: PlayerId, pending_passes: PendingPasses
 ) -> PlayerId:
     """Get next player who needs to pass."""
     for i in PLAYER_IDS:
-        p: PlayerId = (current_player + 1 + i) % 4  # type: ignore[assignment]
+        p = player_id(current_player + 1 + i)
         if pending_passes[p] is None:
             return p
     return current_player

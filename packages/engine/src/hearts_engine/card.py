@@ -12,12 +12,13 @@ from .types import PlayerId
 class Suit(Enum):
     """Card suits. Order: Clubs < Diamonds < Spades < Hearts."""
 
-    CLUBS = ("clubs", "♣")
-    DIAMONDS = ("diamonds", "♦")
-    SPADES = ("spades", "♠")
-    HEARTS = ("hearts", "♥")
+    CLUBS = (0, "clubs", "♣")
+    DIAMONDS = (1, "diamonds", "♦")
+    SPADES = (2, "spades", "♠")
+    HEARTS = (3, "hearts", "♥")
 
-    def __init__(self, value: str, symbol: str) -> None:
+    def __init__(self, order: int, value: str, symbol: str) -> None:
+        self.order = order
         self._value_ = value
         self.symbol = symbol
 
@@ -100,7 +101,7 @@ class Card:
         if not isinstance(other, Card):
             return NotImplemented
         if self.suit != other.suit:
-            return list(Suit).index(self.suit) < list(Suit).index(other.suit)
+            return self.suit.order < other.suit.order
         return self.rank.order < other.rank.order
 
 
@@ -137,9 +138,17 @@ class Trick:
 
     def with_play(self, player: PlayerId, card: Card) -> Trick:
         """Return a new Trick with the given card added."""
-        cards = list(self.cards)
-        cards[player] = card
-        return Trick(lead=self.lead, cards=tuple(cards))  # type: ignore[arg-type]
+        c = self.cards
+        match player:
+            case 0:
+                cards = (card, c[1], c[2], c[3])
+            case 1:
+                cards = (c[0], card, c[2], c[3])
+            case 2:
+                cards = (c[0], c[1], card, c[3])
+            case 3:
+                cards = (c[0], c[1], c[2], card)
+        return Trick(lead=self.lead, cards=cards)
 
     @classmethod
     def from_dict(

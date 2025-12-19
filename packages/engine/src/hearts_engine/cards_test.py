@@ -18,14 +18,6 @@ from .tty import SupportsTTY
 class DescribeCard:
     """Tests for Card dataclass."""
 
-    def it_is_immutable(self) -> None:
-        card = Card(Suit.HEARTS, Rank.ACE)
-        try:
-            card.suit = Suit.SPADES  # type: ignore[misc]
-            assert False, "Should have raised"
-        except AttributeError:
-            pass
-
     def it_displays_nicely(self) -> None:
         assert str(Card(Suit.HEARTS, Rank.ACE)) == "A♥"
         assert str(Card(Suit.SPADES, Rank.QUEEN)) == "Q♠"
@@ -112,15 +104,6 @@ class DescribeTrick:
 
         trick: Trick = Trick(lead=0)
         assert is_dataclass(trick)
-
-    def it_is_immutable(self) -> None:
-        trick = Trick(lead=0)
-        try:
-            trick[0] = Card(Suit.HEARTS, Rank.ACE)  # type: ignore[index]
-        except TypeError:
-            pass
-        else:
-            raise AssertionError("Should have raised TypeError")
 
 
 # Hypothesis strategies

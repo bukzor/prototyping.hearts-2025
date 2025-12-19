@@ -38,3 +38,4 @@ uv.lock
 
 # dirty hacks
 trash/
+.*.sw[a-z]

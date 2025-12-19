@@ -3,12 +3,14 @@
 import dataclasses
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import TypedDict
+from typing import Unpack
 
 from .card import Card
 from .card import Trick
 from .cards import Hand
 from .types import PlayerId
+from .types import player_id
 
 
 class Phase(Enum):
@@ -35,6 +37,26 @@ PASS_CYCLE: tuple[PassDirection, ...] = (
     PassDirection.ACROSS,
     PassDirection.HOLD,
 )
+
+ThreeCards = tuple[Card, Card, Card]
+PendingPasses = tuple[
+    ThreeCards | None, ThreeCards | None, ThreeCards | None, ThreeCards | None
+]
+
+
+def update_pending_passes(
+    pending: PendingPasses, player: PlayerId, cards: ThreeCards
+) -> PendingPasses:
+    """Update pending passes for one player (type-safe tuple construction)."""
+    match player:
+        case 0:
+            return (cards, pending[1], pending[2], pending[3])
+        case 1:
+            return (pending[0], cards, pending[2], pending[3])
+        case 2:
+            return (pending[0], pending[1], cards, pending[3])
+        case 3:
+            return (pending[0], pending[1], pending[2], cards)
 
 
 @dataclass(frozen=True, slots=True)
@@ -77,7 +99,7 @@ def pass_target(player: PlayerId, direction: PassDirection) -> PlayerId:
             offset = 2
         case PassDirection.HOLD:
             return player  # No passing
-    return (player + offset) % 4  # type: ignore[return-value]
+    return player_id(player + offset)
 
 
 @dataclass(frozen=True, slots=True)
@@ -90,12 +112,23 @@ class PlayerState:
     tricks_won: tuple[Trick, ...] = ()
 
 
+class PlayerStateChanges(TypedDict, total=False):
+    """Valid fields for updating PlayerState."""
+
+    hand: Hand
+    score: int
+    round_score: int
+    tricks_won: tuple[Trick, ...]
+
+
 def update_player(
-    players: tuple[PlayerState, ...], player_id: PlayerId, **changes: Any
+    players: tuple[PlayerState, ...],
+    pid: PlayerId,
+    **changes: Unpack[PlayerStateChanges],
 ) -> tuple[PlayerState, ...]:
     """Return new players tuple with one player updated via replace()."""
-    new_player = dataclasses.replace(players[player_id], **changes)
-    return players[:player_id] + (new_player,) + players[player_id + 1 :]
+    new_player = dataclasses.replace(players[pid], **changes)
+    return players[:pid] + (new_player,) + players[pid + 1 :]
 
 
 @dataclass(frozen=True, slots=True)
@@ -123,12 +156,7 @@ class GameState:
     hearts_broken: bool
 
     # Pass phase state (indexed by PlayerId, None = not yet selected)
-    pending_passes: tuple[
-        tuple[Card, Card, Card] | None,
-        tuple[Card, Card, Card] | None,
-        tuple[Card, Card, Card] | None,
-        tuple[Card, Card, Card] | None,
-    ] = (None, None, None, None)
+    pending_passes: PendingPasses = (None, None, None, None)
 
     @property
     def pass_direction(self) -> PassDirection:

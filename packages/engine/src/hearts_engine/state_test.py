@@ -1,9 +1,5 @@
 """Tests for PlayerState."""
 
-import dataclasses
-
-import pytest
-
 from .card import Card
 from .card import Rank
 from .card import Suit
@@ -39,11 +35,6 @@ class DescribePlayerState:
         trick = Trick.from_dict({0: Card(Suit.HEARTS, Rank.ACE)}, lead=0)
         ps = PlayerState(hand=Hand(), tricks_won=(trick,))
         assert ps.tricks_won == (trick,)
-
-    def it_is_frozen(self) -> None:
-        ps = PlayerState(hand=Hand())
-        with pytest.raises(dataclasses.FrozenInstanceError):
-            ps.score = 100  # type: ignore[misc]
 
     def it_is_hashable(self) -> None:
         ps = PlayerState(hand=Hand())

@@ -13,30 +13,29 @@ from .rules import valid_plays
 from .state import GameState
 from .state import Phase
 from .state import update_player
+from .types import ActionFailure
 from .types import ActionResult
+from .types import ActionSuccess
+from .types import player_id
 
 
 def apply_play(state: GameState, card: Card, random: Random) -> ActionResult:
     """Apply a card play."""
     if state.phase != Phase.PLAYING:
-        return ActionResult(
-            ok=False, error="Not in playing phase", new_state=None
-        )
+        return ActionFailure(error="Not in playing phase")
     assert state.trick is not None
 
     player = state.current_player
     hand = state.players[player].hand
 
     if card not in hand:
-        return ActionResult(ok=False, error="Card not in hand", new_state=None)
+        return ActionFailure(error="Card not in hand")
 
     is_first = is_first_trick(state.tricks_won)
     if card not in valid_plays(
         hand, state.trick, is_first, state.hearts_broken
     ):
-        return ActionResult(
-            ok=False, error=f"Invalid play: {card}", new_state=None
-        )
+        return ActionFailure(error=f"Invalid play: {card}")
 
     trick = state.trick.with_play(player, card)
     state = dataclasses.replace(
@@ -49,9 +48,11 @@ def apply_play(state: GameState, card: Card, random: Random) -> ActionResult:
     if len(trick) == 4:
         state = complete_trick(state, random)
     else:
-        state = dataclasses.replace(state, current_player=(player + 1) % 4)  # type: ignore[arg-type]
+        state = dataclasses.replace(
+            state, current_player=player_id(player + 1)
+        )
 
-    return ActionResult(ok=True, error=None, new_state=state)
+    return ActionSuccess(new_state=state)
 
 
 def complete_trick(state: GameState, random: Random) -> GameState:

@@ -1,5 +1,7 @@
 """Tests for rules module."""
 
+from collections.abc import Sequence
+
 from hypothesis import given
 from hypothesis import strategies as st
 
@@ -13,6 +15,19 @@ from .rules import card_points
 from .rules import is_point_card
 from .rules import trick_points
 from .rules import trick_winner
+from .types import PlayerId
+from .types import is_player_id
+
+
+def trick_from_players(players: Sequence[int], cards: Sequence[Card]) -> Trick:
+    """Build a Trick from hypothesis-generated player indices and cards."""
+    lead = players[0]
+    assert is_player_id(lead)
+    plays: dict[PlayerId, Card] = {}
+    for p, c in zip(players, cards):
+        assert is_player_id(p)
+        plays[p] = c
+    return Trick.from_dict(plays, lead=lead)
 
 
 class DescribeIsPointCard:
@@ -156,11 +171,7 @@ class DescribeTrickWinnerProperties:
     def it_always_returns_a_player_from_the_trick(
         self, four_cards: list[Card], players: list[int]
     ) -> None:
-        lead, *_ = players
-        trick = Trick.from_dict(
-            dict(zip(players, four_cards)),  # type: ignore[arg-type]
-            lead=lead,  # type: ignore[arg-type]
-        )
+        trick = trick_from_players(players, four_cards)
         winner = trick_winner(trick)
         assert winner in players
 
@@ -171,11 +182,7 @@ class DescribeTrickWinnerProperties:
     def it_returns_a_card_from_the_trick(
         self, four_cards: list[Card], players: list[int]
     ) -> None:
-        lead, *_ = players
-        trick = Trick.from_dict(
-            dict(zip(players, four_cards)),  # type: ignore[arg-type]
-            lead=lead,  # type: ignore[arg-type]
-        )
+        trick = trick_from_players(players, four_cards)
         winner = trick_winner(trick)
         assert trick[winner] in four_cards
 

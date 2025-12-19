@@ -15,8 +15,11 @@ from .state import PlayerState
 from .state import pass_direction_for_round
 from .state import update_player
 from .types import PLAYER_IDS
+from .types import ActionFailure
 from .types import ActionResult
+from .types import ActionSuccess
 from .types import PlayerId
+from .types import player_id
 
 LOSING_SCORE = 100
 
@@ -29,8 +32,9 @@ def complete_round(state: GameState, random: Random) -> GameState:
             state, phase=Phase.ROUND_END, current_player=shooter
         )
 
-    players = apply_normal_scoring(state.players)
-    state = dataclasses.replace(state, players=players)
+    state = dataclasses.replace(
+        state, players=apply_normal_scoring(state.players)
+    )
     return check_game_end(state, random)
 
 
@@ -51,15 +55,11 @@ def apply_moon_choice(
 ) -> ActionResult:
     """Apply moon shooting choice."""
     if state.phase != Phase.ROUND_END:
-        return ActionResult(
-            ok=False, error="Not in round end phase", new_state=None
-        )
+        return ActionFailure(error="Not in round end phase")
 
     shooter = check_shot_moon(state.tricks_won)
     if shooter is None or shooter != state.current_player:
-        return ActionResult(
-            ok=False, error="Not the moon shooter", new_state=None
-        )
+        return ActionFailure(error="Not the moon shooter")
 
     players = state.players
     if add_to_others:
@@ -83,7 +83,7 @@ def apply_moon_choice(
 
     state = dataclasses.replace(state, players=players)
     state = check_game_end(state, random)
-    return ActionResult(ok=True, error=None, new_state=state)
+    return ActionSuccess(new_state=state)
 
 
 def check_game_end(state: GameState, random: Random) -> GameState:
@@ -96,7 +96,7 @@ def check_game_end(state: GameState, random: Random) -> GameState:
 def start_new_round(state: GameState, random: Random) -> GameState:
     """Start a new round."""
     round_number = state.round_number + 1
-    dealer: PlayerId = (state.dealer + 1) % 4  # type: ignore[assignment]
+    dealer = player_id(state.dealer + 1)
 
     players = state.players
     for pid, hand in zip(PLAYER_IDS, Deck().deal_hands(random)):
