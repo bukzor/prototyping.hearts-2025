@@ -156,7 +156,7 @@ def valid_actions(
 
 def valid_actions_for_state(state: GameState) -> list[PlayerAction]:
     """Extract args from GameState and call valid_actions."""
-    tricks_won = tuple(p.tricks_won for p in state.players)
+    tricks_won = state.tricks_won
     return valid_actions(
         phase=state.phase,
         current_player=state.current_player,

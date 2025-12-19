@@ -30,7 +30,7 @@ def apply_play(state: GameState, card: Card, random: Random) -> ActionResult:
     if card not in hand:
         return ActionResult(ok=False, error="Card not in hand", new_state=None)
 
-    is_first = is_first_trick(tuple(p.tricks_won for p in state.players))
+    is_first = is_first_trick(state.tricks_won)
     if card not in valid_plays(
         hand, state.trick, is_first, state.hearts_broken
     ):

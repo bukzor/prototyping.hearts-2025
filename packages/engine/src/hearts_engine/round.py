@@ -23,7 +23,7 @@ LOSING_SCORE = 100
 
 def complete_round(state: GameState, random: Random) -> GameState:
     """Complete a round and score it."""
-    shooter = check_shot_moon(tuple(p.tricks_won for p in state.players))
+    shooter = check_shot_moon(state.tricks_won)
     if shooter is not None:
         return dataclasses.replace(
             state, phase=Phase.ROUND_END, current_player=shooter
@@ -55,7 +55,7 @@ def apply_moon_choice(
             ok=False, error="Not in round end phase", new_state=None
         )
 
-    shooter = check_shot_moon(tuple(p.tricks_won for p in state.players))
+    shooter = check_shot_moon(state.tricks_won)
     if shooter is None or shooter != state.current_player:
         return ActionResult(
             ok=False, error="Not the moon shooter", new_state=None

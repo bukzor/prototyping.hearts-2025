@@ -134,3 +134,13 @@ class GameState:
     def pass_direction(self) -> PassDirection:
         """Current pass direction."""
         return pass_direction_for_round(self.round_number)
+
+    @property
+    def hands(self) -> tuple[Hand, ...]:
+        """All player hands as a tuple."""
+        return tuple(p.hand for p in self.players)
+
+    @property
+    def tricks_won(self) -> tuple[tuple[Trick, ...], ...]:
+        """All player tricks_won as a tuple."""
+        return tuple(p.tricks_won for p in self.players)

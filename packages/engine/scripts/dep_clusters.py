@@ -34,6 +34,7 @@ CLUSTERS: dict[str, set[str]] = {
     },
     "actions": {
         "valid_actions",
+        "valid_actions_for_state",
         "apply_action",
         "valid_pass_selections",
         "SelectPass",

@@ -53,7 +53,7 @@ def apply_pass(
 
     if all(p is not None for p in state.pending_passes):
         state = execute_passes(state)
-        leader = find_two_of_clubs_holder(tuple(p.hand for p in state.players))
+        leader = find_two_of_clubs_holder(state.hands)
         state = start_playing_phase(state, leader)
     else:
         state = dataclasses.replace(
