@@ -2,38 +2,21 @@
 
 Avoid `# type: ignore` comments. They hide real issues and erode type safety.
 
-Every `type: ignore` indicates a pending task to fix the underlying type issue.
+## Techniques
 
-## Strategies
+- **TypeGuard over cast** - TypeGuard validates at runtime AND narrows types.
+  Cast just lies to the checker.
 
-### Use `zip(PLAYER_IDS, ...)` instead of `enumerate`
+- **Pattern matching for fixed-size tuples** - Tuple slicing loses element
+  types. Match on indices and construct explicitly to preserve them.
 
-```python
-# Avoid: enumerate returns int, not PlayerId
-for i, player in enumerate(players):
-    return i  # type: ignore[return-value]
+- **Explicit yields for iterator arity** - When stdlib returns
+  `Iterator[tuple[T, ...]]` but you need `Iterator[tuple[T, T, T]]`, unpack and
+  yield to teach the checker the exact arity.
 
-# Prefer: zip with typed constant
-for pid, player in zip(PLAYER_IDS, players):
-    return pid  # no ignore needed
-```
+- **Purpose-built helpers over generic + cast** - If a generic method returns
+  the wrong type for your use case, add a typed helper that returns exactly what
+  you need.
 
-### Fix return types at the source
-
-```python
-# Avoid: ignoring at call site
-holder: PlayerId = find_holder(players)  # type: ignore[assignment]
-
-# Prefer: fix the function signature
-def find_holder(players: ...) -> PlayerId:  # not int
-```
-
-### Use helper functions for arithmetic
-
-```python
-# Avoid: arithmetic on Literal types
-next_player = (player + 1) % 4  # type: ignore[assignment]
-
-# Prefer: helper that encapsulates the cast
-next_player = next_player_id(player)
-```
+- **zip with typed constants over enumerate** - `enumerate` returns `int`. If
+  you need a `Literal` or newtype, zip with a typed constant tuple.
