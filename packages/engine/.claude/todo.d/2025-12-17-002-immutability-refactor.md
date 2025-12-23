@@ -80,8 +80,8 @@ Full immutability stack:
 
 - [ ] **Phase 6: Module Reorganization** (detailed plan below)
   - [x] Step 1: `ending/scoring.py` (committed: 35fa2af)
-  - [x] Step 2: `actions/play.py`
-  - [ ] Step 3: `passing/`
+  - [x] Step 2: `actions/play.py` (committed: 4dbd8dc)
+  - [x] Step 3: `passing/`
   - [ ] Step 4: `start/`
   - [ ] Step 5: `ending/`
   - [ ] Step 6: `actions/`

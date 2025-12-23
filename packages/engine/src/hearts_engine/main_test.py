@@ -3,7 +3,7 @@
 from random import Random
 
 from .main import new_game
-from .state import pass_direction_for_round
+from .passing import pass_direction_for_round
 from .types import types as T
 
 

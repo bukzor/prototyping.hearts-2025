@@ -10,9 +10,9 @@ from .cards import draw_three
 from .constants import TWO_OF_CLUBS
 from .main import apply_action
 from .main import new_game
+from .passing import pass_direction_for_round
 from .rules import valid_actions_for_state
 from .state import SelectPass
-from .state import pass_direction_for_round
 from .types import types as T
 from .types.types import GameState
 

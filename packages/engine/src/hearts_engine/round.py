@@ -6,9 +6,9 @@ from random import Random
 from .cards import Deck
 from .cards import deal_hands
 from .ending.scoring import apply_normal_scoring
+from .passing import pass_direction_for_round
 from .rules import check_shot_moon
 from .rules import find_two_of_clubs_holder
-from .state import pass_direction_for_round
 from .state import update_player
 from .types import types as T
 from .types.types import GameState

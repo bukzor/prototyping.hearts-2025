@@ -7,12 +7,12 @@ from .cards import draw_three
 from .constants import QUEEN_OF_SPADES
 from .main import apply_action
 from .main import new_game
+from .passing import pass_direction_for_round
 from .round import check_game_end
 from .round import start_new_round
 from .rules import valid_actions_for_state
 from .state import ChooseMoonOption
 from .state import SelectPass
-from .state import pass_direction_for_round
 from .state import update_player
 from .types import types as T
 from .types.types import GameState
