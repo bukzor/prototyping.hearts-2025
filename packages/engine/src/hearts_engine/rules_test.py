@@ -11,8 +11,8 @@ from .constants import TWO_OF_CLUBS
 from .ending.scoring import card_points
 from .ending.scoring import trick_points
 from .rules import trick_winner
-from .types import types as T
-from .types.types import Trick
+from .types import api as T
+from .types.api import Trick
 
 
 def trick_from_players(
@@ -191,7 +191,7 @@ class DescribePointCardProperties:
     @given(cards)
     def it_total_points_is_26(self, _: T.Card) -> None:
         # All hearts (13) + queen of spades (13) = 26
-        from .cards import Deck
+        from .start.api import Deck
 
         total = sum(card_points(c) for c in Deck())
         assert total == 26

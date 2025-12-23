@@ -3,12 +3,12 @@
 from collections.abc import Callable
 from collections.abc import Sequence
 
-from ..cards import Cards
-from ..cards import Hand
 from ..constants import QUEEN_OF_SPADES
 from ..constants import TWO_OF_CLUBS
-from ..types import types as T
-from ..types.types import Trick
+from ..types import api as T
+from ..types.api import Cards
+from ..types.api import Hand
+from ..types.api import Trick
 
 
 def is_point_card(card: T.Card) -> bool:

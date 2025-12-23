@@ -2,15 +2,15 @@
 
 from random import Random
 
-from .cards import draw_three
 from .constants import TWO_OF_CLUBS
 from .main import apply_action
-from .main import new_game
 from .rules import valid_actions_for_state
+from .start.api import draw_three
+from .start.api import new_game
 from .state import PlayCard
 from .state import SelectPass
-from .types import types as T
-from .types.types import GameState
+from .types import api as T
+from .types.api import GameState
 
 # Module-level RNG for tests that need shared state
 _random = Random(42)

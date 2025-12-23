@@ -4,9 +4,9 @@ import dataclasses
 from dataclasses import dataclass
 from typing import Unpack
 
-from .types import types as T
-from .types.types import PlayerState
-from .types.types import PlayerStateChanges
+from .types import api as T
+from .types.api import PlayerState
+from .types.api import PlayerStateChanges
 
 
 @dataclass(frozen=True, slots=True)

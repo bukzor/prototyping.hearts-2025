@@ -1,44 +1,23 @@
 """Hearts game engine - entry points."""
 
-import uuid
 from random import Random
 from typing import TYPE_CHECKING
 
-from .cards import Deck
-from .cards import deal_hands
 from .state import ChooseMoonOption
 from .state import PlayCard
 from .state import SelectPass
-from .types import types as T
-from .types.types import GameState
-from .types.types import PlayerState
+from .types import api as T
+from .types.api import GameState
 
 if TYPE_CHECKING:
     from .state import PlayerAction
-
-
-def new_game(random: Random, game_id: str | None = None) -> GameState:
-    """Create a new game with shuffled deck."""
-    players = tuple(PlayerState(hand=h) for h in deal_hands(Deck(), random))
-
-    return GameState(
-        game_id=game_id or str(uuid.uuid4()),
-        phase=T.Phase.PASSING,
-        round_number=0,
-        dealer=0,
-        players=players,
-        trick=None,
-        current_player=0,  # Start with player 0 for passing
-        hearts_broken=False,
-        pending_passes=(None, None, None, None),
-    )
 
 
 def apply_action(
     state: GameState, action: PlayerAction, random: Random
 ) -> T.ActionResult:
     """Apply an action to the game state."""
-    from .passing import apply_pass
+    from .passing.api import apply_pass
     from .play import apply_play
     from .round import apply_moon_choice
 

@@ -3,9 +3,9 @@
 from typing import Protocol
 from typing import runtime_checkable
 
-from .cards import Cards
-from .cards import Hand
-from .types import types as T
+from .types import api as T
+from .types.api import Cards
+from .types.api import Hand
 
 
 @runtime_checkable

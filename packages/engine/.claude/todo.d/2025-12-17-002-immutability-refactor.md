@@ -13,11 +13,20 @@ complicates potential undo/replay features.
 
 ## Current Situation (updated 2025-12-23)
 
-Phases 1-5 complete. Types consolidated into `types/` package with 8 modules
-(card, cards, trick, player, phase, state, result, types). Constants extracted
-to `constants.py`. Removed trivial `GameState.pass_direction` property.
+Phases 1-5 complete. Phase 6 Steps 1-4 complete.
 
-Remaining: Phase 6 module reorganization.
+Module pattern established:
+
+- One function/class per file (e.g., `passing/apply_pass.py`)
+- `api.py` in each package for public exports
+- `__init__.py` empty (docstring only)
+- External imports go through `package.api`
+- Internal imports within package go direct
+
+Completed packages: `types/`, `passing/`, `start/` Top-level `api.py` created
+for package-wide exports. Deleted `cards.py` (functions moved to `start/`).
+
+Remaining: Phase 6 Steps 5-7.
 
 ## Proposed Solution
 
@@ -81,8 +90,8 @@ Full immutability stack:
 - [ ] **Phase 6: Module Reorganization** (detailed plan below)
   - [x] Step 1: `ending/scoring.py` (committed: 35fa2af)
   - [x] Step 2: `actions/play.py` (committed: 4dbd8dc)
-  - [x] Step 3: `passing/`
-  - [ ] Step 4: `start/`
+  - [x] Step 3: `passing/` - split to one-function-per-file, added api.py
+  - [x] Step 4: `start/` - created with Deck, deal_hands, new_game, etc.
   - [ ] Step 5: `ending/`
   - [ ] Step 6: `actions/`
   - [ ] Step 7: Cleanup (delete emptied modules)
@@ -93,18 +102,34 @@ Full immutability stack:
 
 ```
 hearts_engine/
+  api.py           # top-level public exports
   actions/
-    __init__.py    # apply_action, apply_play, valid_actions*, action classes
-    play.py        # valid_plays, valid_leads, valid_follows, restrictions
+    __init__.py    # empty (docstring only)
+    api.py         # public exports
+    play.py        # (existing - valid_plays, valid_leads, etc.)
+    apply_play.py
+    apply_action.py
+    ...
   ending/
-    __init__.py    # complete_trick, complete_round, trick_winner, moon logic
-    scoring.py     # card_points, trick_points, round_points, apply_normal_scoring
+    __init__.py    # empty
+    api.py         # public exports
+    scoring.py     # (existing)
+    complete_trick.py
+    complete_round.py
+    ...
   passing/
-    __init__.py    # apply_pass, execute_passes, pass_target, direction logic
+    __init__.py    # empty
+    api.py         # public exports (done)
+    apply_pass.py, execute_passes.py, ... (one per file, done)
   start/
-    __init__.py    # new_game, start_new_round, deal_hands, Deck
-  types/           # (already done)
-  constants.py     # (already done)
+    __init__.py    # empty
+    api.py         # public exports (done)
+    Deck.py, deal_hands.py, new_game.py, ... (one per file, done)
+  types/
+    __init__.py    # empty
+    api.py         # public exports (done)
+    card.py, cards.py, ... (done)
+  constants.py     # (done)
   player.py        # Player protocol (stays)
   tty.py           # formatting (stays)
 ```

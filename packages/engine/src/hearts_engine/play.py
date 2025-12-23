@@ -5,12 +5,12 @@ from random import Random
 
 from .actions.play import is_first_trick
 from .actions.play import valid_plays
-from .cards import Hand
 from .rules import trick_winner
 from .state import update_player
-from .types import types as T
-from .types.types import GameState
-from .types.types import Trick
+from .types import api as T
+from .types.api import GameState
+from .types.api import Hand
+from .types.api import Trick
 
 
 def apply_play(

@@ -2,13 +2,13 @@
 
 from random import Random
 
-from .cards import Deck
-from .cards import draw_three
 from .main import apply_action
-from .main import new_game
+from .start.api import Deck
+from .start.api import draw_three
+from .start.api import new_game
 from .state import SelectPass
-from .types import types as T
-from .types.types import GameState
+from .types import api as T
+from .types.api import GameState
 
 
 class DescribePassPhase:

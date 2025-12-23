@@ -2,9 +2,9 @@
 
 from random import Random
 
-from .main import new_game
-from .passing import pass_direction_for_round
-from .types import types as T
+from .passing.api import pass_direction_for_round
+from .start.api import new_game
+from .types import api as T
 
 
 class DescribeNewGame:

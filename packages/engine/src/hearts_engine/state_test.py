@@ -1,9 +1,9 @@
 """Tests for PlayerState."""
 
-from .cards import Hand
-from .types import types as T
-from .types.types import PlayerState
-from .types.types import Trick
+from .types import api as T
+from .types.api import Hand
+from .types.api import PlayerState
+from .types.api import Trick
 
 
 class DescribePlayerState:

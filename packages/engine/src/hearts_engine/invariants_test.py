@@ -6,15 +6,15 @@ from hypothesis import given
 from hypothesis import settings
 from hypothesis import strategies as st
 
-from .cards import draw_three
 from .constants import TWO_OF_CLUBS
 from .main import apply_action
-from .main import new_game
-from .passing import pass_direction_for_round
+from .passing.api import pass_direction_for_round
 from .rules import valid_actions_for_state
+from .start.api import draw_three
+from .start.api import new_game
 from .state import SelectPass
-from .types import types as T
-from .types.types import GameState
+from .types import api as T
+from .types.api import GameState
 
 
 class DescribeGameInvariants:

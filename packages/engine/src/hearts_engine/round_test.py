@@ -3,20 +3,20 @@
 import dataclasses
 from random import Random
 
-from .cards import draw_three
 from .constants import QUEEN_OF_SPADES
 from .main import apply_action
-from .main import new_game
-from .passing import pass_direction_for_round
+from .passing.api import pass_direction_for_round
 from .round import check_game_end
-from .round import start_new_round
 from .rules import valid_actions_for_state
+from .start.api import draw_three
+from .start.api import new_game
+from .start.api import start_new_round
 from .state import ChooseMoonOption
 from .state import SelectPass
 from .state import update_player
-from .types import types as T
-from .types.types import GameState
-from .types.types import Trick
+from .types import api as T
+from .types.api import GameState
+from .types.api import Trick
 
 
 def _get_to_playing(seed: int = 42) -> tuple[GameState, Random]:

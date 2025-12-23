@@ -6,12 +6,11 @@ from typing import TYPE_CHECKING
 
 from .actions.play import is_first_trick
 from .actions.play import valid_plays
-from .cards import Hand
-from .constants import TWO_OF_CLUBS
 from .ending.scoring import round_points
-from .types import types as T
-from .types.types import GameState
-from .types.types import Trick
+from .types import api as T
+from .types.api import GameState
+from .types.api import Hand
+from .types.api import Trick
 
 if TYPE_CHECKING:
     from .state import PlayerAction
@@ -100,11 +99,3 @@ def check_shot_moon(
         if round_points(tw) == 26:
             return pid
     return None
-
-
-def find_two_of_clubs_holder(hands: Sequence[Hand]) -> T.PlayerId:
-    """Find which player has the 2 of clubs."""
-    for pid, hand in zip(T.PLAYER_IDS, hands):
-        if TWO_OF_CLUBS in hand:
-            return pid
-    raise AssertionError("No player has 2 of clubs")
