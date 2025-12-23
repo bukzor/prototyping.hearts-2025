@@ -2,43 +2,35 @@
 
 import dataclasses
 
-from .card import Card
+from . import types as T
 from .card import Trick
 from .cards import Hand
 from .rules import find_two_of_clubs_holder
 from .state import GameState
-from .state import PassDirection
 from .state import PendingPasses
-from .state import Phase
 from .state import pass_target
 from .state import update_pending_passes
 from .state import update_player
-from .types import PLAYER_IDS
-from .types import ActionFailure
-from .types import ActionResult
-from .types import ActionSuccess
-from .types import PlayerId
-from .types import player_id
 
 
 def apply_pass(
-    state: GameState, cards: tuple[Card, Card, Card]
-) -> ActionResult:
+    state: GameState, cards: tuple[T.Card, T.Card, T.Card]
+) -> T.ActionResult:
     """Apply a pass selection."""
-    if state.phase != Phase.PASSING:
-        return ActionFailure(error="Not in passing phase")
+    if state.phase != T.Phase.PASSING:
+        return T.ActionFailure(error="Not in passing phase")
 
-    if state.pass_direction == PassDirection.HOLD:
-        return ActionFailure(error="Hold round, no passing")
+    if state.pass_direction == T.PassDirection.HOLD:
+        return T.ActionFailure(error="Hold round, no passing")
 
     player = state.current_player
     hand = state.players[player].hand
 
     if not all(c in hand for c in cards):
-        return ActionFailure(error="Cards not in hand")
+        return T.ActionFailure(error="Cards not in hand")
 
     if len(set(cards)) != 3:
-        return ActionFailure(error="Must select 3 different cards")
+        return T.ActionFailure(error="Must select 3 different cards")
 
     pending = update_pending_passes(state.pending_passes, player, cards)
     state = dataclasses.replace(state, pending_passes=pending)
@@ -55,15 +47,15 @@ def apply_pass(
             ),
         )
 
-    return ActionSuccess(new_state=state)
+    return T.ActionSuccess(new_state=state)
 
 
 def next_player_for_passing(
-    current_player: PlayerId, pending_passes: PendingPasses
-) -> PlayerId:
+    current_player: T.PlayerId, pending_passes: PendingPasses
+) -> T.PlayerId:
     """Get next player who needs to pass."""
-    for i in PLAYER_IDS:
-        p = player_id(current_player + 1 + i)
+    for i in T.PLAYER_IDS:
+        p = T.player_id(current_player + 1 + i)
         if pending_passes[p] is None:
             return p
     return current_player
@@ -71,11 +63,11 @@ def next_player_for_passing(
 
 def execute_passes(state: GameState) -> GameState:
     """Execute all pending passes."""
-    received: dict[PlayerId, list[Card]] = {0: [], 1: [], 2: [], 3: []}
+    received: dict[T.PlayerId, list[T.Card]] = {0: [], 1: [], 2: [], 3: []}
 
     players = state.players
     # First pass: remove cards from each player's hand and track received
-    for player in PLAYER_IDS:
+    for player in T.PLAYER_IDS:
         cards = state.pending_passes[player]
         assert cards is not None, player
         received[pass_target(player, state.pass_direction)].extend(cards)
@@ -94,11 +86,11 @@ def execute_passes(state: GameState) -> GameState:
     )
 
 
-def start_playing_phase(state: GameState, leader: PlayerId) -> GameState:
+def start_playing_phase(state: GameState, leader: T.PlayerId) -> GameState:
     """Transition to playing phase."""
     return dataclasses.replace(
         state,
-        phase=Phase.PLAYING,
+        phase=T.Phase.PLAYING,
         trick=Trick(lead=leader),
         current_player=leader,
     )

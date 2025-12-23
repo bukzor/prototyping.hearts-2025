@@ -2,16 +2,15 @@
 
 from random import Random
 
+from . import types as T
 from .card import TWO_OF_CLUBS
+from .cards import draw_three
 from .main import apply_action
 from .main import new_game
 from .rules import valid_actions_for_state
 from .state import GameState
 from .state import PlayCard
 from .state import SelectPass
-from .types import PLAYER_IDS
-from .types import ActionFailure
-from .types import ActionSuccess
 
 # Module-level RNG for tests that need shared state
 _random = Random(42)
@@ -21,10 +20,10 @@ def _get_to_playing(seed: int = 42) -> tuple[GameState, Random]:
     """Helper to skip past passing phase. Returns (game, random)."""
     random = Random(seed)
     game: GameState = new_game(random)
-    for i in PLAYER_IDS:
-        cards = game.players[i].hand.draw_three(random)
+    for i in T.PLAYER_IDS:
+        cards = draw_three(game.players[i].hand, random)
         result = apply_action(game, SelectPass(cards=cards), random)
-        assert isinstance(result, ActionSuccess), result
+        assert isinstance(result, T.ActionSuccess), result
         game = result.new_state
     return game, random
 
@@ -46,18 +45,18 @@ class DescribePlayPhase:
         ]
         if other_cards:
             result = apply_action(game, PlayCard(card=other_cards[0]), random)
-            assert isinstance(result, ActionFailure)
+            assert isinstance(result, T.ActionFailure)
 
     def it_accepts_two_of_clubs_first(self) -> None:
         game, random = _get_to_playing()
         result = apply_action(game, PlayCard(card=TWO_OF_CLUBS), random)
-        assert isinstance(result, ActionSuccess), result
+        assert isinstance(result, T.ActionSuccess), result
 
     def it_advances_to_next_player_after_play(self) -> None:
         game, random = _get_to_playing()
         first_player = game.current_player
         result = apply_action(game, PlayCard(card=TWO_OF_CLUBS), random)
-        assert isinstance(result, ActionSuccess), result
+        assert isinstance(result, T.ActionSuccess), result
         assert result.new_state.current_player == (first_player + 1) % 4
 
 
@@ -69,7 +68,7 @@ class DescribeFollowingSuit:
         game, random = _get_to_playing()
         # Play 2 of clubs
         result = apply_action(game, PlayCard(card=TWO_OF_CLUBS), random)
-        assert isinstance(result, ActionSuccess), result
+        assert isinstance(result, T.ActionSuccess), result
         return result.new_state, random
 
     def it_must_follow_suit_if_able(self) -> None:
@@ -87,7 +86,7 @@ class DescribeFollowingSuit:
             off_suit = [c for c in hand if c.suit != lead_suit]
             if off_suit:
                 result = apply_action(game, PlayCard(card=off_suit[0]), random)
-                assert isinstance(result, ActionFailure)
+                assert isinstance(result, T.ActionFailure)
 
     def it_can_play_anything_if_void(self) -> None:
         game, random = self._setup_trick_in_progress()
@@ -104,12 +103,13 @@ class DescribeFollowingSuit:
             for card in hand:
                 result = apply_action(game, PlayCard(card=card), random)
                 # First trick restriction may block some
-                if isinstance(result, ActionSuccess):
+                if isinstance(result, T.ActionSuccess):
                     break
             # At least one should work
             assert any(
                 isinstance(
-                    apply_action(game, PlayCard(card=c), random), ActionSuccess
+                    apply_action(game, PlayCard(card=c), random),
+                    T.ActionSuccess,
                 )
                 for c in hand
             ), "Should be able to play something"
@@ -134,11 +134,11 @@ class DescribeTrickCompletion:
 
     def _play_full_trick(self, game: GameState, random: Random) -> GameState:
         """Play 4 cards to complete a trick."""
-        for _ in PLAYER_IDS:
+        for _ in T.PLAYER_IDS:
             valid = valid_actions_for_state(game)
             assert valid, "No valid actions"
             result = apply_action(game, valid[0], random)
-            assert isinstance(result, ActionSuccess), result
+            assert isinstance(result, T.ActionSuccess), result
             game = result.new_state
         return game
 

@@ -1,52 +1,24 @@
 """Hearts game rules and validation."""
 
 from collections.abc import Callable
-from collections.abc import Iterable
 from collections.abc import Iterator
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-from .card import QUEEN_OF_SPADES
+from . import types as T
 from .card import TWO_OF_CLUBS
-from .card import Card
-from .card import Suit
 from .card import Trick
 from .cards import Cards
 from .cards import Hand
+from .scoring import is_point_card
+from .scoring import round_points
 from .state import GameState
-from .state import Phase
-from .types import PLAYER_IDS
-from .types import PlayerId
 
 if TYPE_CHECKING:
     from .state import PlayerAction
 
 
-def is_point_card(card: Card) -> bool:
-    """Check if a card is worth points."""
-    return card.suit == Suit.HEARTS or card == QUEEN_OF_SPADES
-
-
-def card_points(card: Card) -> int:
-    """Get point value of a card."""
-    if card.suit == Suit.HEARTS:
-        return 1
-    if card == QUEEN_OF_SPADES:
-        return 13
-    return 0
-
-
-def trick_points(trick: Trick) -> int:
-    """Calculate total points in a trick."""
-    return sum(card_points(c) for c in trick.values())
-
-
-def round_points(tricks: Iterable[Trick]) -> int:
-    """Calculate total points from tricks won in a round."""
-    return sum(trick_points(t) for t in tricks)
-
-
-def trick_winner(trick: Trick) -> PlayerId:
+def trick_winner(trick: Trick) -> T.PlayerId:
     """Determine winner of a trick."""
     assert len(trick) == 4, len(trick)
     assert trick.lead is not None
@@ -70,7 +42,7 @@ def is_first_trick(tricks_won: Sequence[tuple[Trick, ...]]) -> bool:
 CardRestriction = Callable[[Cards], Cards]
 
 
-def must_follow_suit(lead_suit: Suit) -> CardRestriction:
+def must_follow_suit(lead_suit: T.Suit) -> CardRestriction:
     """When following, must play matching suit if possible."""
     return lambda cards: cards.of_suit(lead_suit)
 
@@ -85,37 +57,55 @@ def two_of_clubs_only(cards: Cards) -> Cards:
 
 
 def no_hearts(cards: Cards) -> Cards:
-    return cards.not_of_suit(Suit.HEARTS)
+    return cards.not_of_suit(T.Suit.HEARTS)
 
 
-def valid_plays(
-    hand: Hand, trick: Trick, first_trick: bool, hearts_broken: bool
+def _apply_restrictions(
+    hand: Hand, restrictions: list[CardRestriction]
 ) -> Cards:
-    """Get all valid cards to play."""
-    lead_card = trick[trick.lead]
-
-    restrictions: list[CardRestriction]
-    if lead_card is not None:
-        restrictions = [must_follow_suit(lead_card.suit)]
-        if first_trick:
-            restrictions.append(no_point_cards)
-    elif first_trick:
-        restrictions = [two_of_clubs_only]
-    elif hearts_broken:
-        restrictions = []
-    else:
-        restrictions = [no_hearts]
-
+    """Apply restrictions, falling back if restriction leaves no cards."""
     valid = Cards(hand)
     for restrict in restrictions:
         restricted = restrict(valid)
         if restricted:
             valid = restricted
-
     return valid
 
 
-def valid_pass_selections(hand: Hand) -> Iterator[tuple[Card, Card, Card]]:
+def valid_leads(hand: Hand, first_trick: bool, hearts_broken: bool) -> Cards:
+    """Get valid cards when leading a trick."""
+    if first_trick:
+        restrictions = [two_of_clubs_only]
+    elif hearts_broken:
+        restrictions = []
+    else:
+        restrictions = [no_hearts]
+    return _apply_restrictions(hand, restrictions)
+
+
+def valid_follows(hand: Hand, lead_suit: T.Suit, first_trick: bool) -> Cards:
+    """Get valid cards when following a trick."""
+    restrictions = [must_follow_suit(lead_suit)]
+    if first_trick:
+        restrictions.append(no_point_cards)
+    return _apply_restrictions(hand, restrictions)
+
+
+def valid_plays(
+    hand: Hand,
+    lead_suit: T.Suit | None,
+    first_trick: bool,
+    hearts_broken: bool,
+) -> Cards:
+    """Get all valid cards to play (dispatcher)."""
+    if lead_suit is None:
+        return valid_leads(hand, first_trick, hearts_broken)
+    return valid_follows(hand, lead_suit, first_trick)
+
+
+def valid_pass_selections(
+    hand: Hand,
+) -> Iterator[tuple[T.Card, T.Card, T.Card]]:
     """Get all valid 3-card combinations for passing."""
     from itertools import combinations
 
@@ -125,13 +115,13 @@ def valid_pass_selections(hand: Hand) -> Iterator[tuple[Card, Card, Card]]:
 
 
 def valid_actions(
-    phase: Phase,
-    current_player: PlayerId,
+    phase: T.Phase,
+    current_player: T.PlayerId,
     hand: Hand,
     trick: Trick | None,
     first_trick: bool,
     hearts_broken: bool,
-    moon_shooter: PlayerId | None,
+    moon_shooter: T.PlayerId | None,
 ) -> list[PlayerAction]:
     """Get all valid actions for current player."""
     from .state import ChooseMoonOption
@@ -139,20 +129,22 @@ def valid_actions(
     from .state import SelectPass
 
     match phase:
-        case Phase.PASSING:
+        case T.Phase.PASSING:
             return [SelectPass(cards=c) for c in valid_pass_selections(hand)]
-        case Phase.PLAYING:
+        case T.Phase.PLAYING:
             assert trick is not None
-            cards = valid_plays(hand, trick, first_trick, hearts_broken)
+            cards = valid_plays(
+                hand, trick.lead_suit, first_trick, hearts_broken
+            )
             return [PlayCard(card=c) for c in cards]
-        case Phase.ROUND_END:
+        case T.Phase.ROUND_END:
             if moon_shooter == current_player:
                 return [
                     ChooseMoonOption(add_to_others=False),
                     ChooseMoonOption(add_to_others=True),
                 ]
             return []
-        case Phase.GAME_END:
+        case T.Phase.GAME_END:
             return []
 
 
@@ -172,17 +164,17 @@ def valid_actions_for_state(state: GameState) -> list[PlayerAction]:
 
 def check_shot_moon(
     tricks_won: Sequence[tuple[Trick, ...]],
-) -> PlayerId | None:
+) -> T.PlayerId | None:
     """Check if any player shot the moon. Returns player id or None."""
-    for pid, tw in zip(PLAYER_IDS, tricks_won):
+    for pid, tw in zip(T.PLAYER_IDS, tricks_won):
         if round_points(tw) == 26:
             return pid
     return None
 
 
-def find_two_of_clubs_holder(hands: Sequence[Hand]) -> PlayerId:
+def find_two_of_clubs_holder(hands: Sequence[Hand]) -> T.PlayerId:
     """Find which player has the 2 of clubs."""
-    for pid, hand in zip(PLAYER_IDS, hands):
+    for pid, hand in zip(T.PLAYER_IDS, hands):
         if TWO_OF_CLUBS in hand:
             return pid
     raise AssertionError("No player has 2 of clubs")

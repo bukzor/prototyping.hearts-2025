@@ -1,36 +1,41 @@
-# Single-Argument Methods
+# Method Argument Rules
 
-A function of one composite type _may_ become a method—but only under strict
-conditions.
+Methods with arguments beyond `self` must return `Self`.
 
-## Requirements
+## The Rule
 
-All three must hold:
+A method may:
 
-1. **Single argument**: Function takes exactly one composite type from this
-   project (primitives like `int`, `bool` don't count)
-2. **Uses all fields**: The function genuinely needs every field of the type
-3. **Stable interface**: No foreseeable refactor would narrow the signature
+1. **Take only `self`** — accessor/query, any return type
+2. **Take additional args** — but must return `Self` (fluent/builder pattern)
 
-## Why So Strict?
+If a method takes args and returns something other than `Self`, it should be a
+standalone function.
 
-If a function only uses _some_ fields, it should take those fields directly (see
-`narrow-signatures.md`). Making it a method hides this and makes future
-narrowing harder.
+## Why?
 
-## Example
+- **Fluent methods** like `cards.of_suit(suit) -> Self` compose naturally
+- **Non-Self returns** with args treat `self` as privileged when it's really a
+  peer (see `functions-over-methods.md`)
+- **Explicit dependencies** — functions show what they actually need
+
+## Examples
 
 ```python
-# Candidate: uses all fields of Hand?
-def is_empty(hand: Hand) -> bool:
-    return len(hand) == 0
+# Good: takes only self
+def __len__(self) -> int: ...
+@property
+def lead_suit(self) -> Suit | None: ...
 
-# But Hand is a frozenset—len() is inherited.
-# This doesn't "use all fields" in a meaningful way.
-# Keep as function or use inherited __bool__.
+# Good: takes args, returns Self
+def of_suit(self, suit: Suit) -> Self: ...
+def with_play(self, player: PlayerId, card: Card) -> Self: ...
+
+# Bad: takes args, returns non-Self — should be function
+def deal_hands(self, rng: Random) -> Iterator[Hand]: ...  # NO
+def deal_hands(deck: Deck, rng: Random) -> Iterator[Hand]: ...  # YES
 ```
 
 ## When In Doubt
 
-Keep it a function. Promoting to method is easy later if warranted; demoting is
-painful.
+Keep it a function. Promoting to method is easy; demoting is painful.

@@ -3,11 +3,10 @@
 import dataclasses
 from random import Random
 
+from . import types as T
 from .card import QUEEN_OF_SPADES
-from .card import Card
-from .card import Rank
-from .card import Suit
 from .card import Trick
+from .cards import draw_three
 from .main import apply_action
 from .main import new_game
 from .round import check_game_end
@@ -15,22 +14,18 @@ from .round import start_new_round
 from .rules import valid_actions_for_state
 from .state import ChooseMoonOption
 from .state import GameState
-from .state import PassDirection
-from .state import Phase
 from .state import SelectPass
 from .state import update_player
-from .types import PLAYER_IDS
-from .types import ActionSuccess
 
 
 def _get_to_playing(seed: int = 42) -> tuple[GameState, Random]:
     """Helper to skip past passing phase. Returns (game, random)."""
     random = Random(seed)
     game: GameState = new_game(random)
-    for i in PLAYER_IDS:
-        cards = game.players[i].hand.draw_three(random)
+    for i in T.PLAYER_IDS:
+        cards = draw_three(game.players[i].hand, random)
         result = apply_action(game, SelectPass(cards=cards), random)
-        assert isinstance(result, ActionSuccess), result
+        assert isinstance(result, T.ActionSuccess), result
         game = result.new_state
     return game, random
 
@@ -45,7 +40,7 @@ class DescribeRoundCompletion:
             if not valid:
                 break  # Round/game ended
             result = apply_action(game, valid[0], random)
-            assert isinstance(result, ActionSuccess), result
+            assert isinstance(result, T.ActionSuccess), result
             game = result.new_state
         return game
 
@@ -80,14 +75,14 @@ class DescribeMoonShooting:
         # Give player 0 all point cards in tricks_won (13 hearts + queen of spades)
         # Create tricks with all hearts (need 4 tricks of 4 cards = 16, but we only have 13 hearts)
         # For scoring, we just need tricks containing the point cards
-        ranks = list(Rank)
+        ranks = list(T.Rank)
         hearts_tricks = tuple(
             Trick(
                 cards=(
-                    Card(Suit.HEARTS, ranks[k]),
-                    Card(Suit.HEARTS, ranks[k + 1]),
-                    Card(Suit.HEARTS, ranks[k + 2]),
-                    Card(Suit.HEARTS, ranks[k + 3]),
+                    T.Card(T.Suit.HEARTS, ranks[k]),
+                    T.Card(T.Suit.HEARTS, ranks[k + 1]),
+                    T.Card(T.Suit.HEARTS, ranks[k + 2]),
+                    T.Card(T.Suit.HEARTS, ranks[k + 3]),
                 ),
                 lead=0,
             )
@@ -96,10 +91,10 @@ class DescribeMoonShooting:
         # Last heart + queen of spades in final trick
         final_trick = Trick(
             cards=(
-                Card(Suit.HEARTS, Rank.ACE),
+                T.Card(T.Suit.HEARTS, T.Rank.ACE),
                 QUEEN_OF_SPADES,
-                Card(Suit.CLUBS, Rank.TWO),
-                Card(Suit.CLUBS, Rank.THREE),
+                T.Card(T.Suit.CLUBS, T.Rank.TWO),
+                T.Card(T.Suit.CLUBS, T.Rank.THREE),
             ),
             lead=0,
         )
@@ -107,13 +102,13 @@ class DescribeMoonShooting:
             game.players, 0, tricks_won=hearts_tricks + (final_trick,)
         )
         game = dataclasses.replace(
-            game, phase=Phase.ROUND_END, current_player=0, players=players
+            game, phase=T.Phase.ROUND_END, current_player=0, players=players
         )
 
         result = apply_action(
             game, ChooseMoonOption(add_to_others=True), random
         )
-        assert isinstance(result, ActionSuccess), result
+        assert isinstance(result, T.ActionSuccess), result
         # Others should have +26
         for i in range(1, 4):
             assert result.new_state.players[i].score == 26, (
@@ -126,14 +121,14 @@ class DescribeMoonShooting:
         random = Random(42)
         game = new_game(random)
         # Same setup as above
-        ranks = list(Rank)
+        ranks = list(T.Rank)
         hearts_tricks = tuple(
             Trick(
                 cards=(
-                    Card(Suit.HEARTS, ranks[k]),
-                    Card(Suit.HEARTS, ranks[k + 1]),
-                    Card(Suit.HEARTS, ranks[k + 2]),
-                    Card(Suit.HEARTS, ranks[k + 3]),
+                    T.Card(T.Suit.HEARTS, ranks[k]),
+                    T.Card(T.Suit.HEARTS, ranks[k + 1]),
+                    T.Card(T.Suit.HEARTS, ranks[k + 2]),
+                    T.Card(T.Suit.HEARTS, ranks[k + 3]),
                 ),
                 lead=0,
             )
@@ -141,10 +136,10 @@ class DescribeMoonShooting:
         )
         final_trick = Trick(
             cards=(
-                Card(Suit.HEARTS, Rank.ACE),
+                T.Card(T.Suit.HEARTS, T.Rank.ACE),
                 QUEEN_OF_SPADES,
-                Card(Suit.CLUBS, Rank.TWO),
-                Card(Suit.CLUBS, Rank.THREE),
+                T.Card(T.Suit.CLUBS, T.Rank.TWO),
+                T.Card(T.Suit.CLUBS, T.Rank.THREE),
             ),
             lead=0,
         )
@@ -152,13 +147,13 @@ class DescribeMoonShooting:
             game.players, 0, tricks_won=hearts_tricks + (final_trick,)
         )
         game = dataclasses.replace(
-            game, phase=Phase.ROUND_END, current_player=0, players=players
+            game, phase=T.Phase.ROUND_END, current_player=0, players=players
         )
 
         result = apply_action(
             game, ChooseMoonOption(add_to_others=False), random
         )
-        assert isinstance(result, ActionSuccess), result
+        assert isinstance(result, T.ActionSuccess), result
         assert result.new_state.players[0].score == -26
 
 
@@ -174,7 +169,7 @@ class DescribeGameEnd:
         players = update_player(players, 3, score=20)
         game = dataclasses.replace(game, players=players)
         game = check_game_end(game, random)
-        assert game.phase == Phase.GAME_END
+        assert game.phase == T.Phase.GAME_END
 
     def it_starts_new_round_under_100(self) -> None:
         random = Random(42)
@@ -186,12 +181,12 @@ class DescribeGameEnd:
         game = dataclasses.replace(game, players=players)
         old_round = game.round_number
         game = check_game_end(game, random)
-        assert game.phase != Phase.GAME_END
+        assert game.phase != T.Phase.GAME_END
         assert game.round_number == old_round + 1
 
     def it_rotates_pass_direction(self) -> None:
         random = Random(42)
         game = new_game(random)
-        assert game.pass_direction == PassDirection.LEFT
+        assert game.pass_direction == T.PassDirection.LEFT
         game = start_new_round(game, random)
-        assert game.pass_direction == PassDirection.RIGHT
+        assert game.pass_direction == T.PassDirection.RIGHT

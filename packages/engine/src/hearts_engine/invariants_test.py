@@ -6,17 +6,15 @@ from hypothesis import given
 from hypothesis import settings
 from hypothesis import strategies as st
 
+from . import types as T
 from .card import TWO_OF_CLUBS
+from .cards import draw_three
 from .main import apply_action
 from .main import new_game
 from .rules import valid_actions_for_state
 from .state import GameState
-from .state import PassDirection
-from .state import Phase
 from .state import SelectPass
 from .state import pass_direction_for_round
-from .types import PLAYER_IDS
-from .types import ActionSuccess
 
 
 class DescribeGameInvariants:
@@ -43,10 +41,10 @@ class DescribeGameInvariants:
         for r in range(8):
             d = pass_direction_for_round(r)
             expected = [
-                PassDirection.LEFT,
-                PassDirection.RIGHT,
-                PassDirection.ACROSS,
-                PassDirection.HOLD,
+                T.PassDirection.LEFT,
+                T.PassDirection.RIGHT,
+                T.PassDirection.ACROSS,
+                T.PassDirection.HOLD,
             ][r % 4]
             assert d == expected, (r, d, expected)
 
@@ -61,10 +59,10 @@ class DescribeStatefulInvariants:
         random = Random(seed)
         game: GameState = new_game(random)
         # Complete passing phase
-        for i in PLAYER_IDS:
-            cards = game.players[i].hand.draw_three(random)
+        for i in T.PLAYER_IDS:
+            cards = draw_three(game.players[i].hand, random)
             result = apply_action(game, SelectPass(cards=cards), random)
-            assert isinstance(result, ActionSuccess), result
+            assert isinstance(result, T.ActionSuccess), result
             game = result.new_state
 
         all_cards = [c for p in game.players for c in p.hand]
@@ -80,21 +78,21 @@ class DescribeStatefulInvariants:
         random = Random(seed)
         game: GameState = new_game(random)
         # Complete passing
-        for i in PLAYER_IDS:
-            cards = game.players[i].hand.draw_three(random)
+        for i in T.PLAYER_IDS:
+            cards = draw_three(game.players[i].hand, random)
             result = apply_action(game, SelectPass(cards=cards), random)
-            assert isinstance(result, ActionSuccess), result
+            assert isinstance(result, T.ActionSuccess), result
             game = result.new_state
 
         # Play some tricks (up to 20 cards played)
         for _ in range(20):
-            if game.phase != Phase.PLAYING:
+            if game.phase != T.Phase.PLAYING:
                 break
             valid = valid_actions_for_state(game)
             if not valid:
                 break
             result = apply_action(game, valid[0], random)
-            assert isinstance(result, ActionSuccess), result
+            assert isinstance(result, T.ActionSuccess), result
             game = result.new_state
 
             # Count all cards
@@ -118,17 +116,17 @@ class DescribeStatefulInvariants:
         max_actions = 1000  # Generous upper bound
 
         for _ in range(max_actions):
-            if game.phase == Phase.GAME_END:
+            if game.phase == T.Phase.GAME_END:
                 return  # Success
 
             valid = valid_actions_for_state(game)
             if not valid:
                 break
             result = apply_action(game, valid[0], random)
-            assert isinstance(result, ActionSuccess), result
+            assert isinstance(result, T.ActionSuccess), result
             game = result.new_state
 
         # Game should have ended
         assert (
-            game.phase == Phase.GAME_END
+            game.phase == T.Phase.GAME_END
         ), f"Game didn't end after {max_actions} actions, phase={game.phase}"

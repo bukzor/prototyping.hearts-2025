@@ -1,8 +1,6 @@
 """Tests for PlayerState."""
 
-from .card import Card
-from .card import Rank
-from .card import Suit
+from . import types as T
 from .card import Trick
 from .cards import Hand
 from .state import PlayerState
@@ -15,7 +13,7 @@ class DescribePlayerState:
         assert PlayerState is not None
 
     def it_holds_hand(self) -> None:
-        hand = Hand([Card(Suit.HEARTS, Rank.ACE)])
+        hand = Hand([T.Card(T.Suit.HEARTS, T.Rank.ACE)])
         ps = PlayerState(hand=hand)
         assert ps.hand is hand
 
@@ -32,7 +30,7 @@ class DescribePlayerState:
         assert ps.tricks_won == ()
 
     def it_stores_tricks_won(self) -> None:
-        trick = Trick.from_dict({0: Card(Suit.HEARTS, Rank.ACE)}, lead=0)
+        trick = Trick.from_dict({0: T.Card(T.Suit.HEARTS, T.Rank.ACE)}, lead=0)
         ps = PlayerState(hand=Hand(), tricks_won=(trick,))
         assert ps.tricks_won == (trick,)
 

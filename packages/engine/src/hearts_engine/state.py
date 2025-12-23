@@ -2,50 +2,28 @@
 
 import dataclasses
 from dataclasses import dataclass
-from enum import Enum
 from typing import TypedDict
 from typing import Unpack
 
-from .card import Card
+from . import types as T
 from .card import Trick
 from .cards import Hand
-from .types import PlayerId
-from .types import player_id
 
-
-class Phase(Enum):
-    """Game phase."""
-
-    PASSING = "passing"
-    PLAYING = "playing"
-    ROUND_END = "round_end"
-    GAME_END = "game_end"
-
-
-class PassDirection(Enum):
-    """Direction for passing cards."""
-
-    LEFT = "left"
-    RIGHT = "right"
-    ACROSS = "across"
-    HOLD = "hold"
-
-
-PASS_CYCLE: tuple[PassDirection, ...] = (
-    PassDirection.LEFT,
-    PassDirection.RIGHT,
-    PassDirection.ACROSS,
-    PassDirection.HOLD,
+PASS_CYCLE: tuple[T.PassDirection, ...] = (
+    T.PassDirection.LEFT,
+    T.PassDirection.RIGHT,
+    T.PassDirection.ACROSS,
+    T.PassDirection.HOLD,
 )
 
-ThreeCards = tuple[Card, Card, Card]
+ThreeCards = tuple[T.Card, T.Card, T.Card]
 PendingPasses = tuple[
     ThreeCards | None, ThreeCards | None, ThreeCards | None, ThreeCards | None
 ]
 
 
 def update_pending_passes(
-    pending: PendingPasses, player: PlayerId, cards: ThreeCards
+    pending: PendingPasses, player: T.PlayerId, cards: ThreeCards
 ) -> PendingPasses:
     """Update pending passes for one player (type-safe tuple construction)."""
     match player:
@@ -63,14 +41,14 @@ def update_pending_passes(
 class SelectPass:
     """Action: select 3 cards to pass."""
 
-    cards: tuple[Card, Card, Card]
+    cards: tuple[T.Card, T.Card, T.Card]
 
 
 @dataclass(frozen=True, slots=True)
 class PlayCard:
     """Action: play a card."""
 
-    card: Card
+    card: T.Card
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,23 +61,23 @@ class ChooseMoonOption:
 PlayerAction = SelectPass | PlayCard | ChooseMoonOption
 
 
-def pass_direction_for_round(round_number: int) -> PassDirection:
+def pass_direction_for_round(round_number: int) -> T.PassDirection:
     """Get pass direction for a round (0-indexed)."""
     return PASS_CYCLE[round_number % 4]
 
 
-def pass_target(player: PlayerId, direction: PassDirection) -> PlayerId:
+def pass_target(player: T.PlayerId, direction: T.PassDirection) -> T.PlayerId:
     """Get the target player for passing."""
     match direction:
-        case PassDirection.LEFT:
+        case T.PassDirection.LEFT:
             offset = 1
-        case PassDirection.RIGHT:
+        case T.PassDirection.RIGHT:
             offset = 3
-        case PassDirection.ACROSS:
+        case T.PassDirection.ACROSS:
             offset = 2
-        case PassDirection.HOLD:
+        case T.PassDirection.HOLD:
             return player  # No passing
-    return player_id(player + offset)
+    return T.player_id(player + offset)
 
 
 @dataclass(frozen=True, slots=True)
@@ -123,7 +101,7 @@ class PlayerStateChanges(TypedDict, total=False):
 
 def update_player(
     players: tuple[PlayerState, ...],
-    pid: PlayerId,
+    pid: T.PlayerId,
     **changes: Unpack[PlayerStateChanges],
 ) -> tuple[PlayerState, ...]:
     """Return new players tuple with one player updated via replace()."""
@@ -139,18 +117,18 @@ class GameState:
     game_id: str
 
     # Phase
-    phase: Phase
+    phase: T.Phase
 
     # Round context
     round_number: int
-    dealer: PlayerId
+    dealer: T.PlayerId
 
     # Player state (index = PlayerId)
     players: tuple[PlayerState, ...]
 
     # Current trick (None during passing phase)
     trick: Trick | None
-    current_player: PlayerId
+    current_player: T.PlayerId
 
     # Derived state
     hearts_broken: bool
@@ -159,7 +137,7 @@ class GameState:
     pending_passes: PendingPasses = (None, None, None, None)
 
     @property
-    def pass_direction(self) -> PassDirection:
+    def pass_direction(self) -> T.PassDirection:
         """Current pass direction."""
         return pass_direction_for_round(self.round_number)
 

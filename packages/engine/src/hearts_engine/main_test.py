@@ -2,10 +2,8 @@
 
 from random import Random
 
+from . import types as T
 from .main import new_game
-from .state import PassDirection
-from .state import Phase
-from .types import PLAYER_IDS
 
 
 class DescribeNewGame:
@@ -13,11 +11,11 @@ class DescribeNewGame:
 
     def it_creates_game_in_passing_phase(self) -> None:
         game = new_game(Random(42))
-        assert game.phase == Phase.PASSING
+        assert game.phase == T.Phase.PASSING
 
     def it_deals_13_cards_to_each_player(self) -> None:
         game = new_game(Random(42))
-        for i in PLAYER_IDS:
+        for i in T.PLAYER_IDS:
             assert len(game.players[i].hand) == 13, (
                 i,
                 len(game.players[i].hand),
@@ -40,7 +38,7 @@ class DescribeNewGame:
 
     def it_has_left_pass_direction_for_round_zero(self) -> None:
         game = new_game(Random(42))
-        assert game.pass_direction == PassDirection.LEFT
+        assert game.pass_direction == T.PassDirection.LEFT
 
     def it_starts_with_player_zero_for_passing(self) -> None:
         game = new_game(Random(42))

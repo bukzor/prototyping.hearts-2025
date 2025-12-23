@@ -1,53 +1,49 @@
 """Card collections for Hearts."""
 
-import random
 from collections.abc import Iterator
 from collections.abc import Set as AbstractSet
 from random import Random
 from typing import Self
 
-from .card import Card
-from .card import Rank
-from .card import Suit
-from .types import PLAYER_IDS
+from . import types as T
 
 
-class Cards(frozenset[Card]):
+class Cards(frozenset[T.Card]):
     """Collection of cards with group operation."""
 
-    def __sub__(self, other: AbstractSet[Card]) -> Self:
+    def __sub__(self, other: AbstractSet[T.Card]) -> Self:
         """Return self minus other, preserving type."""
         cls = type(self)
         return cls(super().__sub__(other))
 
-    def of_suit(self, suit: Suit) -> Self:
+    def of_suit(self, suit: T.Suit) -> Self:
         cls = type(self)
         return cls(c for c in self if c.suit == suit)
 
-    def not_of_suit(self, suit: Suit) -> Self:
+    def not_of_suit(self, suit: T.Suit) -> Self:
         cls = type(self)
         return cls(c for c in self if c.suit != suit)
 
     def hearts(self) -> Self:
-        return self.of_suit(Suit.HEARTS)
+        return self.of_suit(T.Suit.HEARTS)
 
-    def group(self) -> dict[Suit, list[Card]]:
+    def group(self) -> dict[T.Suit, list[T.Card]]:
         """Return cards grouped by suit, sorted within each group."""
-        result: dict[Suit, list[Card]] = {}
+        result: dict[T.Suit, list[T.Card]] = {}
         for card in sorted(self):
             result.setdefault(card.suit, []).append(card)
         return result
 
-    def draw(self, n: int, rng: Random = random.seed.__self__) -> Cards:
-        """Draw n random cards from this collection."""
-        return Cards(rng.sample(tuple(self), n))
 
-    def draw_three(
-        self, rng: Random = random.seed.__self__
-    ) -> tuple[Card, Card, Card]:
-        """Draw 3 random cards, typed for passing."""
-        a, b, c = rng.sample(tuple(self), 3)
-        return (a, b, c)
+def draw(cards: Cards, n: int, rng: Random) -> Cards:
+    """Draw n random cards from a collection."""
+    return Cards(rng.sample(tuple(cards), n))
+
+
+def draw_three(cards: Cards, rng: Random) -> tuple[T.Card, T.Card, T.Card]:
+    """Draw 3 random cards, typed for passing."""
+    a, b, c = rng.sample(tuple(cards), 3)
+    return (a, b, c)
 
 
 class Hand(Cards):
@@ -61,13 +57,14 @@ class Deck(Cards):
 
     def __new__(cls) -> Deck:
         return super().__new__(
-            cls, (Card(suit, rank) for suit in Suit for rank in Rank)
+            cls, (T.Card(suit, rank) for suit in T.Suit for rank in T.Rank)
         )
 
-    def deal_hands(self, rng: Random = random.seed.__self__) -> Iterator[Hand]:
-        """Deal deck into 4 hands of 13 cards."""
-        remaining = Cards(self)
-        for _ in PLAYER_IDS:
-            drawn = remaining.draw(13, rng)
-            yield Hand(drawn)
-            remaining -= drawn
+
+def deal_hands(deck: Deck, rng: Random) -> Iterator[Hand]:
+    """Deal deck into 4 hands of 13 cards."""
+    remaining = Cards(deck)
+    for _ in T.PLAYER_IDS:
+        drawn = draw(remaining, 13, rng)
+        yield Hand(drawn)
+        remaining -= drawn

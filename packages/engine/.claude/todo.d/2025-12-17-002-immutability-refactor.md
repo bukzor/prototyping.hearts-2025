@@ -11,13 +11,13 @@ Engine uses mutable dataclasses and collections. This makes reasoning about
 state changes harder, prevents hashability (can't use states as dict keys), and
 complicates potential undo/replay features.
 
-## Current Situation (updated 2025-12-19)
+## Current Situation (updated 2025-12-23)
 
-Most dataclasses frozen. `Hand`/`Cards` now frozenset-based. Remaining:
+Phases 1-4 complete. Split `valid_plays` into `valid_leads`/`valid_follows` with
+narrower signatures. Converted `draw`/`draw_three`/`deal_hands` from methods to
+functions per refined design rule. Extracted `scoring.py` module.
 
-- `GameState` not frozen (uses `.copy()` for external immutability)
-- Methods still on: `Trick`, `Cards`, `Deck`, `GameState`
-- Validation functions now return `Iterator[Card]` (bonus refactor)
+Remaining: Phase 5 types consolidation, Phase 6 module reorganization.
 
 ## Proposed Solution
 
@@ -49,23 +49,26 @@ Full immutability stack:
   - [x] `PlayerState` frozen with `update_player()` helper
   - [x] `GameState` frozen - mutation functions return new state
 
-- [~] **Phase 4: Narrow Function Signatures** Reduce coupling: functions should
-  depend only on what they use. Work recursively - narrowing leaves reveals
-  second-order opportunities.
+- [x] **Phase 4: Narrow Function Signatures** Reduce coupling: functions should
+      depend only on what they use. Work recursively - narrowing leaves reveals
+      second-order opportunities.
 
   **Pass 1 - Leaf functions (no internal GameState deps):**
-  - [x] `is_first_trick(state)` → `is_first_trick(players)`
+  - [x] `is_first_trick(state)` → `is_first_trick(tricks_won)`
   - [x] `can_lead_hearts(state)` → `can_lead_hearts(hand, hearts_broken)`
   - [x] `valid_pass_selections(state)` → `valid_pass_selections(hand)`
-  - [x] `check_shot_moon(state)` → `check_shot_moon(players)`
+  - [x] `check_shot_moon(state)` → `check_shot_moon(tricks_won)`
   - [x] `next_player_for_passing(state)` →
         `next_player_for_passing(current_player, pending_passes)`
 
-  **Pass 2 - Callers of Pass 1 functions:**
-  - [ ] `valid_leads(state)` → `valid_leads(hand, first_trick, hearts_broken)`
-  - [ ] `valid_follows(state)` → `valid_follows(hand, lead_suit, first_trick)`
+  **Pass 2 - Split valid_plays:**
+  - [x] `valid_plays(hand, trick, ...)` → `valid_plays(hand, lead_suit, ...)`
+  - [x] Extract `valid_leads(hand, first_trick, hearts_broken)`
+  - [x] Extract `valid_follows(hand, lead_suit, first_trick)`
+  - [x] Added `Trick.lead_suit` property
 
-  **Later passes:** TBD
+  **Remaining `state:` functions:** All are imperative shell (GameState →
+  GameState transforms) or intentional adapters. No further narrowing needed.
 
 - [ ] **Phase 5: Types consolidation**
   - [ ] Move "ubiquitous" types to `hearts_engine.types`
@@ -92,9 +95,10 @@ Full immutability stack:
 ## Success Criteria
 
 - [x] Core dataclasses frozen (`Card`, `Trick`, `PlayerState`, actions)
-- [ ] All dataclasses frozen (including `GameState`)
+- [x] All dataclasses frozen (including `GameState`)
 - [x] `Hand` → `frozenset` for full hashability
-- [ ] No methods with non-self args (except alt constructors)
+- [~] No methods with non-self args (except alt constructors) - relaxed: filter
+  methods like `of_suit()` kept as more Pythonic
 - [ ] Module structure matches dependency clusters
 - [x] All tests pass
 - [x] Types clean (pyright 0 errors)

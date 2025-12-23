@@ -2,15 +2,13 @@
 
 from random import Random
 
+from . import types as T
 from .cards import Deck
+from .cards import draw_three
 from .main import apply_action
 from .main import new_game
 from .state import GameState
-from .state import Phase
 from .state import SelectPass
-from .types import PLAYER_IDS
-from .types import ActionFailure
-from .types import ActionSuccess
 
 
 class DescribePassPhase:
@@ -19,9 +17,9 @@ class DescribePassPhase:
     def it_accepts_valid_pass(self) -> None:
         random = Random(42)
         game = new_game(random)
-        cards = game.players[0].hand.draw_three(random)
+        cards = draw_three(game.players[0].hand, random)
         result = apply_action(game, SelectPass(cards=cards), random)
-        assert isinstance(result, ActionSuccess), result
+        assert isinstance(result, T.ActionSuccess), result
         assert result.new_state.pending_passes[0] is not None
 
     def it_rejects_cards_not_in_hand(self) -> None:
@@ -31,7 +29,7 @@ class DescribePassPhase:
         other_cards = [c for c in Deck() if c not in game.players[0].hand][:3]
         a, b, c = other_cards
         result = apply_action(game, SelectPass(cards=(a, b, c)), random)
-        assert isinstance(result, ActionFailure)
+        assert isinstance(result, T.ActionFailure)
         assert "not in hand" in result.error.lower()
 
     def it_rejects_duplicate_cards(self) -> None:
@@ -41,23 +39,23 @@ class DescribePassPhase:
         result = apply_action(
             game, SelectPass(cards=(card, card, card)), random
         )
-        assert isinstance(result, ActionFailure)
+        assert isinstance(result, T.ActionFailure)
         assert "different" in result.error.lower()
 
     def it_advances_to_next_player(self) -> None:
         random = Random(42)
         game = new_game(random)
-        cards = game.players[0].hand.draw_three(random)
+        cards = draw_three(game.players[0].hand, random)
         result = apply_action(game, SelectPass(cards=cards), random)
-        assert isinstance(result, ActionSuccess), result
+        assert isinstance(result, T.ActionSuccess), result
         assert result.new_state.current_player == 1
 
     def it_transitions_to_playing_after_all_pass(self) -> None:
         random = Random(42)
         game: GameState = new_game(random)
-        for i in PLAYER_IDS:
-            cards = game.players[i].hand.draw_three(random)
+        for i in T.PLAYER_IDS:
+            cards = draw_three(game.players[i].hand, random)
             result = apply_action(game, SelectPass(cards=cards), random)
-            assert isinstance(result, ActionSuccess), result
+            assert isinstance(result, T.ActionSuccess), result
             game = result.new_state
-        assert game.phase == Phase.PLAYING
+        assert game.phase == T.Phase.PLAYING

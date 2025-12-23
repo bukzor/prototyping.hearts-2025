@@ -4,14 +4,14 @@ import uuid
 from random import Random
 from typing import TYPE_CHECKING
 
+from . import types as T
 from .cards import Deck
+from .cards import deal_hands
 from .state import ChooseMoonOption
 from .state import GameState
-from .state import Phase
 from .state import PlayCard
 from .state import PlayerState
 from .state import SelectPass
-from .types import ActionResult
 
 if TYPE_CHECKING:
     from .state import PlayerAction
@@ -19,11 +19,11 @@ if TYPE_CHECKING:
 
 def new_game(random: Random, game_id: str | None = None) -> GameState:
     """Create a new game with shuffled deck."""
-    players = tuple(PlayerState(hand=h) for h in Deck().deal_hands(random))
+    players = tuple(PlayerState(hand=h) for h in deal_hands(Deck(), random))
 
     return GameState(
         game_id=game_id or str(uuid.uuid4()),
-        phase=Phase.PASSING,
+        phase=T.Phase.PASSING,
         round_number=0,
         dealer=0,
         players=players,
@@ -36,7 +36,7 @@ def new_game(random: Random, game_id: str | None = None) -> GameState:
 
 def apply_action(
     state: GameState, action: PlayerAction, random: Random
-) -> ActionResult:
+) -> T.ActionResult:
     """Apply an action to the game state."""
     from .passing import apply_pass
     from .play import apply_play
