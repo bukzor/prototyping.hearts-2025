@@ -2,8 +2,9 @@
 
 from random import Random
 
-from . import types as T
 from .main import new_game
+from .state import pass_direction_for_round
+from .types import types as T
 
 
 class DescribeNewGame:
@@ -38,7 +39,9 @@ class DescribeNewGame:
 
     def it_has_left_pass_direction_for_round_zero(self) -> None:
         game = new_game(Random(42))
-        assert game.pass_direction == T.PassDirection.LEFT
+        assert (
+            pass_direction_for_round(game.round_number) == T.PassDirection.LEFT
+        )
 
     def it_starts_with_player_zero_for_passing(self) -> None:
         game = new_game(Random(42))

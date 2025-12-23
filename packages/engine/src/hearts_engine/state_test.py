@@ -1,9 +1,9 @@
 """Tests for PlayerState."""
 
-from . import types as T
-from .card import Trick
 from .cards import Hand
-from .state import PlayerState
+from .types import types as T
+from .types.types import PlayerState
+from .types.types import Trick
 
 
 class DescribePlayerState:

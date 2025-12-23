@@ -3,14 +3,14 @@
 import dataclasses
 from random import Random
 
-from . import types as T
-from .card import Trick
 from .cards import Hand
 from .rules import is_first_trick
 from .rules import trick_winner
 from .rules import valid_plays
-from .state import GameState
 from .state import update_player
+from .types import types as T
+from .types.types import GameState
+from .types.types import Trick
 
 
 def apply_play(

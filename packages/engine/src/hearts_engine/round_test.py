@@ -3,19 +3,20 @@
 import dataclasses
 from random import Random
 
-from . import types as T
-from .card import QUEEN_OF_SPADES
-from .card import Trick
 from .cards import draw_three
+from .constants import QUEEN_OF_SPADES
 from .main import apply_action
 from .main import new_game
 from .round import check_game_end
 from .round import start_new_round
 from .rules import valid_actions_for_state
 from .state import ChooseMoonOption
-from .state import GameState
 from .state import SelectPass
+from .state import pass_direction_for_round
 from .state import update_player
+from .types import types as T
+from .types.types import GameState
+from .types.types import Trick
 
 
 def _get_to_playing(seed: int = 42) -> tuple[GameState, Random]:
@@ -187,6 +188,11 @@ class DescribeGameEnd:
     def it_rotates_pass_direction(self) -> None:
         random = Random(42)
         game = new_game(random)
-        assert game.pass_direction == T.PassDirection.LEFT
+        assert (
+            pass_direction_for_round(game.round_number) == T.PassDirection.LEFT
+        )
         game = start_new_round(game, random)
-        assert game.pass_direction == T.PassDirection.RIGHT
+        assert (
+            pass_direction_for_round(game.round_number)
+            == T.PassDirection.RIGHT
+        )

@@ -1,9 +1,9 @@
 """Tests for Player protocol."""
 
-from . import types as T
 from .cards import Cards
 from .cards import Hand
 from .player import Player
+from .types import types as T
 
 
 class DescribePlayer:

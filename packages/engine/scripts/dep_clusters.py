@@ -6,16 +6,23 @@ from pathlib import Path
 
 # Known groupings - for filtering/clustering
 GROUPS: dict[str, set[str]] = {
-    "ubiquitous": {"Card", "GameState", "Suit", "Phase", "Rank", "Player"},
-    "collections": {"Trick", "Cards", "Hand", "Deck"},
+    "ubiquitous": {"Card", "GameState", "Phase", "Rank"},
+    "cross-cutting": {"update_player"},
+    "collections": {"Trick", "Cards", "Hand"},
     "tty": {"SupportsTTY", "format"},
 }
 
-EXCLUDE = GROUPS["ubiquitous"] | GROUPS["collections"] | GROUPS["tty"]
+EXCLUDE = (
+    GROUPS["ubiquitous"]
+    | GROUPS["collections"]
+    | GROUPS["tty"]
+    | GROUPS["cross-cutting"]
+)
+# EXCLUDE = set()  # show everything
 
 # Visual clusters - use "/" for nesting (e.g., "ending/scoring")
 CLUSTERS: dict[str, set[str]] = {
-    "play": {
+    "actions/play": {
         "valid_plays",
         "is_first_trick",
         "is_point_card",
@@ -23,6 +30,9 @@ CLUSTERS: dict[str, set[str]] = {
         "two_of_clubs_only",
         "must_follow_suit",
         "no_hearts",
+        "valid_follows",
+        "valid_leads",
+        "_apply_restrictions",
     },
     "start": {
         "start_new_round",
@@ -31,6 +41,9 @@ CLUSTERS: dict[str, set[str]] = {
         "new_game",
         "find_two_of_clubs_holder",
         "start_playing_phase",
+        "deal_hands",
+        "draw",
+        "Deck",
     },
     "actions": {
         "valid_actions",
@@ -41,6 +54,8 @@ CLUSTERS: dict[str, set[str]] = {
         "PlayCard",
         "ChooseMoonOption",
         "apply_play",
+        "ActionSuccess",
+        "ActionFailure",
     },
     "passing": {
         "apply_pass",
@@ -49,6 +64,7 @@ CLUSTERS: dict[str, set[str]] = {
         "pass_target",
         "pass_direction_for_round",
         "PassDirection",
+        "update_pending_passes",
     },
     "ending": {
         "trick_winner",
@@ -63,6 +79,14 @@ CLUSTERS: dict[str, set[str]] = {
         "round_points",
         "trick_points",
         "card_points",
+    },
+    "player": {
+        "Player",
+        "update_player",
+        "PlayerState",
+        "PlayerStateChanges",
+        "player_id",
+        "is_player_id",
     },
 }
 
@@ -154,8 +178,8 @@ def main() -> None:
     print("  splines=true")
     print("  nodesep=0.3")
     print("  ranksep=0.3")
-    print('  size="7.5,10"')  # disabled to see natural size
-    # print("  ratio=compress")
+    print('  size="30,22.5"')  # disabled to see natural size
+    print("  ratio=compress")
     print('  node [style=filled fontsize=14 margin="0.01,0.005"]')
     print()
 

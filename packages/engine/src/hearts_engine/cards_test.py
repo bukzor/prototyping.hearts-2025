@@ -3,14 +3,14 @@
 from hypothesis import given
 from hypothesis import strategies as st
 
-from . import types as T
-from .card import QUEEN_OF_SPADES
-from .card import TWO_OF_CLUBS
-from .card import Trick
 from .cards import Cards
 from .cards import Deck
 from .cards import Hand
+from .constants import QUEEN_OF_SPADES
+from .constants import TWO_OF_CLUBS
 from .tty import SupportsTTY
+from .types import types as T
+from .types.types import Trick
 
 
 class DescribeCard:

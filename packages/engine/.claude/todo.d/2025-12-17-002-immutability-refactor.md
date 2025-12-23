@@ -13,11 +13,11 @@ complicates potential undo/replay features.
 
 ## Current Situation (updated 2025-12-23)
 
-Phases 1-4 complete. Split `valid_plays` into `valid_leads`/`valid_follows` with
-narrower signatures. Converted `draw`/`draw_three`/`deal_hands` from methods to
-functions per refined design rule. Extracted `scoring.py` module.
+Phases 1-5 complete. Types consolidated into `types/` package with 8 modules
+(card, cards, trick, player, phase, state, result, types). Constants extracted
+to `constants.py`. Removed trivial `GameState.pass_direction` property.
 
-Remaining: Phase 5 types consolidation, Phase 6 module reorganization.
+Remaining: Phase 6 module reorganization.
 
 ## Proposed Solution
 
@@ -70,9 +70,13 @@ Full immutability stack:
   **Remaining `state:` functions:** All are imperative shell (GameState →
   GameState transforms) or intentional adapters. No further narrowing needed.
 
-- [ ] **Phase 5: Types consolidation**
-  - [ ] Move "ubiquitous" types to `hearts_engine.types`
-  - [ ] Use a sub-package if we near 300 LOC
+- [x] **Phase 5: Types consolidation**
+  - [x] Move ubiquitous types (Card, GameState, Phase, Rank) to `types/`
+  - [x] Move collections (Cards, Hand, Trick) to `types/`
+  - [x] Split into sub-package: card.py, cards.py, trick.py, player.py,
+        phase.py, state.py, result.py, types.py (all under 100 LOC)
+  - [x] Extract constants (TWO_OF_CLUBS, QUEEN_OF_SPADES) to `constants.py`
+  - [x] Remove trivial `GameState.pass_direction` property
 
 - [ ] **Phase 6: Modules**
   - [ ] Reorganize to match cluster structure:

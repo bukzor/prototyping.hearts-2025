@@ -2,9 +2,9 @@
 
 from collections.abc import Iterable
 
-from . import types as T
-from .card import QUEEN_OF_SPADES
-from .card import Trick
+from .constants import QUEEN_OF_SPADES
+from .types import types as T
+from .types.types import Trick
 
 
 def is_point_card(card: T.Card) -> bool:

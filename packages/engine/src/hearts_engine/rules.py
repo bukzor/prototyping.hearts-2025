@@ -5,14 +5,14 @@ from collections.abc import Iterator
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-from . import types as T
-from .card import TWO_OF_CLUBS
-from .card import Trick
 from .cards import Cards
 from .cards import Hand
+from .constants import TWO_OF_CLUBS
 from .scoring import is_point_card
 from .scoring import round_points
-from .state import GameState
+from .types import types as T
+from .types.types import GameState
+from .types.types import Trick
 
 if TYPE_CHECKING:
     from .state import PlayerAction

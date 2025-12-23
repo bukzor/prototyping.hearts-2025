@@ -1,13 +1,14 @@
-"""Game state types for Hearts."""
+"""Game state helpers for Hearts."""
 
 import dataclasses
 from dataclasses import dataclass
-from typing import TypedDict
 from typing import Unpack
 
-from . import types as T
-from .card import Trick
-from .cards import Hand
+from .types import types as T
+from .types.types import PendingPasses
+from .types.types import PlayerState
+from .types.types import PlayerStateChanges
+from .types.types import ThreeCards
 
 PASS_CYCLE: tuple[T.PassDirection, ...] = (
     T.PassDirection.LEFT,
@@ -15,11 +16,6 @@ PASS_CYCLE: tuple[T.PassDirection, ...] = (
     T.PassDirection.ACROSS,
     T.PassDirection.HOLD,
 )
-
-ThreeCards = tuple[T.Card, T.Card, T.Card]
-PendingPasses = tuple[
-    ThreeCards | None, ThreeCards | None, ThreeCards | None, ThreeCards | None
-]
 
 
 def update_pending_passes(
@@ -80,25 +76,6 @@ def pass_target(player: T.PlayerId, direction: T.PassDirection) -> T.PlayerId:
     return T.player_id(player + offset)
 
 
-@dataclass(frozen=True, slots=True)
-class PlayerState:
-    """State for a single player."""
-
-    hand: Hand
-    score: int = 0
-    round_score: int = 0
-    tricks_won: tuple[Trick, ...] = ()
-
-
-class PlayerStateChanges(TypedDict, total=False):
-    """Valid fields for updating PlayerState."""
-
-    hand: Hand
-    score: int
-    round_score: int
-    tricks_won: tuple[Trick, ...]
-
-
 def update_player(
     players: tuple[PlayerState, ...],
     pid: T.PlayerId,
@@ -107,46 +84,3 @@ def update_player(
     """Return new players tuple with one player updated via replace()."""
     new_player = dataclasses.replace(players[pid], **changes)
     return players[:pid] + (new_player,) + players[pid + 1 :]
-
-
-@dataclass(frozen=True, slots=True)
-class GameState:
-    """Complete game state."""
-
-    # Identity
-    game_id: str
-
-    # Phase
-    phase: T.Phase
-
-    # Round context
-    round_number: int
-    dealer: T.PlayerId
-
-    # Player state (index = PlayerId)
-    players: tuple[PlayerState, ...]
-
-    # Current trick (None during passing phase)
-    trick: Trick | None
-    current_player: T.PlayerId
-
-    # Derived state
-    hearts_broken: bool
-
-    # Pass phase state (indexed by PlayerId, None = not yet selected)
-    pending_passes: PendingPasses = (None, None, None, None)
-
-    @property
-    def pass_direction(self) -> T.PassDirection:
-        """Current pass direction."""
-        return pass_direction_for_round(self.round_number)
-
-    @property
-    def hands(self) -> tuple[Hand, ...]:
-        """All player hands as a tuple."""
-        return tuple(p.hand for p in self.players)
-
-    @property
-    def tricks_won(self) -> tuple[tuple[Trick, ...], ...]:
-        """All player tricks_won as a tuple."""
-        return tuple(p.tricks_won for p in self.players)

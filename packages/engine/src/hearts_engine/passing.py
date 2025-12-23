@@ -2,15 +2,16 @@
 
 import dataclasses
 
-from . import types as T
-from .card import Trick
 from .cards import Hand
 from .rules import find_two_of_clubs_holder
-from .state import GameState
-from .state import PendingPasses
+from .state import pass_direction_for_round
 from .state import pass_target
 from .state import update_pending_passes
 from .state import update_player
+from .types import types as T
+from .types.types import GameState
+from .types.types import PendingPasses
+from .types.types import Trick
 
 
 def apply_pass(
@@ -20,7 +21,7 @@ def apply_pass(
     if state.phase != T.Phase.PASSING:
         return T.ActionFailure(error="Not in passing phase")
 
-    if state.pass_direction == T.PassDirection.HOLD:
+    if pass_direction_for_round(state.round_number) == T.PassDirection.HOLD:
         return T.ActionFailure(error="Hold round, no passing")
 
     player = state.current_player
@@ -70,7 +71,9 @@ def execute_passes(state: GameState) -> GameState:
     for player in T.PLAYER_IDS:
         cards = state.pending_passes[player]
         assert cards is not None, player
-        received[pass_target(player, state.pass_direction)].extend(cards)
+        received[
+            pass_target(player, pass_direction_for_round(state.round_number))
+        ].extend(cards)
         players = update_player(
             players, player, hand=Hand(players[player].hand - set(cards))
         )

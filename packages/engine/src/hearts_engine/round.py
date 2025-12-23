@@ -3,17 +3,17 @@
 import dataclasses
 from random import Random
 
-from . import types as T
-from .card import Trick
 from .cards import Deck
 from .cards import deal_hands
 from .rules import check_shot_moon
 from .rules import find_two_of_clubs_holder
 from .scoring import round_points
-from .state import GameState
-from .state import PlayerState
 from .state import pass_direction_for_round
 from .state import update_player
+from .types import types as T
+from .types.types import GameState
+from .types.types import PlayerState
+from .types.types import Trick
 
 LOSING_SCORE = 100
 

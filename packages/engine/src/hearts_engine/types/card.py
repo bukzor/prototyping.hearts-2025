@@ -1,32 +1,9 @@
-"""Foundation types for Hearts engine."""
+"""Card primitive types."""
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING
-from typing import Literal
-from typing import TypeGuard
-
-if TYPE_CHECKING:
-    from .state import GameState
-
-# Player identity
-PlayerId = Literal[0, 1, 2, 3]
-PLAYER_IDS: tuple[PlayerId, ...] = (0, 1, 2, 3)
 
 
-def is_player_id(n: int) -> TypeGuard[PlayerId]:
-    """Check if n is a valid PlayerId (0-3)."""
-    return n in (0, 1, 2, 3)
-
-
-def player_id(n: int) -> PlayerId:
-    """Convert an integer to a PlayerId (mod 4)."""
-    result = n % 4
-    assert is_player_id(result), result
-    return result
-
-
-# Card primitives
 class Suit(Enum):
     """Card suits. Order: Clubs < Diamonds < Spades < Hearts."""
 
@@ -121,40 +98,3 @@ class Card:
         if self.suit != other.suit:
             return self.suit.order < other.suit.order
         return self.rank.order < other.rank.order
-
-
-# Game phases
-class Phase(Enum):
-    """Game phase."""
-
-    PASSING = "passing"
-    PLAYING = "playing"
-    ROUND_END = "round_end"
-    GAME_END = "game_end"
-
-
-class PassDirection(Enum):
-    """Direction for passing cards."""
-
-    LEFT = "left"
-    RIGHT = "right"
-    ACROSS = "across"
-    HOLD = "hold"
-
-
-# Action results
-@dataclass(frozen=True, slots=True)
-class ActionSuccess:
-    """Successful action result."""
-
-    new_state: GameState
-
-
-@dataclass(frozen=True, slots=True)
-class ActionFailure:
-    """Failed action result."""
-
-    error: str
-
-
-ActionResult = ActionSuccess | ActionFailure
