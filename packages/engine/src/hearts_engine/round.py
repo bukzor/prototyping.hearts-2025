@@ -5,14 +5,13 @@ from random import Random
 
 from .cards import Deck
 from .cards import deal_hands
+from .ending.scoring import apply_normal_scoring
 from .rules import check_shot_moon
 from .rules import find_two_of_clubs_holder
-from .scoring import round_points
 from .state import pass_direction_for_round
 from .state import update_player
 from .types import types as T
 from .types.types import GameState
-from .types.types import PlayerState
 from .types.types import Trick
 
 LOSING_SCORE = 100
@@ -30,18 +29,6 @@ def complete_round(state: GameState, random: Random) -> GameState:
         state, players=apply_normal_scoring(state.players)
     )
     return check_game_end(state, random)
-
-
-def apply_normal_scoring(
-    players: tuple[PlayerState, ...],
-) -> tuple[PlayerState, ...]:
-    """Apply normal round scoring (no moon shot)."""
-    for pid, player in zip(T.PLAYER_IDS, players):
-        points = round_points(player.tricks_won)
-        players = update_player(
-            players, pid, round_score=points, score=player.score + points
-        )
-    return players
 
 
 def apply_moon_choice(

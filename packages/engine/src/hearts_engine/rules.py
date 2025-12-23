@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING
 from .cards import Cards
 from .cards import Hand
 from .constants import TWO_OF_CLUBS
+from .ending.scoring import round_points
 from .scoring import is_point_card
-from .scoring import round_points
 from .types import types as T
 from .types.types import GameState
 from .types.types import Trick
