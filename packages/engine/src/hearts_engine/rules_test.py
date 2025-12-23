@@ -5,12 +5,12 @@ from collections.abc import Sequence
 from hypothesis import given
 from hypothesis import strategies as st
 
+from .actions.play import is_point_card
 from .constants import QUEEN_OF_SPADES
 from .constants import TWO_OF_CLUBS
 from .ending.scoring import card_points
 from .ending.scoring import trick_points
 from .rules import trick_winner
-from .scoring import is_point_card
 from .types import types as T
 from .types.types import Trick
 

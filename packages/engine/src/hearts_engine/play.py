@@ -3,10 +3,10 @@
 import dataclasses
 from random import Random
 
+from .actions.play import is_first_trick
+from .actions.play import valid_plays
 from .cards import Hand
-from .rules import is_first_trick
 from .rules import trick_winner
-from .rules import valid_plays
 from .state import update_player
 from .types import types as T
 from .types.types import GameState

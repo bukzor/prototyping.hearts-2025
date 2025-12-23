@@ -78,13 +78,102 @@ Full immutability stack:
   - [x] Extract constants (TWO_OF_CLUBS, QUEEN_OF_SPADES) to `constants.py`
   - [x] Remove trivial `GameState.pass_direction` property
 
-- [ ] **Phase 6: Modules**
-  - [ ] Reorganize to match cluster structure:
-    - `play/` - card play validation
-    - `actions/` - action types and dispatch
-    - `passing/` - card passing phase
-    - `ending/` - round/game completion + scoring
-    - `start/` - initialization
+- [ ] **Phase 6: Module Reorganization** (detailed plan below)
+  - [x] Step 1: `ending/scoring.py` (committed: 35fa2af)
+  - [x] Step 2: `actions/play.py`
+  - [ ] Step 3: `passing/`
+  - [ ] Step 4: `start/`
+  - [ ] Step 5: `ending/`
+  - [ ] Step 6: `actions/`
+  - [ ] Step 7: Cleanup (delete emptied modules)
+
+## Phase 6 Detailed Plan
+
+### Target Structure
+
+```
+hearts_engine/
+  actions/
+    __init__.py    # apply_action, apply_play, valid_actions*, action classes
+    play.py        # valid_plays, valid_leads, valid_follows, restrictions
+  ending/
+    __init__.py    # complete_trick, complete_round, trick_winner, moon logic
+    scoring.py     # card_points, trick_points, round_points, apply_normal_scoring
+  passing/
+    __init__.py    # apply_pass, execute_passes, pass_target, direction logic
+  start/
+    __init__.py    # new_game, start_new_round, deal_hands, Deck
+  types/           # (already done)
+  constants.py     # (already done)
+  player.py        # Player protocol (stays)
+  tty.py           # formatting (stays)
+```
+
+### Migration Order (leaf to root)
+
+**Step 1: ending/scoring.py** ✓ (committed: 35fa2af)
+
+- `card_points`, `trick_points`, `round_points` (from scoring.py)
+- `apply_normal_scoring` (from round.py)
+- Note: `is_point_card` goes to `actions/play.py`
+
+**Step 2: actions/play.py**
+
+- `is_point_card` (from scoring.py)
+- `is_first_trick`, `valid_plays`, `valid_leads`, `valid_follows`
+- `must_follow_suit`, `no_point_cards`, `no_hearts`, `two_of_clubs_only`
+- `_apply_restrictions`
+
+**Step 3: passing/**
+
+- `pass_direction_for_round`, `pass_target`, `update_pending_passes` (from
+  state.py)
+- `apply_pass`, `next_player_for_passing`, `execute_passes` (from passing.py)
+
+**Step 4: start/**
+
+- `Deck`, `deal_hands`, `draw` (from cards.py)
+- `find_two_of_clubs_holder` (from rules.py)
+- `start_new_round` (from round.py)
+- `new_game` (from main.py)
+- `start_playing_phase` (from passing.py)
+
+**Step 5: ending/**
+
+- `trick_winner`, `check_shot_moon` (from rules.py)
+- `complete_trick` (from play.py)
+- `complete_round`, `apply_moon_choice`, `check_game_end` (from round.py)
+
+**Step 6: actions/**
+
+- `apply_action` (from main.py)
+- `apply_play` (from play.py)
+- `SelectPass`, `PlayCard`, `ChooseMoonOption` (from state.py)
+- `valid_actions`, `valid_actions_for_state`, `valid_pass_selections` (from
+  rules.py)
+
+**Step 7: Cleanup**
+
+- Delete emptied modules: `scoring.py`, `rules.py`, `round.py`, `play.py`,
+  `cards.py`, `main.py`
+- Keep: `state.py` (if `update_player` remains), `passing.py` (if anything
+  remains)
+- Update `__init__.py` exports and all test imports
+
+### Per-Step Process
+
+1. Create target module with moved functions
+2. Update imports within moved functions
+3. Update imports in all dependent modules (including tests)
+4. Run tests
+5. Delete emptied source file when fully migrated
+
+### Cross-Cutting Concerns
+
+- `draw_three`: Test helper only - move to `start/` (tests can import from
+  there)
+- `update_player`: Used by round, passing, play - keep in `state.py` as
+  cross-cutting utility
 
 ## Decisions Made
 
