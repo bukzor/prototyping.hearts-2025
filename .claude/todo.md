@@ -36,6 +36,14 @@ See `docs/milestones.kb/a000-local-prototype.md` for full scope.
 - [ ] Bot for playtesting (`packages/bot/`)
 - [ ] Wire together: playable 4-player pass-the-controller game
 
+## Infra
+
+- [ ] Fix `pnpm-run` PATH-resolution in pre-commit hooks — commits from sessions
+      that haven't loaded direnv require `eval "$(direnv export bash)"` to make
+      `$REPO/bin/pnpm-run` resolvable. Either symlink `bin/pnpm-run` into
+      `~/bin/`, or update `.pre-commit-config.yaml` to invoke via
+      `$REPO/bin/pnpm-run` directly (rather than bare `pnpm-run`).
+
 ## Context
 
 - Devlog: `docs/dev/devlog/2025-12-16-001-engine-tests-complete.md`
