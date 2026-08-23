@@ -1,12 +1,11 @@
 """Hearts game rules and validation."""
 
 from collections.abc import Iterator
-from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 from .actions.play import is_first_trick
 from .actions.play import valid_plays
-from .ending.scoring import round_points
+from .ending.check_shot_moon import check_shot_moon
 from .types import api as T
 from .types.api import GameState
 from .types.api import Hand
@@ -14,22 +13,6 @@ from .types.api import Trick
 
 if TYPE_CHECKING:
     from .state import PlayerAction
-
-
-def trick_winner(trick: Trick) -> T.PlayerId:
-    """Determine winner of a trick."""
-    assert len(trick) == 4, len(trick)
-    assert trick.lead is not None
-    lead_card = trick[trick.lead]
-    assert lead_card is not None
-    lead_suit = lead_card.suit
-    winner = trick.lead
-    for player, card in trick.items():
-        winner_card = trick[winner]
-        assert winner_card is not None
-        if card.suit == lead_suit and card.rank.order > winner_card.rank.order:
-            winner = player
-    return winner
 
 
 def valid_pass_selections(
@@ -89,13 +72,3 @@ def valid_actions_for_state(state: GameState) -> list[PlayerAction]:
         hearts_broken=state.hearts_broken,
         moon_shooter=check_shot_moon(tricks_won),
     )
-
-
-def check_shot_moon(
-    tricks_won: Sequence[tuple[Trick, ...]],
-) -> T.PlayerId | None:
-    """Check if any player shot the moon. Returns player id or None."""
-    for pid, tw in zip(T.PLAYER_IDS, tricks_won):
-        if round_points(tw) == 26:
-            return pid
-    return None

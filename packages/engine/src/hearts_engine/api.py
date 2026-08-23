@@ -2,14 +2,14 @@
 
 from .constants import QUEEN_OF_SPADES as QUEEN_OF_SPADES
 from .constants import TWO_OF_CLUBS as TWO_OF_CLUBS
+from .ending.api import apply_moon_choice as apply_moon_choice
+from .ending.api import check_game_end as check_game_end
+from .ending.api import check_shot_moon as check_shot_moon
+from .ending.api import complete_round as complete_round
+from .ending.api import trick_winner as trick_winner
 from .main import apply_action as apply_action
 from .passing.api import apply_pass as apply_pass
 from .passing.api import pass_direction_for_round as pass_direction_for_round
-from .round import apply_moon_choice as apply_moon_choice
-from .round import check_game_end as check_game_end
-from .round import complete_round as complete_round
-from .rules import check_shot_moon as check_shot_moon
-from .rules import trick_winner as trick_winner
 from .rules import valid_actions as valid_actions
 from .rules import valid_actions_for_state as valid_actions_for_state
 from .rules import valid_pass_selections as valid_pass_selections

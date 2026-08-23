@@ -1,30 +1,13 @@
-"""Hearts game engine - round and game lifecycle."""
+"""Apply moon shooting choice."""
 
 import dataclasses
 from random import Random
 
-from .ending.scoring import apply_normal_scoring
-from .rules import check_shot_moon
-from .start.api import start_new_round
-from .state import update_player
-from .types import api as T
-from .types.api import GameState
-
-LOSING_SCORE = 100
-
-
-def complete_round(state: GameState, random: Random) -> GameState:
-    """Complete a round and score it."""
-    shooter = check_shot_moon(state.tricks_won)
-    if shooter is not None:
-        return dataclasses.replace(
-            state, phase=T.Phase.ROUND_END, current_player=shooter
-        )
-
-    state = dataclasses.replace(
-        state, players=apply_normal_scoring(state.players)
-    )
-    return check_game_end(state, random)
+from ..state import update_player
+from ..types import api as T
+from ..types.api import GameState
+from .check_game_end import check_game_end
+from .check_shot_moon import check_shot_moon
 
 
 def apply_moon_choice(
@@ -61,10 +44,3 @@ def apply_moon_choice(
     state = dataclasses.replace(state, players=players)
     state = check_game_end(state, random)
     return T.ActionSuccess(new_state=state)
-
-
-def check_game_end(state: GameState, random: Random) -> GameState:
-    """Check if game should end."""
-    if any(p.score >= LOSING_SCORE for p in state.players):
-        return dataclasses.replace(state, phase=T.Phase.GAME_END)
-    return start_new_round(state, random)

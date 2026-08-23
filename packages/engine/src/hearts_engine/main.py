@@ -17,9 +17,9 @@ def apply_action(
     state: GameState, action: PlayerAction, random: Random
 ) -> T.ActionResult:
     """Apply an action to the game state."""
+    from .ending.api import apply_moon_choice
     from .passing.api import apply_pass
     from .play import apply_play
-    from .round import apply_moon_choice
 
     match action:
         case SelectPass(cards=cards):

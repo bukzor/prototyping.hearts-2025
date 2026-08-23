@@ -13,7 +13,7 @@ complicates potential undo/replay features.
 
 ## Current Situation (updated 2025-12-23)
 
-Phases 1-5 complete. Phase 6 Steps 1-4 complete.
+Phases 1-5 complete. Phase 6 Steps 1-5 complete.
 
 Module pattern established:
 
@@ -23,10 +23,11 @@ Module pattern established:
 - External imports go through `package.api`
 - Internal imports within package go direct
 
-Completed packages: `types/`, `passing/`, `start/` Top-level `api.py` created
-for package-wide exports. Deleted `cards.py` (functions moved to `start/`).
+Completed packages: `types/`, `passing/`, `start/`, `ending/`. Top-level
+`api.py` created for package-wide exports. Deleted `cards.py` (functions moved
+to `start/`), `round.py` (functions moved to `ending/`).
 
-Remaining: Phase 6 Steps 5-7.
+Remaining: Phase 6 Steps 6-7.
 
 ## Proposed Solution
 
@@ -92,7 +93,7 @@ Full immutability stack:
   - [x] Step 2: `actions/play.py` (committed: 4dbd8dc)
   - [x] Step 3: `passing/` - split to one-function-per-file, added api.py
   - [x] Step 4: `start/` - created with Deck, deal_hands, new_game, etc.
-  - [ ] Step 5: `ending/`
+  - [x] Step 5: `ending/` - split to one-function-per-file, added api.py
   - [ ] Step 6: `actions/`
   - [ ] Step 7: Cleanup (delete emptied modules)
 

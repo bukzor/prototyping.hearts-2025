@@ -4,9 +4,9 @@ import dataclasses
 from random import Random
 
 from .constants import QUEEN_OF_SPADES
+from .ending.api import check_game_end
 from .main import apply_action
 from .passing.api import pass_direction_for_round
-from .round import check_game_end
 from .rules import valid_actions_for_state
 from .start.api import draw_three
 from .start.api import new_game
